@@ -6,6 +6,8 @@ import { Plus, Download, Facebook, Instagram, Phone } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import SharedHeader from "@/components/shared-header"
+import Image from 'next/image'
+
 
 interface MenuItem {
   name: string
@@ -19,6 +21,10 @@ interface MenuSection {
   items: MenuItem[]
   animationDirection: "left" | "right"
   image: string
+  imageSize?: {
+    width: number
+    height: number
+  }
 }
 
 const menuSections: MenuSection[] = [
@@ -26,7 +32,8 @@ const menuSections: MenuSection[] = [
     id: "shots-ruso",
     title: "SHOTS DEL RUSO",
     animationDirection: "right",
-    image: "Shots con humo/vapor",
+    image: "/Imagenes/shots del ruso_menu.png",
+    imageSize: { width: 550, height: 700 },
     items: [
       { name: "SIBERIANO", description: "VODKA Y LICOR DE MENTA", price: "$3.00" },
       { name: "GATO VASILIY", description: "GIN, LIMÓN FRESCO Y GRANADINA", price: "$3.00" },
@@ -53,7 +60,8 @@ const menuSections: MenuSection[] = [
     id: "shots-flameados",
     title: "SHOTS FLAMEADOS",
     animationDirection: "left",
-    image: "Shot flameado con fuego azul",
+    image: "/Imagenes/shot flameado_menu.png",
+    imageSize: { width: 550, height: 500 },
     items: [
       { name: "TNT", description: "GIN, TEQUILA, VODKA, RON", price: "$6.00" },
       { name: "BUDA", description: "VODKA, TEQUILA, RON, GIN, TRIPLE SEC Y GRANADINA", price: "$5.00" },
@@ -67,7 +75,8 @@ const menuSections: MenuSection[] = [
     id: "cocteles-flameados",
     title: "CÓCTELES FLAMEADOS",
     animationDirection: "right",
-    image: "Cócteles flameados con fuego",
+    image: "/Imagenes/cocteles_flameados_menu.png",
+    imageSize: { width: 550, height: 700 },
     items: [
       { name: "Ferrari", description: "Ron, triple sec, blue curaçao, granadina", price: "$5.00" },
       { name: "Lamborghini", description: "Vodka, licor de café, Irish cream, blue curaçao", price: "$5.00" },
@@ -99,85 +108,233 @@ const menuSections: MenuSection[] = [
     id: "cocteles-cerveza",
     title: "CÓCTELES CON CERVEZA",
     animationDirection: "left",
-    image: "Cóctel con cerveza",
-    items: [],
+    image: "/Imagenes/coctel_cerveza.png",
+    imageSize: { width: 550, height: 700 },
+    items: [
+      { name: "MICHELADA CLÁSICA", description: "CERVEZA CLUB, LIMÓN FRESCO, SAL, PIMIENTA, SALSA INGLESA Y TABASCO", price: "$4.50" },
+      { name: "MICHELADA MIX", description: "CERVEZA CLUB, LIMÓN FRESCO, SAL, PIMIENTA, SALSA WORCESTERSHIRE Y TABASCO", price: "$4.50" },
+      { name: "BOMBA", description: "CERVEZA CLUB, BLUE CURAÇAO, TRIPLE SEC Y AMARETTO", price: "$5.00" },
+      { name: "FUEGO", description: "CERVEZA CLUB, AMARETTO Y RON", price: "$4.25" },
+      { name: "SUBMARINO RUSO", description: "CERVEZA CLUB Y VODKA", price: "$4.75" },
+      { name: "SÚPER MEXICANO", description: "CERVEZA CLUB Y TEQUILA", price: "$4.75" },
+      { name: "CERVEZA AZUL", description: "CERVEZA CLUB, TRIPLE SEC Y TEQUILA", price: "$5.00" },
+      { name: "TURBO BIELA RUSA", description: "CERVEZA CLUB, TEQUILA Y VODKA", price: "$5.00" },
+      { name: "REY NACADOR", description: "CERVEZA CLUB, LICOR DE HIERBAS Y CERVEZA NEGRA", price: "$5.50" },
+      { name: "MICHELADA MEXICANA ORIGINAL", description: "CERVEZA CORONA, LIMÓN FRESCO Y TEQUILA", price: "$5.50" }
+    ]
   },
   {
     id: "cervezas",
     title: "CERVEZAS",
     animationDirection: "right",
-    image: "Cerveza",
-    items: [],
+    image: "/Imagenes/cerveza.png",
+    imageSize: { width: 270, height: 270 },
+    items: [
+      { name: "HEINEKEN (330ML)", description: "", price: "$4.00" },
+      { name: "CLUB (550ML)", description: "", price: "$4.00" },
+      { name: "CORONA EXTRA (355ML)", description: "", price: "$4.00" },
+      { name: "STELLA ARTOIS (330ML)", description: "", price: "$4.00" }
+    ],
   },
   {
     id: "cervezas-artesanales",
     title: "CERVEZAS ARTESANALES",
     animationDirection: "left",
-    image: "Cerveza artesanal",
-    items: [],
+    image: "/Imagenes/cerveza artesanal.png",
+    imageSize: { width: 420, height: 480 },
+    items: [
+      { name: "DRY STOUT (500 ML)", description: "", price: "$7.00" },
+      { name: "RED IPA (500 ML)", description: "", price: "$7.00" },
+      { name: "BELGIAN TRIPLE (500 ML)", description: "", price: "$7.00" },
+      { name: "CREAM ALE (500 ML)", description: "", price: "$7.00" },
+      { name: "DRY STOUT (330 ML)", description: "", price: "$4.00" },
+      { name: "RED IPA (330 ML)", description: "", price: "$4.00" },
+      { name: "BELGIAN TRIPLE (330 ML)", description: "", price: "$4.00" },
+      { name: "CREAM ALE (330 ML)", description: "", price: "$4.00" }
+    ],
   },
   {
     id: "jarras-1l",
     title: "JARRAS 1 LITRO",
     animationDirection: "right",
-    image: "Jarra de cerveza 1L",
-    items: [],
+    image: "/Imagenes/jarra 1l.png",
+    imageSize: { width: 550, height: 680 },
+    items: [
+      { name: "CUBA LIBRE", description: "", price: "$20.00" },
+      { name: "DESTORNILLADOR", description: "", price: "$20.00" },
+      { name: "VINO HERVIDO", description: "", price: "$20.00" },
+      { name: "MOJITO CLÁSICO", description: "", price: "$20.00" },
+      { name: "CAIPIROSHKA", description: "", price: "$20.00" },
+      { name: "GIN TONIC", description: "", price: "$20.00" },
+      { name: "MOSCU MULE", description: "", price: "$20.00" },
+      { name: "SANGRÍA RUSA", description: "", price: "$20.00" },
+      { name: "TURBO BIELA RUSA", description: "", price: "$20.00" },
+      { name: "LONG ISLAND ICE TEA", description: "", price: "$20.00" },
+      { name: "CERVEZA AZUL", description: "", price: "$20.00" },
+      { name: "PADRINO", description: "", price: "$25.00" }
+    ],
   },
   {
     id: "jarras-2l",
     title: "JARRAS 2 LITROS",
     animationDirection: "left",
-    image: "Jarra de cerveza 2L",
-    items: [],
+    image: "/Imagenes/jarra 2l.png",
+    imageSize: { width: 530, height: 680 },
+    items: [
+      { name: "CUBA LIBRE", description: "", price: "$30.00" },
+      { name: "DESTORNILLADOR", description: "", price: "$30.00" },
+      { name: "VINO HERVIDO", description: "", price: "$30.00" },
+      { name: "MOJITO CLÁSICO", description: "", price: "$35.00" },
+      { name: "CAIPIROSHKA", description: "", price: "$35.00" },
+      { name: "GIN TONIC", description: "", price: "$35.00" },
+      { name: "MOSCU MULE", description: "", price: "$35.00" },
+      { name: "SANGRÍA RUSA", description: "", price: "$35.00" },
+      { name: "TURBO BIELA RUSA", description: "", price: "$35.00" },
+      { name: "LONG ISLAND ICE TEA", description: "", price: "$35.00" },
+      { name: "CERVEZA AZUL", description: "", price: "$35.00" },
+      { name: "PADRINO", description: "", price: "$40.00" }
+    ],
   },
   {
     id: "jarras-3l",
     title: "JARRAS 3 LITROS",
     animationDirection: "right",
-    image: "Jarra de cerveza 3L",
-    items: [],
+    image: "/Imagenes/jarra 3l.png",
+    imageSize: { width: 530, height: 680 },
+    items: [
+      { name: "CUBA LIBRE", description: "", price: "$40.00" },
+      { name: "DESTORNILLADOR", description: "", price: "$40.00" },
+      { name: "MOJITO CLÁSICO", description: "", price: "$42.00" },
+      { name: "MOJITO MIX", description: "", price: "$42.00" },
+      { name: "GIN TONIC", description: "", price: "$42.00" },
+      { name: "MOSCU MULE", description: "", price: "$42.00" },
+      { name: "SANGRÍA RUSA", description: "", price: "$42.00" },
+      { name: "TURBO BIELA RUSA", description: "", price: "$42.00" },
+      { name: "LONG ISLAND ICE TEA", description: "", price: "$42.00" },
+      { name: "CERVEZA AZUL", description: "", price: "$42.00" },
+      { name: "PADRINO", description: "", price: "$55.00" },
+      { name: "HADA VERDE", description: "", price: "$65.00" }
+    ],
   },
   {
     id: "sin-alcohol",
     title: "CÓCTELES SIN ALCOHOL",
     animationDirection: "left",
-    image: "Bebida sin alcohol",
-    items: [],
+    image: "/Imagenes/cocteles sin alcohol.png",
+    imageSize: { width: 530, height: 680 },
+    items: [
+      { name: "LIMONADA DE FRUTILLA", description: "", price: "$3.00" },
+      { name: "BATMAN", description: "", price: "$3.50" },
+      { name: "MOJITO CLÁSICO", description: "", price: "$3.50" },
+      { name: "MOJITO DE NARANJA", description: "", price: "$3.50" },
+      { name: "PATITAS DE GATO", description: "", price: "$4.00" },
+      { name: "PIÑA COLADA", description: "", price: "$5.00" },
+      { name: "PIÑA COLADA DE FRUTILLA", description: "", price: "$5.50" },
+      { name: "JUGO DE NARANJA (NATURAL)", description: "", price: "$4.00" },
+      { name: "JUGO DE PIÑA (NATURAL)", description: "", price: "$4.00" },
+      { name: "TASA TÉ", description: "", price: "$1.00" },
+      { name: "CAFÉ AMERICANO", description: "", price: "$1.50" }
+    ],
   },
   {
     id: "aguas-gaseosas",
     title: "AGUAS Y GASEOSAS",
     animationDirection: "right",
-    image: "Bebidas gaseosas",
-    items: [],
+    image: "/Imagenes/aguas y gaseosas.png",
+    imageSize: { width: 1000, height: 350 },
+    items: [
+      { name: "AGUA SIN GAS", description: "", price: "$1.50" },
+      { name: "AGUA CON GAS", description: "", price: "$1.50" },
+      { name: "ENERGIZANTE", description: "", price: "$3.00" },
+      { name: "SPRITE", description: "", price: "$1.50" },
+      { name: "COCA-COLA", description: "", price: "$1.50" }
+    ],
   },
   {
     id: "long-drinks",
     title: "LONG DRINKS",
     animationDirection: "left",
-    image: "Long drinks",
-    items: [],
+    image: "/Imagenes/Long drinks.png",
+    imageSize: { width: 1000, height: 1300 },
+    items: [
+      { name: "TEQUILA SUNRISE", description: "(TEQUILA, JUGO DE NARANJA, GRANADINA)", price: "$6.00" },
+      { name: "MARGARITA CLÁSICA", description: "(TEQUILA, LIMÓN FRESCO, TRIPLE SEC)", price: "$7.00" },
+      { name: "MARGARITA MIX", description: "(TEQUILA, LIMÓN FRESCO, TRIPLE SEC, FRUTAS: FRESA, MORA, NARANJA, MARACUYÁ)", price: "$7.50" },
+      { name: "WHITE RUSSIAN", description: "(VODKA, LICOR DE CAFÉ, IRISH CREAM)", price: "$6.00" },
+      { name: "BLACK RUSSIAN", description: "(VODKA, LICOR DE CAFÉ)", price: "$6.00" },
+      { name: "CAIPIROSHKA MIX", description: "(VODKA, LIMÓN FRESCO, FRUTAS: FRESA, MORA, NARANJA, MARACUYÁ)", price: "$6.00" },
+      { name: "GINA", description: "(VODKA, MARACUYÁ, LIMÓN FRESCO, VINO TINTO)", price: "$6.00" },
+      { name: "MOSCU MULE", description: "(VODKA, LICOR DE JENGIBRE, JENGIBRE)", price: "$7.00" },
+      { name: "BESO DE ARAÑA", description: "(VODKA, LICOR DE LIMÓN, JUGO DE NARANJA)", price: "$5.50" },
+      { name: "SANGRÍA RUSA", description: "(VODKA, LIMÓN FRESCO, AZÚCAR, JENGIBRE)", price: "$5.50" },
+      { name: "DESTORNILLADOR", description: "(VODKA, JUGO DE NARANJA)", price: "$5.00" },
+      { name: "CUBA LIBRE", description: "(RON, LIMÓN FRESCO, COCA-COLA, ANGOSTURA BITTER)", price: "$5.00" },
+      { name: "MOJITO", description: "(RON BLANCO, LIMÓN FRESCO, AZÚCAR, HIERBA BUENA)", price: "$5.00" },
+      { name: "MOJITO MIX", description: "(RON, LIMÓN FRESCO, HIERBA BUENA, FRUTAS: FRESA, MORA, NARANJA, MARACUYÁ)", price: "$5.50" },
+      { name: "DAIQUIRI", description: "(RON, LIMÓN FRESCO, AZÚCAR, FRUTAS: FRESA, MORA, NARANJA, MARACUYÁ)", price: "$6.00" },
+      { name: "PIÑA COLADA", description: "(RON, PIÑA HAWAIANA, IRISH CREAM, CREMA DE LECHE)", price: "$8.00" },
+      { name: "EL PADRINO", description: "(RED LABEL, LICOR AMARETTO)", price: "$6.50" },
+      { name: "LUCIFER", description: "(RED LABEL, LICOR AMARETTO, JUGO DE NARANJA)", price: "$6.50" },
+      { name: "OLD FASHIONED", description: "(RED LABEL, ANGOSTURA BITTER, AZÚCAR, NARANJA)", price: "$8.00" },
+      { name: "GIN TONIC", description: "(GIN, LIMÓN FRESCO, AGUA TONICA, BOTANICAS)", price: "$6.00" },
+      { name: "RED GIN", description: "(GIN, MORA, HIERBA BUENA, JENGIBRE)", price: "$6.00" },
+      { name: "NEGRONI", description: "(GIN, CAMPARI, VERMOUTH ROSSO)", price: "$8.00" },
+      { name: "WHISKY SOUR NEW YORK", description: "(RED LABEL, LIMÓN FRESCO, AZÚCAR, CLARA DE HUEVO)", price: "$10.00" }
+    ],
   },
   {
     id: "especiales",
     title: "ESPECIALES",
     animationDirection: "right",
-    image: "Cócteles especiales",
-    items: [],
+    image: "/Imagenes/especialesmenu.png",
+    imageSize: { width: 1000, height: 480 },
+    items: [
+      { name: "ZHUMIRINHA", description: "(ZHUMIR, LIMÓN FRESCO, AZÚCAR)", price: "$6.00" },
+      { name: "MAI-TAI", description: "(RON BLANCO, RON NEGRO, JUGO DE NARANJA, PINA, LICOR AMARETTO, GRANADINA)", price: "$8.00" },
+      { name: "LONG ISLAND", description: "(VODKA, GIN, TRIPLE SEC, TEQUILA, RON BLANCO, COCA-COLA)", price: "$7.00" },
+      { name: "HADA VERDE", description: "(VODKA, RON BLANCO, GIN, BLUE CURAÇAO, LICOR DE MELÓN, LIMÓN, SPRITE)", price: "$7.00" },
+      { name: "K-12", description: "(GIN, TEQUILA, TRIPLE SEC, ENERGIZANTE, SPRITE)", price: "$7.00" },
+      { name: "JAGGER BOMB DE LA CASA", description: "(LICOR DE HIERBAS, ENERGIZANTE)", price: "$8.00" }
+    ],
   },
   {
     id: "bebidas-calientes",
     title: "BEBIDAS CALIENTES",
     animationDirection: "left",
-    image: "Bebidas calientes",
-    items: [],
+    image: "/Imagenes/bebidascalientes.png",
+    imageSize: { width: 400, height: 200 },
+    items: [
+      { name: "VINO HERVIDO", description: "(VINO, RON, ESPECIAS PROCESADAS ARTESANALMENTE)", price: "$5.00" },
+      { name: "CANELAZO", description: "(AGUARDIENTE, NARANJILLA, CANELA)", price: "$5.00" }
+    ],
   },
   {
     id: "licores",
     title: "LICORES",
     animationDirection: "right",
-    image: "Licores",
-    items: [],
+    image: "/Imagenes/licores.png",
+    imageSize: { width: 400, height: 1300 },
+    items: [
+      { name: "MERLOT", description: "", price: "$5.00" },
+      { name: "CABERNET SAUVIGNON", description: "", price: "$5.00" },
+      { name: "VINO BLANCO", description: "", price: "$5.00" },
+      { name: "TANQUERAY", description: "", price: "$7.00" },
+      { name: "BEFEATER", description: "", price: "$8.00" },
+      { name: "BOMBAY", description: "", price: "$9.00" },
+      { name: "JOHNNY WALKER RED LABEL", description: "", price: "$5.00" },
+      { name: "JOHNNY WALKER DOUBLE BLACK", description: "", price: "$6.00" },
+      { name: "JACK DANIEL'S", description: "(TENNESSEE-HONEY-FIRE)", price: "$12.00" },
+      { name: "BUCHANANS", description: "", price: "$8.00" },
+      { name: "CARUPANO 8 AÑOS", description: "", price: "$18.00" },
+      { name: "DIPLOMÁTICO RESERVA EXCLUSIVA", description: "", price: "$12.00" },
+      { name: "ZACAPA 12 AÑOS", description: "", price: "$18.00" },
+      { name: "RON DE BOBBY", description: "", price: "$15.00" },
+      { name: "PATRÓN", description: "", price: "$15.00" },
+      { name: "JOSE CUERVO (ORO/PLATA)", description: "", price: "$8.00" },
+      { name: "DE LA CASA", description: "", price: "$5.00" },
+      { name: "ANTIOQUEÑO", description: "", price: "$10.00" },
+      { name: "CACHAZO", description: "", price: "$10.00" }
+    ],
   },
 ]
 
@@ -208,13 +365,14 @@ export default function MenuPage() {
   }
 
   const handleDownloadMenu = () => {
-    const link = document.createElement("a")
-    link.href = "/menu-bar-kalashnikov.pdf"
-    link.download = "Menu-Bar-Ruso-Kalashnikov.pdf"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const link = document.createElement("a");
+    link.href = "/Pdf/MENU_COCTELES_KALASHNIKOV.pdf"; // <-- ruta relativa desde public
+    link.download = "MENU_COCTELES_KALASHNIKOV.pdf"; // <-- nombre con el que se descargará
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
+
 
   return (
     <motion.div
@@ -234,29 +392,39 @@ export default function MenuPage() {
 
 function HeroSection({ onDownload }: { onDownload: () => void }) {
   return (
-    <section className="relative min-h-screen flex items-center">
-      <div className="absolute inset-0 -z-10">
-        <div className="w-full h-full bg-gradient-to-br from-green-900/40 via-emerald-500/30 to-teal-800/50 flex items-center justify-center">
-          <div className="text-center text-gray-400">
-            <div className="w-full h-full bg-gray-800/20 flex items-center justify-center">
-              <span className="text-lg">Imagen de cóctel verde con humo - Fondo completo hasta header</span>
-            </div>
-          </div>
+    <section className="relative h-[600px] flex items-center">
+      {/* Imagen de fondo - usando el método que funciona */}
+      <div className="absolute inset-0">
+        <div
+          className="w-full h-full flex items-center justify-center"
+          style={{
+            backgroundImage: "url('/Imagenes/Menu_logo.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
         </div>
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
+      {/* Gradiente más suave - igual al que funciona */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
 
-      <div className="container mx-auto px-4 relative z-10 pt-24">
+      {/* Contenido */}
+      <div className="container mx-auto px-4 relative z-20">
+        <div className="pt-24"></div>
         <motion.div
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.4 }}
           className="max-w-2xl"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">Explora nuestra carta</h1>
+          {/* Texto directo sobre la imagen sin fondo */}
+          <h1 className="text-2xl md:text-2xl font-bold mb-6 text-white drop-shadow-2xl">
+            Explora nuestra carta
+          </h1>
 
-          <p className="text-gray-300 text-lg mb-8 max-w-md">
+          <p className="text-gray-200 text-lg mb-10 max-w-md drop-shadow-xl">
             Desde cócteles clásicos hasta nuestras creaciones más audaces, cada opción está pensada para sorprender y
             deleitar tu paladar.
           </p>
@@ -265,7 +433,7 @@ function HeroSection({ onDownload }: { onDownload: () => void }) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onDownload}
-            className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors flex items-center space-x-2 rounded-md"
+            className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors flex items-center space-x-2 rounded-md shadow-2xl"
           >
             <Download className="w-5 h-5" />
             <span>Descargar Menú</span>
@@ -286,7 +454,7 @@ function MenuSections({
   onToggle: (id: string) => void
 }) {
   return (
-    <section className="py-20 bg-black">
+    <section className="py-5 bg-black">
       <div className="container mx-auto px-4 max-w-7xl">
         {sections.map((section, index) => (
           <MenuSectionItem
@@ -313,6 +481,10 @@ function MenuSectionItem({
   onToggle: () => void
   index: number
 }) {
+  // Tamaño por defecto si no se especifica imageSize
+  const defaultSize = { width: 256, height: 256 }
+  const imageSize = section.imageSize || defaultSize
+
   return (
     <motion.div
       initial={{ y: 30, opacity: 0 }}
@@ -357,12 +529,75 @@ function MenuSectionItem({
           >
             <div className="p-6">
               {section.items.length > 0 ? (
-                <div
-                  className={`grid md:grid-cols-2 gap-8 items-start ${
-                    section.animationDirection === "left" ? "md:grid-flow-col-dense" : ""
-                  }`}
-                >
-                  <div className={`space-y-4 ${section.animationDirection === "left" ? "md:order-2" : ""}`}>
+                <div className="grid md:grid-cols-2 gap-8 items-start">
+                  {/* Contenedor de la imagen */}
+                  <motion.div
+                    initial={{ scale: 0, rotate: -90 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{
+                      delay: 0.2,
+                      duration: 0.5,
+                      type: "spring",
+                      bounce: 0.3,
+                    }}
+                    className={`flex justify-center ${section.animationDirection === "left" ? "md:order-1" : "md:order-2"
+                      }`}
+                  >
+                    <motion.div
+                      whileHover={{
+                        scale: 1.05,
+                        rotate: [0, -3, 3, 0],
+                        transition: { duration: 0.4 },
+                      }}
+                      className="relative"
+                    >
+                      {section.image.startsWith('/') ? (
+                        <div
+                          className="relative"
+                          style={{
+                            width: `${imageSize.width}px`,
+                            height: `${imageSize.height}px`
+                          }}
+                        >
+                          <Image
+                            src={section.image}
+                            alt={section.title}
+                            fill
+                            className="object-contain"
+                            sizes={`${Math.max(imageSize.width, imageSize.height)}px`}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className="bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden"
+                          style={{
+                            width: `${imageSize.width}px`,
+                            height: `${imageSize.height}px`
+                          }}
+                        >
+                          <motion.div
+                            animate={{
+                              scale: [1, 1.1, 1],
+                              opacity: [0.3, 0.6, 0.3],
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Number.POSITIVE_INFINITY,
+                              ease: "easeInOut",
+                            }}
+                            className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg"
+                          />
+                          <div className="text-gray-400 text-center z-10">
+                            <span className="text-sm">{section.image}</span>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  </motion.div>
+
+                  {/* Contenedor del menú */}
+                  <div className={`space-y-4 ${section.animationDirection === "left" ? "md:order-2" : "md:order-1"
+                    }`}>
                     {section.items.map((item, itemIndex) => (
                       <motion.div
                         key={itemIndex}
@@ -379,45 +614,6 @@ function MenuSectionItem({
                       </motion.div>
                     ))}
                   </div>
-
-                  <motion.div
-                    initial={{ scale: 0, rotate: -90 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{
-                      delay: 0.2,
-                      duration: 0.5,
-                      type: "spring",
-                      bounce: 0.3,
-                    }}
-                    className={`flex justify-center ${section.animationDirection === "left" ? "md:order-1" : ""}`}
-                  >
-                    <motion.div
-                      whileHover={{
-                        scale: 1.05,
-                        rotate: [0, -3, 3, 0],
-                        transition: { duration: 0.4 },
-                      }}
-                      className="relative"
-                    >
-                      <div className="w-64 h-64 bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden">
-                        <motion.div
-                          animate={{
-                            scale: [1, 1.1, 1],
-                            opacity: [0.3, 0.6, 0.3],
-                          }}
-                          transition={{
-                            duration: 1.5,
-                            repeat: Number.POSITIVE_INFINITY,
-                            ease: "easeInOut",
-                          }}
-                          className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg"
-                        />
-                        <div className="text-gray-400 text-center z-10">
-                          <span className="text-sm">{section.image}</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </motion.div>
                 </div>
               ) : (
                 <div className="text-center py-8">
@@ -431,8 +627,26 @@ function MenuSectionItem({
                       bounce: 0.3,
                     }}
                   >
-                    <div className="w-48 h-48 bg-gray-800 rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <span className="text-gray-400 text-sm text-center">{section.image}</span>
+                    <div
+                      className="flex items-center justify-center mx-auto mb-4 relative"
+                      style={{
+                        width: `${imageSize.width}px`,
+                        height: `${imageSize.height}px`
+                      }}
+                    >
+                      {section.image.startsWith('/') ? (
+                        <Image
+                          src={section.image}
+                          alt={section.title}
+                          fill
+                          className="object-contain"
+                          sizes={`${Math.max(imageSize.width, imageSize.height)}px`}
+                        />
+                      ) : (
+                        <div className="bg-gray-800 rounded-lg w-full h-full flex items-center justify-center">
+                          <span className="text-gray-400 text-sm text-center">{section.image}</span>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                   <p className="text-gray-400">Próximamente disponible</p>
@@ -459,11 +673,16 @@ function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8">
           <div>
-            <Link href="/" className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-black font-bold text-sm">LOGO</span>
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
+                <Image
+                  src="/imagenes/logo_bar.png"
+                  alt="Bar Ruso Kalashnikov"
+                  fill
+                  className="object-contain rounded-full"
+                />
               </div>
-            </Link>
+            </div>
             <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
             <p className="text-gray-400 text-sm mb-6">
               La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.
@@ -545,9 +764,22 @@ function Footer() {
           <div id="galeria">
             <h4 className="font-semibold mb-4">Instagram</h4>
             <div className="grid grid-cols-2 gap-2">
-              {instagramImages.map((image, index) => (
-                <div key={index} className="bg-gray-800 rounded aspect-square flex items-center justify-center">
-                  <span className="text-gray-400 text-xs text-center">{image}</span>
+              {[
+                "/imagenes/Instagram_1.png",
+                "/imagenes/Instagram_2.png",
+                "/imagenes/Instagram_3.png",
+                "/imagenes/Instagram_4.png"
+              ].map((src, index) => (
+                <div
+                  key={index}
+                  className="rounded overflow-hidden aspect-square relative"
+                >
+                  <Image
+                    src={src}
+                    alt={`Instagram ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               ))}
             </div>

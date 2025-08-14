@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
+import Image from 'next/image'
 
 interface SharedHeaderProps {
   scrolled?: boolean
@@ -54,16 +55,20 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.8 }}
-      className={`fixed top-0 w-full z-40 py-4 transition-all duration-300 ${
-        scrolled ? "bg-black/95 backdrop-blur-sm" : "bg-transparent"
-      }`}
+      className={`fixed top-0 w-full z-40 py-4 transition-all duration-300 ${scrolled ? "bg-black/95 backdrop-blur-sm" : "bg-transparent"
+        }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
-            <span className="text-black font-bold text-sm">LOGO</span>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
+            <Image
+              src="/imagenes/logo_bar.png"
+              alt="Bar Ruso Kalashnikov"
+              fill
+              className="object-contain"
+            />
           </div>
-          <span className="text-xl font-bold">BAR RUSO KALASHNIKOV</span>
+          <span className="text-lg font-bold text-[#FF9D00]">BAR RUSO KALASHNIKOV</span>
         </Link>
 
         <nav className="hidden md:flex space-x-8">
@@ -71,11 +76,10 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
             <Link
               key={item.href}
               href={item.href}
-              className={`px-4 py-2 transition-all duration-200 rounded-md ${
-                pathname === item.href
+              className={`px-4 py-2 transition-all duration-200 rounded-md ${pathname === item.href
                   ? "border border-orange-500 bg-orange-500/10 text-orange-500 rounded-md"
                   : "hover:text-orange-500"
-              }`}
+                }`}
             >
               {item.label}
             </Link>
@@ -108,11 +112,10 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-4 py-2 transition-all duration-200 rounded-md ${
-                    pathname === item.href
+                  className={`px-4 py-2 transition-all duration-200 rounded-md ${pathname === item.href
                       ? "border border-orange-500 bg-orange-500/10 text-orange-500 rounded-md"
                       : "hover:text-orange-500"
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </Link>

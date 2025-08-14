@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Facebook, Instagram, Phone } from "lucide-react"
 import SharedHeader from "@/components/shared-header"
 import Link from "next/link"
+import Image from 'next/image'
 
 function useCountAnimation(end: number, duration = 2000) {
   const [count, setCount] = useState(0)
@@ -98,15 +99,24 @@ function LoadingScreen() {
         <motion.div
           animate={{
             rotate: 360,
-            scale: [1, 1.2, 1],
+            scale: [1, 1.1, 1],
           }}
           transition={{
-            rotate: { duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
-            scale: { duration: 1, repeat: Number.POSITIVE_INFINITY },
+            rotate: { duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
+            scale: { duration: 2, repeat: Number.POSITIVE_INFINITY },
           }}
-          className="w-32 h-32 mx-auto mb-8"
+          className="w-32 h-32 mx-auto mb-8 relative"
         >
-          <div className="w-full h-full rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
+          {/* Logo en el centro */}
+          <Image
+            src="/imagenes/logo_bar.png"
+            alt="Bar Ruso Kalashnikov"
+            fill
+            className="object-contain rounded-full"
+            priority
+          />
+          {/* Borde giratorio */}
+          <div className="absolute inset-0 w-full h-full rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
         </motion.div>
 
         <motion.h1
@@ -140,12 +150,19 @@ function LoadingScreen() {
 
 function HeroSection() {
   return (
-    <section id="inicio" className="relative min-h-screen flex items-center">
+    <section id="inicio" className="relative h-[600px] flex items-center">
       <div className="absolute inset-0">
-        <div className="w-full h-full bg-gradient-to-br from-blue-900/30 via-cyan-500/20 to-blue-800/40 flex items-center justify-center">
+        <div
+          className="w-full h-full bg-gradient-to-br from-blue-900/30 via-cyan-500/20 to-blue-800/40 flex items-center justify-center"
+          style={{
+            backgroundImage: "url('/imagenes/Inicio_logo.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
           <div className="text-center text-gray-400">
             <div className="w-full h-full bg-gray-800/20 flex items-center justify-center">
-              <span className="text-lg">Imagen de cóctel con efectos azules - Fondo completo</span>
             </div>
           </div>
         </div>
@@ -158,15 +175,15 @@ function HeroSection() {
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
-          className="max-w-2xl"
+          className="max-w-lg"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold mb-10">
             Cócteles con carácter.
             <br />
-            <span className="text-orange-500">Veladas con sabor.</span>
+            <span className="text_blank-500">Veladas con sabor.</span>
           </h1>
 
-          <p className="text-gray-300 text-lg mb-8 max-w-md">
+          <p className="text-gray-300 text-sm mb-10 max-w-xs">
             Un bar íntimo en el centro de la ciudad: más de 250 cócteles, catas y sesiones de DJ los fines de semana.
             Ven a disfrutar de una velada perfecta.
           </p>
@@ -175,7 +192,7 @@ function HeroSection() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md"
+              className="bg-orange-500 text-black px-6 py-2 text-sm font-semibold hover:bg-orange-600 transition-colors rounded-md"
             >
               Más Información
             </motion.button>
@@ -183,14 +200,14 @@ function HeroSection() {
         </motion.div>
       </div>
 
-      <div className="absolute bottom-8 right-8 flex space-x-4 z-20">
+      <div className="absolute bottom-4 right-4 flex space-x-3 z-20">
         <a
           href="https://facebook.com/barrusokalashnikov"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-400 hover:text-white transition-colors"
         >
-          <Facebook className="w-6 h-6" />
+          <Facebook className="w-5 h-5" />
         </a>
         <a
           href="https://instagram.com/barrusokalashnikov"
@@ -198,7 +215,7 @@ function HeroSection() {
           rel="noopener noreferrer"
           className="text-gray-400 hover:text-white transition-colors"
         >
-          <Instagram className="w-6 h-6" />
+          <Instagram className="w-5 h-5" />
         </a>
       </div>
     </section>
@@ -207,25 +224,29 @@ function HeroSection() {
 
 function WelcomeSection() {
   return (
-    <section className="py-20 bg-black">
+    <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
-            className="bg-gray-800 rounded-3xl p-8 flex items-center justify-center h-80"
+            className="rounded-3xl p-8 flex items-center justify-center h-100"
           >
-            <div className="text-center text-gray-400">
-              <div className="w-48 h-48 bg-gray-700 rounded-lg mb-4 mx-auto flex items-center justify-center">
-                Moscow Mule en copa metálica
-              </div>
+            <div className="w-full h-full rounded-lg relative">
+              <Image
+                src="/Imagenes/cerveza_inicio.jpg"
+                alt="Moscow Mule en copa metálica"
+                fill
+                className="object-cover rounded-lg"
+              />
             </div>
           </motion.div>
 
           <motion.div initial={{ x: 50, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }}>
             <p className="text-orange-500 text-sm font-semibold mb-4">BIENVENIDOS</p>
-            <h2 className="text-4xl font-bold mb-6">Una experiencia única</h2>
+            <h2 className="text-2xl font-bold mb-0">Una experiencia</h2>
+            <h2 className="text-2xl font-bold mb-6">única</h2>
             <p className="text-gray-300 leading-relaxed mb-8">
               En el corazón de Cuenca, Bar Ruso Kalashnikov combina la tradición rusa con la innovación culinaria
               moderna. Nuestros mixólogos expertos crean cócteles únicos, mientras nuestros chefs preparan platos
@@ -250,23 +271,23 @@ function WelcomeSection() {
 
 function MenuSection() {
   const menuItems = [
-    { name: "Shots del Ruso", image: "Shots con humo" },
-    { name: "Cócteles Flameados", image: "Cóctel azul flameado" },
-    { name: "Especiales", image: "Margarita verde" },
-    { name: "Cervezas Artesanales", image: "Cerveza artesanal" },
-    { name: "Cócteles Sin Alcohol", image: "Bebida roja sin alcohol" },
+    { name: "Shots del Ruso", image: "/Imagenes/Shots del Ruso.png" },
+    { name: "Cócteles Flameados", image: "/Imagenes/Cocteles_Flameados.png" },
+    { name: "Especiales", image: "/Imagenes/Especiales.png" },
+    { name: "Cervezas Artesanales", image: "/Imagenes/Cervezas_Artesanales.png" },
+    { name: "Cócteles Sin Alcohol", image: "/Imagenes/Cocteles_sin_alcohol.png" },
   ]
 
   return (
-    <section id="menu" className="py-20 bg-black">
+    <section id="menu" className="py-8 bg-black">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-10"
         >
-          <h2 className="text-4xl font-bold mb-8">NUESTRO MENÚ</h2>
+          <h2 className="text-2xl font-bold mb-8">NUESTRO MENÚ</h2>
           <p className="text-gray-300 max-w-4xl mx-auto">
             Hemos creado una carta de cócteles pensada para cautivar todos tus sentidos, combinando recetas clásicas y
             creaciones exclusivas que te transportarán a un universo de aromas, colores y sensaciones únicas.
@@ -282,10 +303,14 @@ function MenuSection() {
               transition={{ delay: index * 0.1, duration: 0.6 }}
               className="text-center group cursor-pointer"
             >
-              <div className="bg-gray-800 rounded-lg p-8 mb-4 h-64 flex items-center justify-center group-hover:bg-gray-700 transition-colors">
-                <div className="text-gray-400 text-center">
-                  <div className="w-24 h-32 bg-gray-600 rounded mx-auto mb-2"></div>
-                  {item.image}
+              <div className="rounded-lg p-8 mb-4 h-80 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="relative w-full h-full">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-contain"
+                  />
                 </div>
               </div>
               <Link href="/menu">
@@ -303,25 +328,33 @@ function MenuSection() {
 
 function BarInteriorSection() {
   return (
-    <section className="py-20 bg-black relative">
-      <div className="absolute inset-0">
-        <div className="w-full h-full bg-gradient-to-r from-purple-900/20 via-blue-900/20 to-pink-900/20 flex items-center justify-center">
-          <div className="text-center text-gray-400">
-            <div className="w-full h-96 bg-gray-800 rounded-lg flex items-center justify-center">
-              Interior del bar con luces de neón azules y rojas
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <section className="py-10 bg-black relative">
       <div className="container mx-auto px-4 relative z-10">
+        {/* Imagen del local */}
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
+          className="mb-12"
+        >
+          <div className="relative w-full h-80 rounded-lg overflow-hidden">
+            <Image
+              src="/Imagenes/local.jpeg"
+              alt="Interior del Bar Ruso Kalashnikov"
+              fill
+              className="object-cover"
+            />
+          </div>
+        </motion.div>
+
+        {/* Textos */}
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
           className="text-center max-w-4xl mx-auto"
         >
-          <h2 className="text-4xl font-bold mb-8">TU DESEO, SERVIDO EN UNA COPA</h2>
+          <h2 className="text-2xl font-bold mb-8">TU DESEO, SERVIDO EN UNA COPA</h2>
           <p className="text-gray-300 text-lg leading-relaxed">
             En Kalashnikov, tú pides y recibes: la bebida perfecta que imaginas, creada a la medida de tus deseos por
             manos expertas. Aquí, cada cóctel es una promesa cumplida, un instante pensado solo para ti, donde el sabor,
@@ -334,20 +367,20 @@ function BarInteriorSection() {
 }
 
 function StatsSection() {
-  const rating = useCountAnimation(4.8, 2000)
+  const rating = useCountAnimation(44, 2000)  // Cambié de 4.8 a 44
   const reviews = useCountAnimation(127, 2500)
   const cocktails = useCountAnimation(50, 2200)
   const followers = useCountAnimation(3909, 3000)
 
   const stats = [
-    { hook: rating, display: "4.8", label: "Calificación de Google" },
+    { hook: rating, display: "4.4", label: "Calificación de Google" },
     { hook: reviews, display: "127+", label: "Reseñas" },
     { hook: cocktails, display: "50+", label: "Cócteles Únicos" },
     { hook: followers, display: "3909", label: "Seguidores" },
   ]
 
   return (
-    <section className="py-20 bg-black">
+    <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
@@ -368,7 +401,7 @@ function StatsSection() {
             >
               <div className="text-4xl md:text-5xl font-bold text-orange-500 mb-2">
                 {index === 0
-                  ? (stat.hook.count / 10).toFixed(1)
+                  ? (stat.hook.count / 10).toFixed(1)  // 44 / 10 = 4.4
                   : index === 1
                     ? `${stat.hook.count}+`
                     : index === 2
@@ -385,20 +418,48 @@ function StatsSection() {
 }
 
 function LocalSection() {
+  const [currentImage, setCurrentImage] = useState(0)
+
+  const images = [
+    '/Imagenes/Inicio_1.jpg',
+    '/Imagenes/Inicio_2.jpg',
+    '/Imagenes/Inicio_3.jpg',
+    '/Imagenes/Inicio_4.jpg',
+    '/Imagenes/Inicio_5.jpg'
+  ]
+
+  console.log('Imagen actual:', images[currentImage])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % images.length)
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [images.length])
+
   return (
-    <section id="sobre-nosotros" className="py-20 bg-black">
+    <section id="sobre-nosotros" className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
-            className="bg-gray-800 rounded-3xl p-8 flex items-center justify-center h-80"
+            className="rounded-3xl p-8 flex items-center justify-center h-[400px]"
           >
-            <div className="text-center text-gray-400">
-              <div className="w-full h-48 bg-gray-700 rounded-lg flex items-center justify-center">
-                Imagen de personas celebrando en el bar
-              </div>
+            <div className="w-full h-80 rounded-lg relative overflow-hidden">
+              <Image
+                src={images[currentImage]}
+                alt={`Imagen del local ${currentImage + 1}`}
+                fill
+                className="object-cover rounded-lg transition-opacity duration-500"
+                quality={100}
+                priority={true}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                onError={() => console.log('Error cargando imagen:', images[currentImage])}
+                onLoad={() => console.log('Imagen cargada:', images[currentImage])}
+              />
             </div>
           </motion.div>
 
@@ -435,8 +496,13 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-black font-bold text-sm">LOGO</span>
+              <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
+                <Image
+                  src="/imagenes/logo_bar.png"
+                  alt="Bar Ruso Kalashnikov"
+                  fill
+                  className="object-contain rounded-full"
+                />
               </div>
             </div>
             <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
@@ -520,9 +586,22 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Instagram</h4>
             <div className="grid grid-cols-2 gap-2">
-              {instagramImages.map((image, index) => (
-                <div key={index} className="bg-gray-800 rounded aspect-square flex items-center justify-center">
-                  <span className="text-gray-400 text-xs text-center">{image}</span>
+              {[
+                "/imagenes/Instagram_1.png",
+                "/imagenes/Instagram_2.png",
+                "/imagenes/Instagram_3.png",
+                "/imagenes/Instagram_4.png"
+              ].map((src, index) => (
+                <div
+                  key={index}
+                  className="rounded overflow-hidden aspect-square relative"
+                >
+                  <Image
+                    src={src}
+                    alt={`Instagram ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               ))}
             </div>

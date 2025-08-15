@@ -1,12 +1,11 @@
 "use client"
 
-import { useState,useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Play, Calendar, Instagram, Facebook, Phone, X } from "lucide-react"
 import Link from "next/link"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
-
 
 const galleryItems = [
   { type: "video", title: "Preparación de Cócteles", videoSrc: "/videos/Video-1.mp4" },
@@ -43,7 +42,6 @@ export default function GaleriaPage() {
 function HeroSection() {
   return (
     <section className="relative h-[700px] flex items-center">
-      {/* Imagen de fondo */}
       <div className="absolute inset-0">
         <div
           className="w-full h-full"
@@ -56,10 +54,8 @@ function HeroSection() {
         />
       </div>
 
-      {/* Gradiente encima de la imagen */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
 
-      {/* Contenido */}
       <div className="container mx-auto px-4 relative z-20 pt-24">
         <motion.div
           initial={{ x: -100, opacity: 0 }}
@@ -75,33 +71,138 @@ function HeroSection() {
             Descubre la magia de nuestras noches a través de videos y fotografías
             que capturan la esencia única de Bar Ruso Kalashnikov.
           </p>
-
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-          </motion.div>
         </motion.div>
       </div>
     </section>
   );
 }
 
+// Componente optimizado para elementos de galería
+interface GalleryItemProps {
+  item: {
+    type: string;
+    title: string;
+    videoSrc?: string;
+    imageSrc?: string;
+  };
+  index: number;
+  onClick: (videoSrc: string) => void;
+}
+
+const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onClick }) => {
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+
+  // Manejar hover solo para efectos visuales (sin reproducir video)
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true)
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false)
+  }, [])
+
+  return (
+    <div
+      className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 transition-all duration-200 cursor-pointer"
+      onClick={() => item.type === "video" && item.videoSrc && onClick(item.videoSrc)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
+        {/* Video como imagen estática (sin reproducir en hover) */}
+        {item.videoSrc && (
+          <>
+            <video
+              src={item.videoSrc}
+              className="absolute inset-0 w-full h-full object-cover"
+              muted
+              playsInline
+              preload="metadata"
+              style={{ opacity: isLoaded ? 1 : 0 }}
+              onLoadedData={() => setIsLoaded(true)}
+            />
+            <div className="absolute inset-0 bg-black/30"></div>
+            
+            {/* Botón de play mejorado */}
+            {item.type === "video" && (
+              <div 
+                className="absolute inset-0 flex items-center justify-center z-20"
+                style={{
+                  transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                  transition: 'transform 0.2s ease-out'
+                }}
+              >
+                <div className="w-16 h-16 bg-orange-500/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg">
+                  <Play className="w-8 h-8 text-white ml-1" />
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Imagen optimizada */}
+        {item.imageSrc && !item.videoSrc && (
+          <Image
+            src={item.imageSrc}
+            alt={item.title}
+            fill
+            className="object-cover"
+            loading="lazy"
+            quality={80}
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+            onLoad={() => setIsLoaded(true)}
+          />
+        )}
+
+        {/* Badge de tipo optimizado */}
+        <div className="absolute top-4 right-4 z-20">
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+              item.type === "video" ? "bg-red-500/90 text-white" : "bg-blue-500/80 text-white"
+            } backdrop-blur-sm`}
+          >
+            {item.type === "video" ? "VIDEO" : "FOTO"}
+          </span>
+        </div>
+      </div>
+
+      {/* Contenido del card */}
+      <div className="p-6">
+        <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition-colors duration-200">
+          {item.title}
+        </h3>
+      </div>
+    </div>
+  )
+}
+
 function GallerySection() {
   const [filter, setFilter] = useState<"all" | "video" | "photo">("all")
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
+  const [visibleItems, setVisibleItems] = useState(6) // Mostrar solo 6 inicialmente
 
   const filteredItems = galleryItems.filter((item) => filter === "all" || item.type === filter)
 
-  const handleVideoClick = (videoSrc: string | undefined) => {
+  const handleVideoClick = useCallback((videoSrc: string) => {
     if (videoSrc) {
       setSelectedVideo(videoSrc)
     }
-  }
+  }, [])
 
-  const closeVideoModal = () => {
+  const closeVideoModal = useCallback(() => {
     setSelectedVideo(null)
-  }
+  }, [])
+
+  const loadMoreItems = useCallback(() => {
+    setVisibleItems(prev => prev + 6)
+  }, [])
+
+  // Resetear items visibles cuando cambia el filtro
+  useEffect(() => {
+    setVisibleItems(6)
+  }, [filter])
 
   return (
     <>
@@ -115,6 +216,7 @@ function GallerySection() {
             </p>
           </div>
 
+          {/* Filtros optimizados */}
           <div className="flex justify-center mb-12">
             <div className="flex space-x-4 bg-gray-900/50 p-2 rounded-lg">
               {[
@@ -124,11 +226,12 @@ function GallerySection() {
               ].map((filterOption) => (
                 <button
                   key={filterOption.key}
-                  onClick={() => setFilter(filterOption.key as any)}
-                  className={`px-6 py-2 rounded-md transition-all duration-300 ${filter === filterOption.key
-                    ? "bg-orange-500 text-black font-semibold"
-                    : "text-gray-300 hover:text-white hover:bg-gray-800"
-                    }`}
+                  onClick={() => setFilter(filterOption.key as "all" | "video" | "photo")}
+                  className={`px-6 py-2 rounded-md transition-all duration-200 ${
+                    filter === filterOption.key
+                      ? "bg-orange-500 text-black font-semibold"
+                      : "text-gray-300 hover:text-white hover:bg-gray-800"
+                  }`}
                 >
                   {filterOption.label}
                 </button>
@@ -136,77 +239,29 @@ function GallerySection() {
             </div>
           </div>
 
-          {/* Grid de Galería - SIN ANIMACIONES DE CARGA */}
+          {/* Grid de Galería Optimizado - Sin animaciones complejas */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredItems.map((item, index) => (
-              <div
-                key={index}
-                className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-2 hover:scale-105"
-                onClick={() => item.type === "video" && handleVideoClick(item.videoSrc)}
-              >
-                <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
-                  {/* Si tiene videoSrc, mostrar el video como thumbnail */}
-                  {item.videoSrc ? (
-                    <>
-                      <video
-                        src={item.videoSrc}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        muted
-                        playsInline
-                        preload="metadata"
-                        onMouseEnter={(e) => e.currentTarget.play()}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.pause();
-                          e.currentTarget.currentTime = 0;
-                        }}
-                      />
-                      {/* Overlay oscuro para mejor legibilidad */}
-                      <div className="absolute inset-0 bg-black/30"></div>
-                    </>
-                  ) : item.imageSrc ? (
-                    /* Si tiene imageSrc, mostrar la imagen real */
-                    <Image
-                      src={item.imageSrc}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    /* Fallback para elementos sin imagen/video */
-                    <div className="text-center text-gray-400 z-10">
-                    </div>
-                  )}
-
-                  {item.type === "video" && (
-                    <motion.div 
-                      whileHover={{ scale: 1.1 }} 
-                      className="absolute inset-0 flex items-center justify-center z-20"
-                    >
-                      <div className="w-16 h-16 bg-orange-500/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg">
-                        <Play className="w-8 h-8 text-white ml-1" />
-                      </div>
-                    </motion.div>
-                  )}
-
-                  <div className="absolute top-4 right-4 z-20">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${item.type === "video" ? "bg-red-500/90 text-white" : "bg-blue-500/80 text-white"
-                        } backdrop-blur-sm`}
-                    >
-                      {item.type === "video" ? "VIDEO" : "FOTO"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition-colors">{item.title}</h3>
-                  <div className="flex items-center text-gray-400 text-sm">
-                  
-                  </div>
-                </div>
-              </div>
+            {filteredItems.slice(0, visibleItems).map((item, index) => (
+              <GalleryItem
+                key={`${item.type}-${index}`}
+                item={item}
+                index={index}
+                onClick={handleVideoClick}
+              />
             ))}
           </div>
+
+          {/* Botón cargar más */}
+          {visibleItems < filteredItems.length && (
+            <div className="text-center mt-8">
+              <button
+                onClick={loadMoreItems}
+                className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md"
+              >
+                Cargar más
+              </button>
+            </div>
+          )}
 
           <div className="text-center mt-16">
             <h3 className="text-2xl font-bold mb-4">¿Quieres ser parte de nuestra galería?</h3>
@@ -216,44 +271,36 @@ function GallerySection() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/menu">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md"
-                >
+                <button className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md">
                   Menús
-                </motion.button>
+                </button>
               </Link>
-              <motion.a
+              <a
                 href="https://www.instagram.com/explore/locations/764588696/bar-ruso-kalashnikov/"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 className="border border-orange-500 text-orange-500 px-8 py-3 font-semibold hover:bg-orange-500 hover:text-black transition-colors inline-flex items-center justify-center space-x-2 rounded-md"
               >
                 <Instagram className="w-5 h-5" />
                 <span>Síguenos en Instagram</span>
-              </motion.a>
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Modal de Video */}
+      {/* Modal de Video Optimizado */}
       {selectedVideo && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
           onClick={closeVideoModal}
         >
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.8 }}
+          <div
             className="relative w-full max-w-4xl aspect-video"
+            style={{
+              transform: 'scale(1)',
+              transition: 'transform 0.2s ease-out'
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -270,18 +317,17 @@ function GallerySection() {
             >
               Tu navegador no soporta la reproducción de video.
             </video>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </>
   )
 }
 
 function Footer() {
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Tipos para los horarios
   type ScheduleDay = {
     open: number;
     close: number;
@@ -291,26 +337,22 @@ function Footer() {
     [key: number]: ScheduleDay;
   };
 
-  // Horarios del bar
   const schedule: Schedule = {
-    1: { open: 15, close: 24 }, // Lunes
-    2: { open: 15, close: 24 }, // Martes
-    3: { open: 15, close: 24 }, // Miércoles
-    4: { open: 15, close: 24 }, // Jueves
-    5: { open: 15, close: 26 }, // Viernes (26 = 2:00 AM del siguiente día)
-    6: { open: 15, close: 24 }, // Sábado
-    0: null // Domingo - cerrado
+    1: { open: 15, close: 24 },
+    2: { open: 15, close: 24 },
+    3: { open: 15, close: 24 },
+    4: { open: 15, close: 24 },
+    5: { open: 15, close: 26 },
+    6: { open: 15, close: 24 },
+    0: null
   };
 
-  // Función para obtener la hora actual en Ecuador (GMT-5)
   const getEcuadorTime = (): Date => {
     const now = new Date();
-    // Ecuador está en GMT-5
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     return new Date(utc + (-5 * 3600000));
   };
 
-  // Función para verificar si está abierto
   const checkIfOpen = (time: Date): boolean => {
     const dayOfWeek: number = time.getDay();
     const hours: number = time.getHours();
@@ -320,13 +362,12 @@ function Footer() {
     const todaySchedule: ScheduleDay = schedule[dayOfWeek];
     
     if (!todaySchedule) {
-      return false; // Cerrado los domingos
+      return false;
     }
 
-    const openTime: number = todaySchedule.open * 60; // 15:00 = 900 minutos
+    const openTime: number = todaySchedule.open * 60;
     let closeTime: number = todaySchedule.close * 60;
 
-    // Si cierra después de medianoche
     if (todaySchedule.close > 24) {
       if (currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60)) {
         return true;
@@ -340,7 +381,6 @@ function Footer() {
     return false;
   };
 
-  // Actualizar cada minuto
   useEffect(() => {
     const updateTime = () => {
       const ecuadorTime = getEcuadorTime();
@@ -348,10 +388,7 @@ function Footer() {
       setIsOpen(checkIfOpen(ecuadorTime));
     };
 
-    // Actualizar inmediatamente
     updateTime();
-
-    // Actualizar cada minuto
     const interval = setInterval(updateTime, 60000);
 
     return () => clearInterval(interval);
@@ -399,31 +436,11 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#inicio" className="hover:text-white">
-                  Inicio
-                </a>
-              </li>
-              <li>
-                <a href="/sobre-nosotros" className="hover:text-white">
-                  Sobre Nosotros
-                </a>
-              </li>
-              <li>
-                <a href="/menu" className="hover:text-white">
-                  Menú
-                </a>
-              </li>
-              <li>
-                <a href="/contacto" className="hover:text-white">
-                  Contacto
-                </a>
-              </li>
-              <li>
-                <a href="/galeria" className="hover:text-white">
-                  Galería
-                </a>
-              </li>
+              <li><a href="#inicio" className="hover:text-white">Inicio</a></li>
+              <li><a href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</a></li>
+              <li><a href="/menu" className="hover:text-white">Menú</a></li>
+              <li><a href="/contacto" className="hover:text-white">Contacto</a></li>
+              <li><a href="/galeria" className="hover:text-white">Galería</a></li>
             </ul>
           </div>
 
@@ -448,7 +465,6 @@ function Footer() {
               </div>
             </div>
             
-            {/* SECCIÓN DE ESTADO DINÁMICO */}
             <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
@@ -486,6 +502,7 @@ function Footer() {
                     alt={`Instagram ${index + 1}`}
                     fill
                     className="object-cover"
+                    loading="lazy"
                   />
                 </div>
               ))}
@@ -511,18 +528,13 @@ function WhatsAppButton() {
   }
 
   return (
-    <motion.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ delay: 0.4, duration: 0.3 }}
-      className="fixed bottom-8 right-8 z-30"
-    >
+    <div className="fixed bottom-8 right-8 z-30">
       <button
         onClick={handleWhatsAppClick}
         className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
       >
         <Phone className="w-6 h-6 text-white" />
       </button>
-    </motion.div>
+    </div>
   )
 }

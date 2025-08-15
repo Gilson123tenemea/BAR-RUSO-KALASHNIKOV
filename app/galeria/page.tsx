@@ -90,10 +90,9 @@ interface GalleryItemProps {
 }
 
 const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onClick }) => {
-  const [isLoaded, setIsLoaded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
-  // Manejar hover solo para efectos visuales (sin reproducir video)
+  // Manejar hover solo para efectos visuales - SIN reproducir videos
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true)
   }, [])
@@ -104,13 +103,18 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onClick }) => {
 
   return (
     <div
-      className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 transition-all duration-200 cursor-pointer"
+      className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 cursor-pointer"
+      style={{
+        transition: 'border-color 0.2s ease',
+        transform: 'translateZ(0)', // Forzar aceleración por hardware
+        backfaceVisibility: 'hidden' // Optimización de renderizado
+      }}
       onClick={() => item.type === "video" && item.videoSrc && onClick(item.videoSrc)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
-        {/* Video como imagen estática (sin reproducir en hover) */}
+        {/* Video como imagen estática - solo primer frame */}
         {item.videoSrc && (
           <>
             <video
@@ -119,21 +123,15 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onClick }) => {
               muted
               playsInline
               preload="metadata"
-              style={{ opacity: isLoaded ? 1 : 0 }}
-              onLoadedData={() => setIsLoaded(true)}
             />
             <div className="absolute inset-0 bg-black/30"></div>
             
-            {/* Botón de play mejorado */}
+            {/* Botón de play */}
             {item.type === "video" && (
-              <div 
-                className="absolute inset-0 flex items-center justify-center z-20"
-                style={{
-                  transform: isHovered ? 'scale(1.1)' : 'scale(1)',
-                  transition: 'transform 0.2s ease-out'
-                }}
-              >
-                <div className="w-16 h-16 bg-orange-500/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg">
+              <div className="absolute inset-0 flex items-center justify-center z-20">
+                <div className={`w-16 h-16 bg-orange-500/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg transition-transform duration-200 ${
+                  isHovered ? 'scale-110' : 'scale-100'
+                }`}>
                   <Play className="w-8 h-8 text-white ml-1" />
                 </div>
               </div>
@@ -152,7 +150,6 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onClick }) => {
             quality={80}
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-            onLoad={() => setIsLoaded(true)}
           />
         )}
 
@@ -289,7 +286,7 @@ function GallerySection() {
         </div>
       </section>
 
-      {/* Modal de Video Optimizado */}
+      {/* Modal de Video - REPRODUCCIÓN INSTANTÁNEA */}
       {selectedVideo && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
@@ -297,10 +294,6 @@ function GallerySection() {
         >
           <div
             className="relative w-full max-w-4xl aspect-video"
-            style={{
-              transform: 'scale(1)',
-              transition: 'transform 0.2s ease-out'
-            }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -313,6 +306,7 @@ function GallerySection() {
               src={selectedVideo}
               controls
               autoPlay
+              preload="auto"
               className="w-full h-full rounded-lg"
             >
               Tu navegador no soporta la reproducción de video.

@@ -16,7 +16,7 @@ export default function ContactoPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
-      className="min-h-screen bg-black text-white"
+      className="min-h-screen bg-black text-white overflow-x-hidden" 
     >
       <SharedHeader />
       <HeroSection />
@@ -100,10 +100,10 @@ function ContactSection() {
     try {
       // Configuración de EmailJS - Reemplaza con tus credenciales
       await emailjs.sendForm(
-        "YOUR_SERVICE_ID", // Reemplaza con tu Service ID
-        "YOUR_TEMPLATE_ID", // Reemplaza con tu Template ID
+        "service_1yyh7l9", // Reemplaza con tu Service ID
+        "template_gts5nsm", // Reemplaza con tu Template ID
         form.current,
-        "YOUR_PUBLIC_KEY", // Reemplaza con tu Public Key
+        "zC1c36MzmjOsPQM4Q", // Reemplaza con tu Public Key
       )
 
       setSubmitStatus("success")

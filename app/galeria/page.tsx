@@ -9,18 +9,18 @@ import Image from 'next/image'
 
 
 const galleryItems = [
-  { type: "video", title: "Noche de Cócteles Flameados", date: "2025-01-15", thumbnail: "Video de cócteles flameados", videoSrc: "/videos/Video-1.mp4" },
-  { type: "photo", title: "Ambiente Nocturno", date: "2025-01-14", thumbnail: "Foto del ambiente nocturno", imageSrc: "/Imagenes/galeria_foto_1.jpg" },
-  { type: "video", title: "Preparación de Moscow Mule", date: "2025-01-13", thumbnail: "Video preparando Moscow Mule", videoSrc: "/videos/Video-2.mp4" },
-  { type: "photo", title: "Nuevos Cócteles de Temporada", date: "2025-01-12", thumbnail: "Foto de cócteles nuevos", imageSrc: "/Imagenes/galeria_foto_2.jpeg" },
-  { type: "video", title: "Behind the Scenes", date: "2025-01-11", thumbnail: "Video detrás de cámaras", videoSrc: "/videos/Video-3.mp4" },
-  { type: "photo", title: "Interior Renovado", date: "2025-01-10", thumbnail: "Foto del interior renovado", imageSrc: "/Imagenes/galeria_foto_3.jpg" },
-  { type: "video", title: "Preparación de Cócteles Especiales", date: "2025-01-09", thumbnail: "Video preparando cócteles especiales", videoSrc: "/videos/Video-4.mp4" },
-  { type: "video", title: "Ambiente de Fin de Semana", date: "2025-01-08", thumbnail: "Video del ambiente de fin de semana", videoSrc: "/videos/Video-5.mp4" },
-  { type: "video", title: "Técnicas de Bartending", date: "2025-01-07", thumbnail: "Video de técnicas de bartending", videoSrc: "/videos/Video-6.mp4" },
-  { type: "video", title: "Momentos Especiales", date: "2025-01-06", thumbnail: "Video de momentos especiales", videoSrc: "/videos/Video-7.mp4" },
-  { type: "photo", title: "Decoración Especial", date: "2025-01-05", thumbnail: "Foto de decoración especial", imageSrc: "/Imagenes/galeria_foto_4.jpg" },
-  { type: "photo", title: "Vista Panorámica", date: "2025-01-04", thumbnail: "Foto vista panorámica", imageSrc: "/Imagenes/galeria_foto_5.jpg" },
+  { type: "video", title: "Preparación de Cócteles", videoSrc: "/videos/Video-1.mp4" },
+  { type: "photo", title: "Ambiente Nocturno", imageSrc: "/Imagenes/galeria_foto_1.jpg" },
+  { type: "video", title: "Cócteles Flameados", videoSrc: "/videos/Video-2.mp4" },
+  { type: "photo", title: "Nuestras Visitas", imageSrc: "/Imagenes/galeria_foto_2.jpeg" },
+  { type: "video", title: "Especiales", videoSrc: "/videos/Video-3.mp4" },
+  { type: "photo", title: "Interior Renovado", imageSrc: "/Imagenes/galeria_foto_3.jpg" },
+  { type: "video", title: "Preparación de Cócteles Especiales", videoSrc: "/videos/Video-4.mp4" },
+  { type: "video", title: "Ambiente de Fin de Semana", videoSrc: "/videos/Video-5.mp4" },
+  { type: "video", title: "Equipo de Trabajo", videoSrc: "/videos/Video-6.mp4" },
+  { type: "video", title: "Momentos Especiales", videoSrc: "/videos/Video-7.mp4" },
+  { type: "photo", title: "Decoración Especial", imageSrc: "/Imagenes/galeria_foto_4.jpg" },
+  { type: "photo", title: "Cervezas", imageSrc: "/Imagenes/galeria_foto_5.jpg" },
 ]
 
 export default function GaleriaPage() {
@@ -174,7 +174,6 @@ function GallerySection() {
                   ) : (
                     /* Fallback para elementos sin imagen/video */
                     <div className="text-center text-gray-400 z-10">
-                      <span className="text-sm">{item.thumbnail}</span>
                     </div>
                   )}
 
@@ -202,14 +201,7 @@ function GallerySection() {
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition-colors">{item.title}</h3>
                   <div className="flex items-center text-gray-400 text-sm">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span>
-                      {new Date(item.date).toLocaleDateString("es-ES", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </span>
+                  
                   </div>
                 </div>
               </div>

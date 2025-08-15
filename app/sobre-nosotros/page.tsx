@@ -33,7 +33,7 @@ export default function SobreNosotrosPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
-      className="min-h-screen bg-black text-white"
+      className="min-h-screen bg-black text-white overflow-x-hidden" 
     >
       <SharedHeader />
       <HeroSection />

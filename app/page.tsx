@@ -184,7 +184,7 @@ function HeroSection() {
           </h1>
 
           <p className="text-gray-300 text-sm mb-10 max-w-xs">
-            Un bar íntimo en el centro de la ciudad: más de 250 cócteles, catas y sesiones de DJ los fines de semana.
+            Un bar íntimo en el centro de la ciudad: más de 250 cócteles, catas y musica.
             Ven a disfrutar de una velada perfecta.
           </p>
 
@@ -248,10 +248,9 @@ function WelcomeSection() {
             <h2 className="text-2xl font-bold mb-0">Una experiencia</h2>
             <h2 className="text-2xl font-bold mb-6">única</h2>
             <p className="text-gray-300 leading-relaxed mb-8">
-              En el corazón de Cuenca, Bar Ruso Kalashnikov combina la tradición rusa con la innovación culinaria
-              moderna. Nuestros mixólogos expertos crean cócteles únicos, mientras nuestros chefs preparan platos
-              auténticos con un toque contemporáneo. Cada visita es un viaje sensorial donde los técnicas vanguardistas,
-              creando momentos inolvidables en un ambiente sofisticado y acogedor.
+              En el corazón de Cuenca, Bar Ruso Kalashnikov combina la tradición rusa con la creatividad en la coctelería moderna. 
+              Nuestros mixólogos expertos elaboran bebidas únicas que fusionan técnicas clásicas y vanguardistas.
+              Cada visita es una experiencia sensorial que invita a disfrutar de momentos inolvidables en un ambiente vibrante, acogedor y lleno de energía.
             </p>
             <Link href="/galeria">
               <motion.button
@@ -466,9 +465,9 @@ function LocalSection() {
           <motion.div initial={{ x: 50, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }}>
             <p className="text-orange-500 text-sm font-semibold mb-4">NUESTRO LOCAL</p>
             <p className="text-gray-300 leading-relaxed mb-6">
-              Nuestra coctelería fusiona la elegancia de la tradición rusa con la creatividad contemporánea, ofreciendo
-              bebidas que combinan destilados selectos, técnicas de mixología de alto nivel y una cuidada presentación
-              digna de los mejores bares del mundo.
+              Nuestra coctelería une la elegancia de la tradición rusa con la innovación contemporánea, creando bebidas que combinan destilados selectos, 
+              técnicas de mixología de alto nivel y presentaciones que cautivan a la vista y al paladar, 
+              al nivel de los mejores bares del mundo.
             </p>
             <p className="text-gray-300 leading-relaxed">
               Ubicado en un espacio de diseño sofisticado y atmósfera envolvente, nuestro bar transporta a cada

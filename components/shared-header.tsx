@@ -62,7 +62,7 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
         <Link href="/" className="flex items-center space-x-4">
           <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
             <Image
-              src="/imagenes/logo_bar.png"
+              src="/Imagenes/logo_bar.png"
               alt="Bar Ruso Kalashnikov"
               fill
               className="object-contain"

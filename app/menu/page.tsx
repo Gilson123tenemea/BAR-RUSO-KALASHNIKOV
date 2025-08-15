@@ -61,7 +61,7 @@ const menuSections: MenuSection[] = [
     title: "SHOTS FLAMEADOS",
     animationDirection: "left",
     image: "/Imagenes/shot flameado_menu.png",
-    imageSize: { width: 550, height: 500 },
+    imageSize: { width: 450, height: 500 },
     items: [
       { name: "TNT", description: "GIN, TEQUILA, VODKA, RON", price: "$6.00" },
       { name: "BUDA", description: "VODKA, TEQUILA, RON, GIN, TRIPLE SEC Y GRANADINA", price: "$5.00" },
@@ -76,7 +76,7 @@ const menuSections: MenuSection[] = [
     title: "CÓCTELES FLAMEADOS",
     animationDirection: "right",
     image: "/Imagenes/cocteles_flameados_menu.png",
-    imageSize: { width: 550, height: 700 },
+    imageSize: { width: 650, height: 750 },
     items: [
       { name: "Ferrari", description: "Ron, triple sec, blue curaçao, granadina", price: "$5.00" },
       { name: "Lamborghini", description: "Vodka, licor de café, Irish cream, blue curaçao", price: "$5.00" },
@@ -128,7 +128,7 @@ const menuSections: MenuSection[] = [
     title: "CERVEZAS",
     animationDirection: "right",
     image: "/Imagenes/cerveza.png",
-    imageSize: { width: 270, height: 270 },
+    imageSize: { width: 170, height: 300 },
     items: [
       { name: "HEINEKEN (330ML)", description: "", price: "$4.00" },
       { name: "CLUB (550ML)", description: "", price: "$4.00" },
@@ -241,7 +241,7 @@ const menuSections: MenuSection[] = [
     title: "AGUAS Y GASEOSAS",
     animationDirection: "right",
     image: "/Imagenes/aguas y gaseosas.png",
-    imageSize: { width: 1000, height: 350 },
+    imageSize: { width: 250, height: 500 },
     items: [
       { name: "AGUA SIN GAS", description: "", price: "$1.50" },
       { name: "AGUA CON GAS", description: "", price: "$1.50" },
@@ -255,7 +255,7 @@ const menuSections: MenuSection[] = [
     title: "LONG DRINKS",
     animationDirection: "left",
     image: "/Imagenes/Long drinks.png",
-    imageSize: { width: 1000, height: 1300 },
+    imageSize: { width: 1000, height: 1800 },
     items: [
       { name: "TEQUILA SUNRISE", description: "(TEQUILA, JUGO DE NARANJA, GRANADINA)", price: "$6.00" },
       { name: "MARGARITA CLÁSICA", description: "(TEQUILA, LIMÓN FRESCO, TRIPLE SEC)", price: "$7.00" },
@@ -302,7 +302,7 @@ const menuSections: MenuSection[] = [
     title: "BEBIDAS CALIENTES",
     animationDirection: "left",
     image: "/Imagenes/bebidascalientes.png",
-    imageSize: { width: 400, height: 200 },
+    imageSize: { width: 150, height: 150 },
     items: [
       { name: "VINO HERVIDO", description: "(VINO, RON, ESPECIAS PROCESADAS ARTESANALMENTE)", price: "$5.00" },
       { name: "CANELAZO", description: "(AGUARDIENTE, NARANJILLA, CANELA)", price: "$5.00" }
@@ -485,6 +485,8 @@ function MenuSectionItem({
   const defaultSize = { width: 256, height: 256 }
   const imageSize = section.imageSize || defaultSize
 
+
+
   return (
     <motion.div
       initial={{ y: 30, opacity: 0 }}
@@ -494,7 +496,7 @@ function MenuSectionItem({
     >
       <motion.button
         onClick={onToggle}
-        className="w-full flex items-center justify-between py-4 px-6 bg-gray-900/50 hover:bg-gray-800/50 transition-colors border-b border-gray-800"
+        className="w-full flex items-center justify-between py-4 px-4 md:px-6 bg-gray-900/50 hover:bg-gray-800/50 transition-colors border-b border-gray-800"
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
       >
@@ -502,7 +504,7 @@ function MenuSectionItem({
           <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
             <Plus className="w-6 h-6 text-orange-500" />
           </motion.div>
-          <span className="text-xl font-semibold text-orange-500">{section.title}</span>
+          <span className="text-lg md:text-xl font-semibold text-orange-500">{section.title}</span>
         </div>
       </motion.button>
 
@@ -527,9 +529,9 @@ function MenuSectionItem({
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden bg-gray-900/30"
           >
-            <div className="p-6">
+            <div className="p-4 md:p-6">
               {section.items.length > 0 ? (
-                <div className="grid md:grid-cols-2 gap-8 items-start">
+                <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
                   {/* Contenedor de la imagen */}
                   <motion.div
                     initial={{ scale: 0, rotate: -90 }}
@@ -540,8 +542,11 @@ function MenuSectionItem({
                       type: "spring",
                       bounce: 0.3,
                     }}
-                    className={`flex justify-center ${section.animationDirection === "left" ? "md:order-1" : "md:order-2"
-                      }`}
+                    className={`flex justify-center w-full order-1 ${
+                      section.animationDirection === "left" 
+                        ? "lg:order-1" 
+                        : "lg:order-2"
+                    }`}
                   >
                     <motion.div
                       whileHover={{
@@ -549,46 +554,94 @@ function MenuSectionItem({
                         rotate: [0, -3, 3, 0],
                         transition: { duration: 0.4 },
                       }}
-                      className="relative"
+                      className="relative flex justify-center"
                     >
                       {section.image.startsWith('/') ? (
-                        <div
-                          className="relative"
-                          style={{
-                            width: `${imageSize.width}px`,
-                            height: `${imageSize.height}px`
-                          }}
-                        >
-                          <Image
-                            src={section.image}
-                            alt={section.title}
-                            fill
-                            className="object-contain"
-                            sizes={`${Math.max(imageSize.width, imageSize.height)}px`}
-                          />
+                        <div className="relative flex justify-center w-full">
+                          {/* Imagen para Desktop */}
+                          <div className="hidden lg:block relative">
+                            <Image
+                              src={section.image}
+                              alt={section.title}
+                              width={imageSize.width}
+                              height={imageSize.height}
+                              className="object-contain max-w-full h-auto"
+                              style={{
+                                maxWidth: `${imageSize.width}px`,
+                                maxHeight: '70vh'
+                              }}
+                              sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
+                            />
+                          </div>
+                          
+                          {/* Imagen para Mobile */}
+                          <div className="block lg:hidden relative mx-auto">
+                            <Image
+                              src={section.image}
+                              alt={section.title}
+                              width={280}
+                              height={300}
+                              className="object-contain w-full h-auto"
+                              style={{
+                                maxWidth: '280px',
+                                maxHeight: '300px'
+                              }}
+                              sizes="280px"
+                            />
+                          </div>
                         </div>
                       ) : (
-                        <div
-                          className="bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden"
-                          style={{
-                            width: `${imageSize.width}px`,
-                            height: `${imageSize.height}px`
-                          }}
-                        >
-                          <motion.div
-                            animate={{
-                              scale: [1, 1.1, 1],
-                              opacity: [0.3, 0.6, 0.3],
+                        <div className="flex justify-center w-full">
+                          {/* Placeholder para Desktop */}
+                          <div
+                            className="hidden lg:block bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden"
+                            style={{
+                              width: `${imageSize.width}px`,
+                              height: `${imageSize.height}px`,
+                              maxWidth: '100%',
+                              maxHeight: '70vh'
                             }}
-                            transition={{
-                              duration: 1.5,
-                              repeat: Number.POSITIVE_INFINITY,
-                              ease: "easeInOut",
+                          >
+                            <motion.div
+                              animate={{
+                                scale: [1, 1.1, 1],
+                                opacity: [0.3, 0.6, 0.3],
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Number.POSITIVE_INFINITY,
+                                ease: "easeInOut",
+                              }}
+                              className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg"
+                            />
+                            <div className="text-gray-400 text-center z-10">
+                              <span className="text-sm">{section.image}</span>
+                            </div>
+                          </div>
+                          
+                          {/* Placeholder para Mobile */}
+                          <div
+                            className="block lg:hidden bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden mx-auto"
+                            style={{
+                              width: '280px',
+                              height: '300px'
                             }}
-                            className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg"
-                          />
-                          <div className="text-gray-400 text-center z-10">
-                            <span className="text-sm">{section.image}</span>
+                          >
+                            <motion.div
+                              animate={{
+                                scale: [1, 1.1, 1],
+                                opacity: [0.3, 0.6, 0.3],
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Number.POSITIVE_INFINITY,
+                                ease: "easeInOut",
+                              }}
+                              className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg"
+                            />
+                            <div className="text-gray-400 text-center z-10">
+                              <span className="text-xs">{section.image}</span>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -596,27 +649,38 @@ function MenuSectionItem({
                   </motion.div>
 
                   {/* Contenedor del menú */}
-                  <div className={`space-y-4 ${section.animationDirection === "left" ? "md:order-2" : "md:order-1"
-                    }`}>
+                  <div className={`space-y-3 md:space-y-4 w-full order-2 ${
+                    section.animationDirection === "left" 
+                      ? "lg:order-2" 
+                      : "lg:order-1"
+                  }`}>
                     {section.items.map((item, itemIndex) => (
                       <motion.div
                         key={itemIndex}
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: itemIndex * 0.05, duration: 0.3 }}
-                        className="border-b border-gray-700 pb-4"
+                        className="border-b border-gray-700 pb-3 md:pb-4"
                       >
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-semibold text-white">{item.name}</h3>
-                          <span className="text-orange-500 font-bold">{item.price}</span>
+                        <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
+                          <h3 className="font-semibold text-white text-sm md:text-base leading-tight flex-1">
+                            {item.name}
+                          </h3>
+                          <span className="text-orange-500 font-bold text-sm md:text-base whitespace-nowrap ml-2">
+                            {item.price}
+                          </span>
                         </div>
-                        <p className="text-gray-400 text-sm">{item.description}</p>
+                        {item.description && (
+                          <p className="text-gray-400 text-xs md:text-sm leading-relaxed pr-2">
+                            {item.description}
+                          </p>
+                        )}
                       </motion.div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8">
+                <div className="text-center py-6 md:py-8">
                   <motion.div
                     initial={{ scale: 0, rotate: -90 }}
                     animate={{ scale: 1, rotate: 0 }}
@@ -626,30 +690,73 @@ function MenuSectionItem({
                       type: "spring",
                       bounce: 0.3,
                     }}
+                    className="flex justify-center"
                   >
-                    <div
-                      className="flex items-center justify-center mx-auto mb-4 relative"
-                      style={{
-                        width: `${imageSize.width}px`,
-                        height: `${imageSize.height}px`
-                      }}
-                    >
+                    <div className="flex items-center justify-center relative">
                       {section.image.startsWith('/') ? (
-                        <Image
-                          src={section.image}
-                          alt={section.title}
-                          fill
-                          className="object-contain"
-                          sizes={`${Math.max(imageSize.width, imageSize.height)}px`}
-                        />
+                        <>
+                          {/* Imagen para Desktop */}
+                          <div className="hidden lg:block relative">
+                            <Image
+                              src={section.image}
+                              alt={section.title}
+                              width={imageSize.width}
+                              height={imageSize.height}
+                              className="object-contain max-w-full h-auto"
+                              style={{
+                                maxWidth: `${imageSize.width}px`,
+                                maxHeight: '70vh'
+                              }}
+                              sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
+                            />
+                          </div>
+                          
+                          {/* Imagen para Mobile */}
+                          <div className="block lg:hidden relative">
+                            <Image
+                              src={section.image}
+                              alt={section.title}
+                              width={280}
+                              height={300}
+                              className="object-contain w-full h-auto"
+                              style={{
+                                maxWidth: '280px',
+                                maxHeight: '300px'
+                              }}
+                              sizes="280px"
+                            />
+                          </div>
+                        </>
                       ) : (
-                        <div className="bg-gray-800 rounded-lg w-full h-full flex items-center justify-center">
-                          <span className="text-gray-400 text-sm text-center">{section.image}</span>
-                        </div>
+                        <>
+                          {/* Placeholder Desktop */}
+                          <div
+                            className="hidden lg:block bg-gray-800 rounded-lg flex items-center justify-center"
+                            style={{
+                              width: `${imageSize.width}px`,
+                              height: `${imageSize.height}px`,
+                              maxWidth: '100%',
+                              maxHeight: '70vh'
+                            }}
+                          >
+                            <span className="text-gray-400 text-sm text-center">{section.image}</span>
+                          </div>
+                          
+                          {/* Placeholder Mobile */}
+                          <div
+                            className="block lg:hidden bg-gray-800 rounded-lg flex items-center justify-center"
+                            style={{
+                              width: '280px',
+                              height: '300px'
+                            }}
+                          >
+                            <span className="text-gray-400 text-xs text-center">{section.image}</span>
+                          </div>
+                        </>
                       )}
                     </div>
                   </motion.div>
-                  <p className="text-gray-400">Próximamente disponible</p>
+                  <p className="text-gray-400 mt-4 text-sm md:text-base">Próximamente disponible</p>
                 </div>
               )}
             </div>

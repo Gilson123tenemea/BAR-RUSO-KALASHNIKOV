@@ -22,9 +22,9 @@ export const metadata: Metadata = {
   generator: 'Gilson.Tenemea',
   
   icons: {
-    icon: '/imagenes/logo_bar.png',
-    shortcut: '/imagenes/logo_bar.png',
-    apple: '/imagenes/logo_bar.png',
+    icon: '/Imagenes/logo_bar.png',
+    shortcut: '/Imagenes/logo_bar.png',
+    apple: '/Imagenes/logo_bar.png',
   }
 }
 

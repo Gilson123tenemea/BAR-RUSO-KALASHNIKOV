@@ -748,7 +748,7 @@ function Footer() {
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
                 <Image
-                  src="/imagenes/logo_bar.png"
+                  src="/Imagenes/logo_bar.png"
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"
@@ -855,10 +855,10 @@ function Footer() {
             <h4 className="font-semibold mb-4">Instagram</h4>
             <div className="grid grid-cols-2 gap-2">
               {[
-                "/imagenes/Instagram_1.png",
-                "/imagenes/Instagram_2.png",
-                "/imagenes/Instagram_3.png",
-                "/imagenes/Instagram_4.png"
+                "/Imagenes/Instagram_1.png",
+                "/Imagenes/Instagram_2.png",
+                "/Imagenes/Instagram_3.png",
+                "/Imagenes/Instagram_4.png"
               ].map((src, index) => (
                 <div
                   key={index}

@@ -210,7 +210,7 @@ function HeroSection() {
           <Facebook className="w-5 h-5" />
         </a>
         <a
-          href="https://instagram.com/barrusokalashnikov"
+          href="https://www.instagram.com/explore/locations/764588696/bar-ruso-kalashnikov/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-400 hover:text-white transition-colors"
@@ -481,14 +481,85 @@ function LocalSection() {
     </section>
   )
 }
-
 function Footer() {
-  const instagramImages = [
-    "Cóctel rojo con decoración",
-    "Bebida azul con efectos",
-    "Cóctel rosado",
-    "Bebida naranja con decoración",
-  ]
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  // Tipos para los horarios
+  type ScheduleDay = {
+    open: number;
+    close: number;
+  } | null;
+
+  type Schedule = {
+    [key: number]: ScheduleDay;
+  };
+
+  // Horarios del bar
+  const schedule: Schedule = {
+    1: { open: 15, close: 24 }, // Lunes
+    2: { open: 15, close: 24 }, // Martes
+    3: { open: 15, close: 24 }, // Miércoles
+    4: { open: 15, close: 24 }, // Jueves
+    5: { open: 15, close: 26 }, // Viernes (26 = 2:00 AM del siguiente día)
+    6: { open: 15, close: 24 }, // Sábado
+    0: null // Domingo - cerrado
+  };
+
+  // Función para obtener la hora actual en Ecuador (GMT-5)
+  const getEcuadorTime = (): Date => {
+    const now = new Date();
+    // Ecuador está en GMT-5
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    return new Date(utc + (-5 * 3600000));
+  };
+
+  // Función para verificar si está abierto
+  const checkIfOpen = (time: Date): boolean => {
+    const dayOfWeek: number = time.getDay();
+    const hours: number = time.getHours();
+    const minutes: number = time.getMinutes();
+    const currentTimeInMinutes: number = hours * 60 + minutes;
+
+    const todaySchedule: ScheduleDay = schedule[dayOfWeek];
+    
+    if (!todaySchedule) {
+      return false; // Cerrado los domingos
+    }
+
+    const openTime: number = todaySchedule.open * 60; // 15:00 = 900 minutos
+    let closeTime: number = todaySchedule.close * 60;
+
+    // Si cierra después de medianoche
+    if (todaySchedule.close > 24) {
+      if (currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60)) {
+        return true;
+      }
+    } else {
+      if (currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // Actualizar cada minuto
+  useEffect(() => {
+    const updateTime = () => {
+      const ecuadorTime = getEcuadorTime();
+      setCurrentTime(ecuadorTime);
+      setIsOpen(checkIfOpen(ecuadorTime));
+    };
+
+    // Actualizar inmediatamente
+    updateTime();
+
+    // Actualizar cada minuto
+    const interval = setInterval(updateTime, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <footer id="contacto" className="bg-black py-16 border-t border-gray-800">
@@ -519,7 +590,7 @@ function Footer() {
                 <Facebook className="w-5 h-5" />
               </a>
               <a
-                href="https://instagram.com/barrusokalashnikov"
+                href="https://www.instagram.com/explore/locations/764588696/bar-ruso-kalashnikov/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -580,7 +651,25 @@ function Footer() {
                 <span className="text-red-500">CERRADO</span>
               </div>
             </div>
-            <p className="text-orange-500 text-sm mt-4 font-semibold">ABIERTO AHORA</p>
+            
+            {/* SECCIÓN DE ESTADO DINÁMICO */}
+            <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
+                    {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                      timeZone: 'America/Guayaquil',
+                      hour: '2-digit', 
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+                <div className={`w-3 h-3 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></div>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -613,7 +702,7 @@ function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
 function WhatsAppButton() {

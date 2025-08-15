@@ -1,12 +1,14 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useRef,useEffect} from "react"
 import { motion } from "framer-motion"
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Send } from "lucide-react"
 import Link from "next/link"
 import emailjs from "@emailjs/browser"
 import SharedHeader from "@/components/shared-header"
+import Image from 'next/image'
+
 
 export default function ContactoPage() {
   return (
@@ -19,6 +21,7 @@ export default function ContactoPage() {
       <SharedHeader />
       <HeroSection />
       <ContactSection />
+      <BarInteriorSection />
       <Footer />
       <WhatsAppButton />
     </motion.div>
@@ -29,36 +32,43 @@ function HeroSection() {
   const handleUbicacionClick = () => {
     window.open(
       "https://www.google.com/maps/place/Bar+Ruso+Kalashnikov/@-2.9053604,-79.0121328,225m/data=!3m1!1e3!4m10!1m2!2m1!1scocteles!3m6!1s0x91cd194baa33c27f:0x1bd14ff355480aa5!8m2!3d-2.9053604!4d-79.0112284!15sCghjb2N0ZWxlc1oKIghjb2N0ZWxlc5IBA2JhcpoBI0NoWkRTVWhOTUc5blMwVkpRMEZuU1VNMmIxbHhlRkZuRUFFqgFICggvbS8wMjRnNhABKgwiCGNvY3RlbGVzKA4yHhABIhpKWkOv7yyP5zgKC63_-P0b64-6vWa_9As5rDIMEAIiCGNvY3RlbGVz4AEA-gEECAAQQA!16s%2Fg%2F11gjj1nnvp?entry=ttu&g_ep=EgoyMDI1MDgxMS4wIKXMDSoASAFQAw%3D%3D",
-      "_blank",
-    )
-  }
+      "_blank"
+    );
+  };
 
   return (
-    <section className="relative min-h-screen flex items-center">
-      <div className="absolute inset-0 -z-10">
-        <div className="w-full h-full bg-gradient-to-br from-amber-900/40 via-orange-500/30 to-red-800/50 flex items-center justify-center">
-          <div className="text-center text-gray-400">
-            <div className="w-full h-full bg-gray-800/20 flex items-center justify-center">
-              <span className="text-lg">Imagen de bartender preparando cócteles - Fondo completo hasta header</span>
-            </div>
-          </div>
-        </div>
+    <section className="relative h-[600px] flex items-center">
+      {/* Imagen de fondo */}
+      <div className="absolute inset-0">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: "url('/Imagenes/contacto logo.jpeg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+          }}
+        />
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
+      {/* Gradiente encima de la imagen */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
 
-      <div className="container mx-auto px-4 relative z-10 pt-24">
+      {/* Contenido */}
+      <div className="container mx-auto px-4 relative z-20 pt-24">
         <motion.div
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.4 }}
           className="max-w-2xl"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">Hablemos de tu próxima visita</h1>
+          <h1 className="text-5xl md:text-2xl font-bold mb-6">
+            Hablemos de tu próxima visita
+          </h1>
 
           <p className="text-gray-300 text-lg mb-8 max-w-md">
-            Estamos aquí para responder tus preguntas y brindarte la información que necesitas. Ven a disfrutar de una
-            velada perfecta desde esta noche.
+            Estamos aquí para responder tus preguntas y brindarte la información que necesitas.
+            Ven a disfrutar de una velada perfecta desde esta noche.
           </p>
 
           <motion.button
@@ -73,7 +83,7 @@ function HeroSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }
 
 function ContactSection() {
@@ -115,11 +125,11 @@ function ContactSection() {
   }
 
   return (
-    <section className="py-20 bg-black">
+    <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text mb-8">
           <motion.div initial={{ y: 50, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
-            <p className="text-orange-500 text-sm font-semibold mb-2">Estamos para atenderte</p>
+            <p className="text-black-500 text-sm font-semibold mb-2">--- Estamos para atenderte ---</p>
           </motion.div>
         </div>
 
@@ -130,7 +140,9 @@ function ContactSection() {
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl font-bold mb-6">Ponte en contacto con nosotros</h2>
+            <h2 className="text-2xl font-bold mb-6 text-[#FF9D00]">
+              Ponte en contacto con nosotros
+            </h2>
             <p className="text-gray-300 mb-8">
               ¿Tienes alguna duda o quieres más información? Nuestro equipo está listo para atenderte y ayudarte a vivir
               la mejor experiencia en nuestro bar.
@@ -210,7 +222,9 @@ function ContactSection() {
             className="space-y-8"
           >
             <div>
-              <h3 className="text-2xl font-bold mb-6">Tus Detalles</h3>
+              <h3 className="text-2xl font-bold mb-6 text-[#FF9D00]">
+                Tus Detalles
+              </h3>
               <p className="text-gray-300 mb-8">
                 Completa tus datos y escríbenos tu mensaje. Te responderemos lo antes posible.
               </p>
@@ -299,7 +313,7 @@ function ContactSection() {
                   <Facebook className="w-6 h-6" />
                 </motion.a>
                 <motion.a
-                  href="https://instagram.com/barrusokalashnikov"
+                  href="https://www.instagram.com/explore/locations/764588696/bar-ruso-kalashnikov/"
                   target="_blank"
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1 }}
@@ -316,24 +330,129 @@ function ContactSection() {
   )
 }
 
+function BarInteriorSection() {
+  return (
+    <section className="py-1 bg-black relative">
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Imagen del local con texto encima */}
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="mb-12"
+        >
+          <div className="relative w-full h-80 rounded-lg overflow-hidden flex items-center justify-center">
+            {/* Imagen */}
+            <Image
+              src="/Imagenes/local.jpeg"
+              alt="Interior del Bar Ruso Kalashnikov"
+              fill
+              className="object-cover"
+            />
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+
+
 function Footer() {
-  const instagramImages = [
-    "Cóctel rojo con decoración",
-    "Bebida azul con efectos",
-    "Cóctel rosado",
-    "Bebida naranja con decoración",
-  ]
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  // Tipos para los horarios
+  type ScheduleDay = {
+    open: number;
+    close: number;
+  } | null;
+
+  type Schedule = {
+    [key: number]: ScheduleDay;
+  };
+
+  // Horarios del bar
+  const schedule: Schedule = {
+    1: { open: 15, close: 24 }, // Lunes
+    2: { open: 15, close: 24 }, // Martes
+    3: { open: 15, close: 24 }, // Miércoles
+    4: { open: 15, close: 24 }, // Jueves
+    5: { open: 15, close: 26 }, // Viernes (26 = 2:00 AM del siguiente día)
+    6: { open: 15, close: 24 }, // Sábado
+    0: null // Domingo - cerrado
+  };
+
+  // Función para obtener la hora actual en Ecuador (GMT-5)
+  const getEcuadorTime = (): Date => {
+    const now = new Date();
+    // Ecuador está en GMT-5
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    return new Date(utc + (-5 * 3600000));
+  };
+
+  // Función para verificar si está abierto
+  const checkIfOpen = (time: Date): boolean => {
+    const dayOfWeek: number = time.getDay();
+    const hours: number = time.getHours();
+    const minutes: number = time.getMinutes();
+    const currentTimeInMinutes: number = hours * 60 + minutes;
+
+    const todaySchedule: ScheduleDay = schedule[dayOfWeek];
+    
+    if (!todaySchedule) {
+      return false; // Cerrado los domingos
+    }
+
+    const openTime: number = todaySchedule.open * 60; // 15:00 = 900 minutos
+    let closeTime: number = todaySchedule.close * 60;
+
+    // Si cierra después de medianoche
+    if (todaySchedule.close > 24) {
+      if (currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60)) {
+        return true;
+      }
+    } else {
+      if (currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // Actualizar cada minuto
+  useEffect(() => {
+    const updateTime = () => {
+      const ecuadorTime = getEcuadorTime();
+      setCurrentTime(ecuadorTime);
+      setIsOpen(checkIfOpen(ecuadorTime));
+    };
+
+    // Actualizar inmediatamente
+    updateTime();
+
+    // Actualizar cada minuto
+    const interval = setInterval(updateTime, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <footer className="bg-black py-16 border-t border-gray-800">
+    <footer id="contacto" className="bg-black py-16 border-t border-gray-800">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8">
           <div>
-            <Link href="/" className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-black font-bold text-sm">LOGO</span>
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
+                <Image
+                  src="/imagenes/logo_bar.png"
+                  alt="Bar Ruso Kalashnikov"
+                  fill
+                  className="object-contain rounded-full"
+                />
               </div>
-            </Link>
+            </div>
             <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
             <p className="text-gray-400 text-sm mb-6">
               La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.
@@ -348,7 +467,7 @@ function Footer() {
                 <Facebook className="w-5 h-5" />
               </a>
               <a
-                href="https://instagram.com/barrusokalashnikov"
+                href="https://www.instagram.com/explore/locations/764588696/bar-ruso-kalashnikov/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -362,29 +481,29 @@ function Footer() {
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <Link href="/" className="hover:text-white">
+                <a href="#inicio" className="hover:text-white">
                   Inicio
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/sobre-nosotros" className="hover:text-white">
+                <a href="/sobre-nosotros" className="hover:text-white">
                   Sobre Nosotros
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/menu" className="hover:text-white">
+                <a href="/menu" className="hover:text-white">
                   Menú
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/contacto" className="hover:text-white">
+                <a href="/contacto" className="hover:text-white">
                   Contacto
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/galeria" className="hover:text-white">
+                <a href="/galeria" className="hover:text-white">
                   Galería
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -409,15 +528,46 @@ function Footer() {
                 <span className="text-red-500">CERRADO</span>
               </div>
             </div>
-            <p className="text-orange-500 text-sm mt-4 font-semibold">ABIERTO AHORA</p>
+            
+            {/* SECCIÓN DE ESTADO DINÁMICO */}
+            <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
+                    {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                      timeZone: 'America/Guayaquil',
+                      hour: '2-digit', 
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+                <div className={`w-3 h-3 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></div>
+              </div>
+            </div>
           </div>
 
           <div>
             <h4 className="font-semibold mb-4">Instagram</h4>
             <div className="grid grid-cols-2 gap-2">
-              {instagramImages.map((image, index) => (
-                <div key={index} className="bg-gray-800 rounded aspect-square flex items-center justify-center">
-                  <span className="text-gray-400 text-xs text-center">{image}</span>
+              {[
+                "/imagenes/Instagram_1.png",
+                "/imagenes/Instagram_2.png",
+                "/imagenes/Instagram_3.png",
+                "/imagenes/Instagram_4.png"
+              ].map((src, index) => (
+                <div
+                  key={index}
+                  className="rounded overflow-hidden aspect-square relative"
+                >
+                  <Image
+                    src={src}
+                    alt={`Instagram ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -429,7 +579,7 @@ function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
 function WhatsAppButton() {

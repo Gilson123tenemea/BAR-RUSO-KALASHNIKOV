@@ -3,6 +3,8 @@ import { motion } from "framer-motion"
 import { MapPin, Star, Facebook, Instagram, Phone, Wine, Users, Sparkles } from "lucide-react"
 import Link from "next/link"
 import SharedHeader from "@/components/shared-header"
+import Image from 'next/image'
+import { useState, useEffect } from "react"
 
 const testimonials = [
   {
@@ -36,8 +38,8 @@ export default function SobreNosotrosPage() {
       <SharedHeader />
       <HeroSection />
       <ExperienceSection />
-      <FeaturesSection />
       <HistorySection />
+      <FeaturesSection />
       <TeamSection />
       <TestimonialsSection />
       <Footer />
@@ -55,27 +57,35 @@ function HeroSection() {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center">
-      <div className="absolute inset-0 -z-10">
-        <div className="w-full h-full bg-gradient-to-br from-amber-900/40 via-orange-500/30 to-red-800/50 flex items-center justify-center">
+    <section id="hero" className="relative h-[600px] flex items-center">
+      <div className="absolute inset-0">
+        <div
+          className="w-full h-full bg-gradient-to-br from-amber-900/40 via-orange-500/30 to-red-800/50 flex items-center justify-center"
+          style={{
+            backgroundImage: "url('/Imagenes/sobre nosotros logo.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
           <div className="text-center text-gray-400">
             <div className="w-full h-full bg-gray-800/20 flex items-center justify-center">
-              <span className="text-lg">Imagen del interior del bar con personas - Fondo completo hasta header</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
 
-      <div className="container mx-auto px-4 relative z-10 pt-24">
+      <div className="container mx-auto px-4 relative z-20 pt-24">
         <motion.div
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.4 }}
           className="max-w-2xl"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">Más que un bar, una experiencia</h1>
+          <h1 className="text-5xl md:text-2xl font-bold mb-0">Más que un bar, una </h1>
+          <h1 className="text-5xl md:text-2xl font-bold mb-6">experiencia</h1>
 
           <p className="text-gray-300 text-lg mb-8 max-w-md">
             Un espacio donde la creatividad, el ambiente y la coctelería de autor se unen para ofrecerte momentos
@@ -99,115 +109,52 @@ function HeroSection() {
 
 function ExperienceSection() {
   return (
-    <section className="py-20 bg-black">
+    <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="relative"
-          >
-            <motion.div
-              whileHover={{ scale: 1.02, rotate: 1 }}
-              transition={{ duration: 0.3 }}
-              className="relative overflow-hidden rounded-lg"
-            >
-              <div className="w-full max-w-sm mx-auto h-96 bg-gradient-to-br from-blue-900/60 via-purple-800/50 to-blue-600/40 flex items-center justify-center relative rounded-lg">
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.3, 0.7, 0.3],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg"
-                />
-                <div className="text-center text-white z-10">
-                  <div className="text-3xl font-bold mb-2">A QUÍ VIDEO</div>
-                  <span className="text-sm opacity-75">Video vertical del bar</span>
-                </div>
+          <div className="relative">
+            <div className="relative overflow-hidden rounded-lg">
+              {/* Contenedor del video - puedes ajustar las dimensiones aquí */}
+              <div className="w-full max-w-sm mx-auto h-150 relative rounded-lg overflow-hidden">
+                <video
+                  className="w-full h-full object-cover rounded-lg"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls={false}
+                  preload="auto"
+                >
+                  <source src="/videos/e.mp4" type="video/mp4" />
+                  Tu navegador no soporta el elemento video.
+                </video>
+
+                {/* Overlay opcional con gradiente suave */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none rounded-lg"></div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ x: 50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-8"
-          >
-            <div>
-              <h3 className="text-2xl font-bold text-orange-500 mb-4">Experiencia que inspira</h3>
+          <div className="space-y-8">
+            <div className="bg-[#010510] rounded-2xl p-6">
+              <h3 className="text-2xl font-bold text-orange-500 mb-4">
+                Experiencia que inspira
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Cada detalle de nuestro bar está pensado para cautivar tus sentidos: luces suaves, música perfecta y un
-                equipo que convierte cada visita en un momento único.
+                Cada detalle de nuestro bar está pensado para cautivar tus sentidos: luces suaves, música perfecta y un equipo que convierte cada visita en un momento único.
               </p>
             </div>
 
-            <div>
-              <h3 className="text-2xl font-bold text-orange-500 mb-4">Arte en cada copa</h3>
+            <div className="bg-[#010510] rounded-2xl p-6">
+              <h3 className="text-2xl font-bold text-orange-500 mb-4">
+                Arte en cada copa
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Más que bebidas, creamos piezas de arte líquido. Ingredientes frescos, técnicas de autor y pasión en
-                cada preparación.
+                Más que bebidas, creamos piezas de arte líquido. Ingredientes frescos, técnicas de autor y pasión en cada preparación.
               </p>
             </div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  )
-}
+          </div>
 
-function FeaturesSection() {
-  const features = [
-    {
-      icon: Wine,
-      title: "Coctelería Artesanal",
-      description:
-        "Cócteles únicos creados por nuestros mixólogos expertos con ingredientes premium importados directamente de Rusia.",
-    },
-    {
-      icon: Sparkles,
-      title: "Bebidas Rusa",
-      description:
-        "Cócteles y tragos tradicionales rusos reinventados con técnicas modernas y presentación contemporánea, ofreciendo una experiencia única en cada sorbo.",
-    },
-    {
-      icon: Users,
-      title: "Ambiente Exclusivo",
-      description:
-        "Cócteles únicos creados por nuestros mixólogos expertos con ingredientes premium importados directamente de Rusia.",
-    },
-  ]
-
-  return (
-    <section className="py-20 bg-gray-900/30">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ y: 50, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="text-center p-6 bg-black/50 rounded-lg border border-gray-800 hover:border-orange-500/50 transition-all duration-300"
-            >
-              <motion.div
-                whileHover={{ scale: 1.2, rotate: 10 }}
-                transition={{ duration: 0.3 }}
-                className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg"
-              >
-                <feature.icon className="w-8 h-8 text-white" />
-              </motion.div>
-              <h3 className="text-xl font-bold text-orange-500 mb-4">{feature.title}</h3>
-              <p className="text-gray-300 leading-relaxed">{feature.description}</p>
-            </motion.div>
-          ))}
         </div>
       </div>
     </section>
@@ -216,7 +163,7 @@ function FeaturesSection() {
 
 function HistorySection() {
   return (
-    <section className="py-20 bg-black">
+    <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -249,7 +196,15 @@ function HistorySection() {
               transition={{ duration: 0.3 }}
               className="relative overflow-hidden rounded-lg"
             >
-              <div className="w-full h-80 bg-gradient-to-br from-blue-900/60 via-cyan-800/50 to-teal-600/40 flex items-center justify-center relative">
+              <div
+                className="w-full h-100 bg-gradient-to-br from-blue-900/60 via-cyan-800/50 to-teal-600/40 flex items-center justify-center relative"
+                style={{
+                  backgroundImage: "url('/Imagenes/frase del bar.jpeg')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              >
                 <motion.div
                   animate={{
                     scale: [1, 1.05, 1],
@@ -262,13 +217,63 @@ function HistorySection() {
                   }}
                   className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20"
                 />
-                <div className="text-center text-white z-10">
-                  <div className="text-lg mb-2">Interior del bar con luces de neón</div>
-                  <div className="text-2xl font-bold text-cyan-400">¿No será de tomar un traguito?</div>
-                </div>
+                {/* Overlay oscuro para mejor contraste si hay texto en la imagen */}
+                <div className="absolute inset-0 bg-black/30"></div>
               </div>
             </motion.div>
           </motion.div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FeaturesSection() {
+  const features = [
+    {
+      icon: Wine,
+      title: "Coctelería Artesanal",
+      description:
+        "Cócteles únicos creados por nuestros mixólogos expertos con ingredientes premium importados directamente de Rusia.",
+    },
+    {
+      icon: Sparkles,
+      title: "Bebidas Rusa",
+      description:
+        "Cócteles y tragos tradicionales rusos reinventados con técnicas modernas y presentación contemporánea, ofreciendo una experiencia única en cada sorbo.",
+    },
+    {
+      icon: Users,
+      title: "Ambiente Exclusivo",
+      description:
+        "Cócteles únicos creados por nuestros mixólogos expertos con ingredientes premium importados directamente de Rusia.",
+    },
+  ]
+
+  return (
+    <section className="py-10 bg-gray-900/30">
+      <div className="container mx-auto px-4">
+        <div className="grid md:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: index * 0.2 }}
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="text-center p-6 bg-black/50 rounded-lg border border-gray-800 hover:border-orange-500/50 transition-all duration-300"
+            >
+              <motion.div
+                whileHover={{ scale: 1.2, rotate: 10 }}
+                transition={{ duration: 0.3 }}
+                className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg"
+              >
+                <feature.icon className="w-8 h-8 text-white" />
+              </motion.div>
+              <h3 className="text-xl font-bold text-orange-500 mb-4">{feature.title}</h3>
+              <p className="text-gray-300 leading-relaxed">{feature.description}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -277,63 +282,52 @@ function HistorySection() {
 
 function TeamSection() {
   return (
-    <section className="py-20 bg-gray-900/30">
+    <section className="py-10 bg-gray-900/30">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="relative"
-          >
-            <motion.div
-              whileHover={{ scale: 1.02, rotate: 1 }}
-              transition={{ duration: 0.3 }}
-              className="relative overflow-hidden rounded-lg"
-            >
-              <div className="w-full max-w-sm mx-auto h-96 bg-gradient-to-br from-purple-900/60 via-blue-800/50 to-indigo-600/40 flex items-center justify-center relative rounded-lg">
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.3, 0.7, 0.3],
-                  }}
-                  transition={{
-                    duration: 2.5,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg"
-                />
-                <div className="text-center text-white z-10">
-                  <div className="text-3xl font-bold mb-2">A QUÍ VIDEO</div>
-                  <span className="text-sm opacity-75">Video vertical del equipo</span>
-                </div>
+          <div className="relative">
+            <div className="relative overflow-hidden rounded-lg">
+              {/* Contenedor del video - puedes ajustar las dimensiones aquí */}
+              <div className="w-full max-w-sm mx-auto h-150 relative rounded-lg overflow-hidden">
+                <video
+                  className="w-full h-full object-cover rounded-lg"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls={false}
+                  preload="auto"
+                >
+                  <source src="/videos/d.mp4" type="video/mp4" />
+                  Tu navegador no soporta el elemento video.
+                </video>
+
+                {/* Overlay opcional con gradiente suave */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none rounded-lg"></div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ x: 50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-8"
-          >
-            <div>
-              <h3 className="text-2xl font-bold text-orange-500 mb-4">Equipo experto en coctelería</h3>
+          <div className="space-y-8">
+            <div className="bg-[#010510] rounded-2xl p-6">
+              <h3 className="text-2xl font-bold text-orange-500 mb-4">
+                Equipo experto en coctelería
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Con años de experiencia y un dominio impecable de las técnicas más sofisticadas, nuestro equipo crea
-                bebidas que combinan precisión, sabor y presentación de alto nivel.
+                Con años de experiencia y un dominio impecable de las técnicas más sofisticadas, nuestro equipo crea bebidas que combinan precisión, sabor y presentación de alto nivel.
               </p>
             </div>
 
-            <div>
-              <h3 className="text-2xl font-bold text-orange-500 mb-4">Bebidas que cuentan historias</h3>
+            <div className="bg-[#010510] rounded-2xl p-6">
+              <h3 className="text-2xl font-bold text-orange-500 mb-4">
+                Bebidas que cuentan historias
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Desde clásicos rusos hasta creaciones de autor, cada trago refleja dedicación, tradición y un toque
-                contemporáneo que te invita a volver.
+                Desde clásicos rusos hasta creaciones de autor, cada trago refleja dedicación, tradición y un toque contemporáneo que te invita a volver.
               </p>
             </div>
-          </motion.div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -342,7 +336,7 @@ function TeamSection() {
 
 function TestimonialsSection() {
   return (
-    <section className="py-20 bg-black">
+    <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ y: 50, opacity: 0 }}
@@ -351,7 +345,7 @@ function TestimonialsSection() {
           className="text-center mb-12"
         >
           <p className="text-orange-500 text-sm font-semibold mb-2">TESTIMONIOS</p>
-          <h2 className="text-4xl font-bold">Lo que dicen nuestros clientes</h2>
+          <h2 className="text-2xl font-bold">Lo que dicen nuestros clientes</h2>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -385,23 +379,100 @@ function TestimonialsSection() {
 }
 
 function Footer() {
-  const instagramImages = [
-    "Cóctel rojo con decoración",
-    "Bebida azul con efectos",
-    "Cóctel rosado",
-    "Bebida naranja con decoración",
-  ]
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  // Tipos para los horarios
+  type ScheduleDay = {
+    open: number;
+    close: number;
+  } | null;
+
+  type Schedule = {
+    [key: number]: ScheduleDay;
+  };
+
+  // Horarios del bar
+  const schedule: Schedule = {
+    1: { open: 15, close: 24 }, // Lunes
+    2: { open: 15, close: 24 }, // Martes
+    3: { open: 15, close: 24 }, // Miércoles
+    4: { open: 15, close: 24 }, // Jueves
+    5: { open: 15, close: 26 }, // Viernes (26 = 2:00 AM del siguiente día)
+    6: { open: 15, close: 24 }, // Sábado
+    0: null // Domingo - cerrado
+  };
+
+  // Función para obtener la hora actual en Ecuador (GMT-5)
+  const getEcuadorTime = (): Date => {
+    const now = new Date();
+    // Ecuador está en GMT-5
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    return new Date(utc + (-5 * 3600000));
+  };
+
+  // Función para verificar si está abierto
+  const checkIfOpen = (time: Date): boolean => {
+    const dayOfWeek: number = time.getDay();
+    const hours: number = time.getHours();
+    const minutes: number = time.getMinutes();
+    const currentTimeInMinutes: number = hours * 60 + minutes;
+
+    const todaySchedule: ScheduleDay = schedule[dayOfWeek];
+    
+    if (!todaySchedule) {
+      return false; // Cerrado los domingos
+    }
+
+    const openTime: number = todaySchedule.open * 60; // 15:00 = 900 minutos
+    let closeTime: number = todaySchedule.close * 60;
+
+    // Si cierra después de medianoche
+    if (todaySchedule.close > 24) {
+      if (currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60)) {
+        return true;
+      }
+    } else {
+      if (currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // Actualizar cada minuto
+  useEffect(() => {
+    const updateTime = () => {
+      const ecuadorTime = getEcuadorTime();
+      setCurrentTime(ecuadorTime);
+      setIsOpen(checkIfOpen(ecuadorTime));
+    };
+
+    // Actualizar inmediatamente
+    updateTime();
+
+    // Actualizar cada minuto
+    const interval = setInterval(updateTime, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <footer id="contacto" className="bg-black py-16 border-t border-gray-800">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8">
           <div>
-            <Link href="/" className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-black font-bold text-sm">LOGO</span>
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
+                <Image
+                  src="/imagenes/logo_bar.png"
+                  alt="Bar Ruso Kalashnikov"
+                  fill
+                  className="object-contain rounded-full"
+                />
               </div>
-            </Link>
+            </div>
             <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
             <p className="text-gray-400 text-sm mb-6">
               La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.
@@ -416,7 +487,7 @@ function Footer() {
                 <Facebook className="w-5 h-5" />
               </a>
               <a
-                href="https://instagram.com/barrusokalashnikov"
+                href="https://www.instagram.com/explore/locations/764588696/bar-ruso-kalashnikov/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -430,29 +501,29 @@ function Footer() {
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <Link href="/" className="hover:text-white">
+                <a href="#inicio" className="hover:text-white">
                   Inicio
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/sobre-nosotros" className="hover:text-white">
+                <a href="/sobre-nosotros" className="hover:text-white">
                   Sobre Nosotros
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/menu" className="hover:text-white">
+                <a href="/menu" className="hover:text-white">
                   Menú
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/contacto" className="hover:text-white">
+                <a href="/contacto" className="hover:text-white">
                   Contacto
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/galeria" className="hover:text-white">
+                <a href="/galeria" className="hover:text-white">
                   Galería
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -477,15 +548,46 @@ function Footer() {
                 <span className="text-red-500">CERRADO</span>
               </div>
             </div>
-            <p className="text-orange-500 text-sm mt-4 font-semibold">ABIERTO AHORA</p>
+            
+            {/* SECCIÓN DE ESTADO DINÁMICO */}
+            <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
+                    {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                      timeZone: 'America/Guayaquil',
+                      hour: '2-digit', 
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+                <div className={`w-3 h-3 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></div>
+              </div>
+            </div>
           </div>
 
-          <div id="galeria">
+          <div>
             <h4 className="font-semibold mb-4">Instagram</h4>
             <div className="grid grid-cols-2 gap-2">
-              {instagramImages.map((image, index) => (
-                <div key={index} className="bg-gray-800 rounded aspect-square flex items-center justify-center">
-                  <span className="text-gray-400 text-xs text-center">{image}</span>
+              {[
+                "/imagenes/Instagram_1.png",
+                "/imagenes/Instagram_2.png",
+                "/imagenes/Instagram_3.png",
+                "/imagenes/Instagram_4.png"
+              ].map((src, index) => (
+                <div
+                  key={index}
+                  className="rounded overflow-hidden aspect-square relative"
+                >
+                  <Image
+                    src={src}
+                    alt={`Instagram ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -497,7 +599,7 @@ function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
 function WhatsAppButton() {

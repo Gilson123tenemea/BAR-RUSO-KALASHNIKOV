@@ -175,7 +175,7 @@ function HistorySection() {
             <h2 className="text-3xl font-bold text-orange-500">Nuestra historia</h2>
             <div className="space-y-4 text-gray-300">
               <p>
-                Desde 2018, creamos un ambiente al que siempre querrás volver. Nuestras infusiones propias, el uso de
+                Desde 2014, creamos un ambiente al que siempre querrás volver. Nuestras infusiones propias, el uso de
                 productos locales y un equipo apasionado han hecho de este lugar un referente en la ciudad.
               </p>
               <p>
@@ -246,7 +246,7 @@ function FeaturesSection() {
       icon: Users,
       title: "Ambiente Exclusivo",
       description:
-        "Cócteles únicos creados por nuestros mixólogos expertos con ingredientes premium importados directamente de Rusia.",
+        "Vive una atmósfera elegante e inspiradora, perfecta para compartir momentos únicos, rodeado de buena música y hospitalidad rusa.",
     },
   ]
 

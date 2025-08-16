@@ -38,22 +38,22 @@ const menuSections: MenuSection[] = [
       { name: "SIBERIANO", description: "VODKA Y LICOR DE MENTA", price: "$3.00" },
       { name: "GATO VASILIY", description: "GIN, LIMÓN FRESCO Y GRANADINA", price: "$3.00" },
       { name: "LÍNEA DE BIKINI", description: "VODKA, LICOR DE CAFÉ Y FRUTILLA", price: "$3.00" },
-      { name: "VIENTO DE MENTA", description: "TEQUILA, LICOR DE MENTA Y BLUE CURAÇAO", price: "$3.75" },
+      { name: "VIENTO DE MENTA", description: "TEQUILA, LICOR DE MENTA Y BLUE CURACAO", price: "$3.75" },
       { name: "BOLLARSKIY", description: "VODKA, TABASCO Y GRANADINA", price: "$3.75" },
-      { name: "TEQUILA AZUL", description: "TEQUILA Y BLUE CURAÇAO", price: "$4.50" },
-      { name: "MEDUSA", description: "RON, TRIPLE SEC, IRISH CREAM Y BLUE CURAÇAO", price: "$3.75" },
+      { name: "TEQUILA AZUL", description: "TEQUILA Y BLUE CURACAO", price: "$4.50" },
+      { name: "MEDUSA", description: "RON, TRIPLE SEC, IRISH CREAM Y BLUE CURACAO", price: "$3.75" },
       {
         name: "BANDERA ECUATORIANA",
-        description: "VODKA, BLUE CURAÇAO, LICOR DE MARACUYÁ Y GRANADINA",
+        description: "VODKA, BLUE CURACAO, LICOR DE MARACUYÁ Y GRANADINA",
         price: "$4.00",
       },
-      { name: "BANDERA RUSA", description: "VODKA, BLUE CURAÇAO Y GRANADINA", price: "$4.00" },
+      { name: "BANDERA RUSA", description: "VODKA, BLUE CURACAO Y GRANADINA", price: "$4.00" },
       {
         name: "SEMÁFORO (3 SHOTS)",
         description: "VODKA, LICOR DE MENTA, LICOR DE MARACUYÁ Y GRANADINA",
-        price: "$4.50",
+        price: "$6.00",
       },
-      { name: "QUÍMICO", description: "10 TUBOS DE ENSAYO, RECETA DE LA CASA", price: "$4.50" },
+      { name: "QUÍMICO", description: "10 TUBOS DE ENSAYO, RECETA DE LA CASA", price: "$9.00" },
     ],
   },
   {
@@ -65,9 +65,9 @@ const menuSections: MenuSection[] = [
     items: [
       { name: "TNT", description: "GIN, TEQUILA, VODKA, RON", price: "$6.00" },
       { name: "BUDA", description: "VODKA, TEQUILA, RON, GIN, TRIPLE SEC Y GRANADINA", price: "$5.00" },
-      { name: "B-52", description: "VODKA, LICOR DE CAFÉ, IRISH CREAM", price: "$8.50" },
+      { name: "B-52", description: "VODKA, LICOR DE CAFÉ, IRISH CREAM", price: "$4.00" },
       { name: "MEXICAN FLAG SHOT", description: "TEQUILA, LICOR DE MENTA Y GRANADINA", price: "$4.00" },
-      { name: "SIN NOMBRE", description: "VODKA, BLUE CURAÇAO, IRISH CREAM Y GRANADINA", price: "$3.50" },
+      { name: "SIN NOMBRE", description: "VODKA, BLUE CURACAO, IRISH CREAM Y GRANADINA", price: "$3.50" },
       { name: "BESO NEGRO", description: "RON, IRISH CREAM Y GRANADINA", price: "$3.50" },
     ],
   },
@@ -78,32 +78,33 @@ const menuSections: MenuSection[] = [
     image: "/Imagenes/cocteles_flameados_menu.png",
     imageSize: { width: 650, height: 750 },
     items: [
-      { name: "Ferrari", description: "Ron, triple sec, blue curaçao, granadina", price: "$5.00" },
-      { name: "Lamborghini", description: "Vodka, licor de café, Irish cream, blue curaçao", price: "$5.00" },
+      { name: "FERRARI", description: "RON, TRIPLE SEC, BLUE CURACAO, GRANADINA", price: "$5.00" },
+      { name: "LAMBORGHINI", description: "VODKA, LICOR DE CAFÉ, IRISH CREAM, BLUE CURACAO", price: "$5.00" },
       {
-        name: "Casco de Ingeniero Civil",
-        description: "Tequila, blue curaçao, Irish cream, vodka y triple sec",
-        price: "$6.50",
+        name: "CASCO DE INGENIERO CIVIL",
+        description: "TEQUILA, BLUE CURACAO, IRISH CREAM, VODKA Y TRIPLE SEC",
+        price: "$8.00",
       },
-      { name: "Lágrima de Culebra", description: "Tequila, limón fresco y licor de café", price: "$8.50" },
-      { name: "Chernobyl", description: "Vodka, tequila, ron, whisky, sprite, coca-cola y granadina", price: "$8.50" },
+      { name: "LÁGRIMA DE CULEBRA", description: "TEQUILA, LIMÓN FRESCO Y LICOR DE CAFÉ", price: "$8.00" },
+      { name: "CHERNOBYL", description: "VODKA, TEQUILA, RON, WHISKY, SPRITE, COCA-COLA Y GRANADINA", price: "$8.00" },
       {
-        name: "Luces Navideñas",
+        name: "LUCES NAVIDEÑAS",
         description:
-          "Ron, vodka, blue curaçao, vino tinto, Irish cream, triple sec, licor de menta, licor amaretto y granadina",
-        price: "$10.50",
+          "RON, VODKA, BLUE CURAÇAO, VINO TINTO, IRISH CREAM, TRIPLE SEC, LICOR DE MENTA, LICOR AMARETTO Y GRANADINA",
+        price: "$10.00",
       },
-      { name: "Abiamo", description: "Vodka, ron, gin, triple sec (método: sobre un embudo)", price: "$10.50" },
-      { name: "Lada-14", description: "Licor de hierbas, gin, vodka y limón fresco", price: "$10.50" },
+      { name: "ABIAMO", description: "VODKA, RON, GIN, TRIPLE SEC (MÉTODO: SOBRE UN EMBUDO)", price: "$10.00" },
+      { name: "LADA-14", description: "LICOR DE HIERBAS, GIN, VODKA Y LIMÓN FRESCO", price: "$10.00" },
       {
-        name: "Inmortal con Fatality",
-        description: "Ron, triple sec, granadina, blue curaçao, Irish cream, licor de menta, cerveza, vodka, tequila",
+        name: "INMORTAL CON FATALITY",
+        description: "RON, TRIPLE SEC, GRANADINA, BLUE CURACAO, IRISH CREAM, LICOR DE MENTA, CERVEZA, VODKA, TEQUILA",
         price: "$15.00",
       },
-      { name: "Super Ferrari", description: "Absenta, blue curaçao, granadina, ron y triple sec", price: "$15.00" },
-      { name: "Lamborgini Kalina", description: "Ron, blue curaçao, tequila, gin y granadina", price: "$15.00" },
+      { name: "SUPER FERRARI", description: "ABSENTA, BLUE CURACAO, GRANADINA, RON Y TRIPLE SEC", price: "$15.00" },
+      { name: "LAMBORGINI KALINA", description: "RON, BLUE CURACAO, TEQUILA, GIN Y GRANADINA, METODO: TORRES DE COPAS FLAMEADAS", price: "$15.00" },
     ],
   },
+
   {
     id: "cocteles-cerveza",
     title: "CÓCTELES CON CERVEZA",
@@ -111,16 +112,17 @@ const menuSections: MenuSection[] = [
     image: "/Imagenes/coctel_cerveza.png",
     imageSize: { width: 550, height: 700 },
     items: [
-      { name: "MICHELADA CLÁSICA", description: "CERVEZA CLUB, LIMÓN FRESCO, SAL, PIMIENTA, SALSA INGLESA Y TABASCO", price: "$4.50" },
-      { name: "MICHELADA MIX", description: "CERVEZA CLUB, LIMÓN FRESCO, SAL, PIMIENTA, SALSA WORCESTERSHIRE Y TABASCO", price: "$4.50" },
-      { name: "BOMBA", description: "CERVEZA CLUB, BLUE CURAÇAO, TRIPLE SEC Y AMARETTO", price: "$5.00" },
+      { name: "MICHELADA CLÁSICA", description: "CERVEZA CLUB, LIMÓN FRESCO, SAL, PIMIENTA, SALSA WORCESTERSHIPE Y TABASCO", price: "$4.00" },
+      { name: "MICHELADA MIX", description: "CERVEZA CLUB, LIMÓN FRESCO, SAL, PIMIENTA, SALSA WORCESTERSHIRE Y TABASCO, FRUTAS: FRESA, MORA, NARANJA, MARACUYA", price: "$4.50" },
+      { name: "MICHELADA CON TEQUILA", description: "TEQUILA, CERVEZA CLUB, LIMÓN FRESCO, SAL, PIMIENTA, SALSA WORCESTERSHIRE Y TABASCO", price: "$6.00" },
+      { name: "BOMBA", description: "CERVEZA CLUB, BLUE CURACAO, TRIPLE SEC Y GRANADINA", price: "$4.00" },
       { name: "FUEGO", description: "CERVEZA CLUB, AMARETTO Y RON", price: "$4.25" },
       { name: "SUBMARINO RUSO", description: "CERVEZA CLUB Y VODKA", price: "$4.75" },
-      { name: "SÚPER MEXICANO", description: "CERVEZA CLUB Y TEQUILA", price: "$4.75" },
-      { name: "CERVEZA AZUL", description: "CERVEZA CLUB, TRIPLE SEC Y TEQUILA", price: "$5.00" },
-      { name: "TURBO BIELA RUSA", description: "CERVEZA CLUB, TEQUILA Y VODKA", price: "$5.00" },
-      { name: "REY NACADOR", description: "CERVEZA CLUB, LICOR DE HIERBAS Y CERVEZA NEGRA", price: "$5.50" },
-      { name: "MICHELADA MEXICANA ORIGINAL", description: "CERVEZA CORONA, LIMÓN FRESCO Y TEQUILA", price: "$5.50" }
+      { name: "SUBMARINO MEXICANO", description: "CERVEZA CLUB Y TEQUILA", price: "$4.75" },
+      { name: "CERVEZA AZUL", description: "CERVEZA CLUB, TRIPLE SEC, TEQUILA Y BLUE CURACAO", price: "$6.00" },
+      { name: "TURBO BIELA RUSA", description: "CERVEZA CLUB, VODKA, TRIPLE SEC, GIN, RON, TEQUILA", price: "$6.00" },
+      { name: "NEGRO CAZADOR", description: "LICOR DE HIERBAS Y CERVEZA NEGRA", price: "$9.00" },
+      { name: "MICHELADA MEXICANA ORIGINAL", description: "CERVEZA CORONA, LIMÓN FRESCO, TABASCO Y TEQUILA", price: "$8.00" }
     ]
   },
   {
@@ -141,16 +143,12 @@ const menuSections: MenuSection[] = [
     title: "CERVEZAS ARTESANALES",
     animationDirection: "left",
     image: "/Imagenes/cerveza artesanal.png",
-    imageSize: { width: 420, height: 480 },
+    imageSize: { width: 250, height: 380 },
     items: [
       { name: "DRY STOUT (500 ML)", description: "", price: "$7.00" },
       { name: "RED IPA (500 ML)", description: "", price: "$7.00" },
       { name: "BELGIAN TRIPLE (500 ML)", description: "", price: "$7.00" },
-      { name: "CREAM ALE (500 ML)", description: "", price: "$7.00" },
-      { name: "DRY STOUT (330 ML)", description: "", price: "$4.00" },
-      { name: "RED IPA (330 ML)", description: "", price: "$4.00" },
-      { name: "BELGIAN TRIPLE (330 ML)", description: "", price: "$4.00" },
-      { name: "CREAM ALE (330 ML)", description: "", price: "$4.00" }
+      { name: "CREAM ALE (500 ML)", description: "", price: "$7.00" }
     ],
   },
   {
@@ -212,8 +210,7 @@ const menuSections: MenuSection[] = [
       { name: "TURBO BIELA RUSA", description: "", price: "$42.00" },
       { name: "LONG ISLAND ICE TEA", description: "", price: "$42.00" },
       { name: "CERVEZA AZUL", description: "", price: "$42.00" },
-      { name: "PADRINO", description: "", price: "$55.00" },
-      { name: "HADA VERDE", description: "", price: "$65.00" }
+      { name: "PADRINO", description: "", price: "$55.00" }
     ],
   },
   {
@@ -264,10 +261,11 @@ const menuSections: MenuSection[] = [
       { name: "BLACK RUSSIAN", description: "(VODKA, LICOR DE CAFÉ)", price: "$6.00" },
       { name: "CAIPIROSHKA MIX", description: "(VODKA, LIMÓN FRESCO, FRUTAS: FRESA, MORA, NARANJA, MARACUYÁ)", price: "$6.00" },
       { name: "GINA", description: "(VODKA, MARACUYÁ, LIMÓN FRESCO, VINO TINTO)", price: "$6.00" },
-      { name: "MOSCU MULE", description: "(VODKA, LICOR DE JENGIBRE, JENGIBRE)", price: "$7.00" },
-      { name: "BESO DE ARAÑA", description: "(VODKA, LICOR DE LIMÓN, JUGO DE NARANJA)", price: "$5.50" },
-      { name: "SANGRÍA RUSA", description: "(VODKA, LIMÓN FRESCO, AZÚCAR, JENGIBRE)", price: "$5.50" },
-      { name: "DESTORNILLADOR", description: "(VODKA, JUGO DE NARANJA)", price: "$5.00" },
+      { name: "MOSCU MULE", description: "(VODKA, LICOR DE FRESCO, GINGER ALE SIROPE JENGIBRE)", price: "$7.00" },
+      { name: "BESO DE ARAÑA", description: "(VODKA, LICOR DE MELON, LIMON FRESCO)", price: "$6.00" },
+      { name: "SANGRÍA RUSA", description: "(VODKA, VINO TINTO, LIMON FRESCO, NARANJA, MORA)", price: "$5.50" },
+      { name: "DESTORNILLADOR", description: "(VODKA, GRANADINA, JUGO DE NARANJA)", price: "$5.00" },
+      { name: "VODKA TONIC", description: "(VODKA, AGUA TONICA)", price: "$5.00" },
       { name: "CUBA LIBRE", description: "(RON, LIMÓN FRESCO, COCA-COLA, ANGOSTURA BITTER)", price: "$5.00" },
       { name: "MOJITO", description: "(RON BLANCO, LIMÓN FRESCO, AZÚCAR, HIERBA BUENA)", price: "$5.00" },
       { name: "MOJITO MIX", description: "(RON, LIMÓN FRESCO, HIERBA BUENA, FRUTAS: FRESA, MORA, NARANJA, MARACUYÁ)", price: "$5.50" },
@@ -276,10 +274,10 @@ const menuSections: MenuSection[] = [
       { name: "EL PADRINO", description: "(RED LABEL, LICOR AMARETTO)", price: "$6.50" },
       { name: "LUCIFER", description: "(RED LABEL, LICOR AMARETTO, JUGO DE NARANJA)", price: "$6.50" },
       { name: "OLD FASHIONED", description: "(RED LABEL, ANGOSTURA BITTER, AZÚCAR, NARANJA)", price: "$8.00" },
+      { name: "WHISKY SOUR NEW YORK", description: "(RED LABEL, LIMÓN FRESCO, AZÚCAR, CLARA DE HUEVO)", price: "$10.00" },
       { name: "GIN TONIC", description: "(GIN, LIMÓN FRESCO, AGUA TONICA, BOTANICAS)", price: "$6.00" },
-      { name: "RED GIN", description: "(GIN, MORA, HIERBA BUENA, JENGIBRE)", price: "$6.00" },
-      { name: "NEGRONI", description: "(GIN, CAMPARI, VERMOUTH ROSSO)", price: "$8.00" },
-      { name: "WHISKY SOUR NEW YORK", description: "(RED LABEL, LIMÓN FRESCO, AZÚCAR, CLARA DE HUEVO)", price: "$10.00" }
+      { name: "RED GIN", description: "(GIN, MORA, HIERBA BUENA, JENGIBRE ALE)", price: "$6.00" },
+      { name: "NEGRONI", description: "(GIN, CAMPARI, VERMOUTH ROSSO)", price: "$8.00" }
     ],
   },
   {
@@ -290,9 +288,9 @@ const menuSections: MenuSection[] = [
     imageSize: { width: 1000, height: 480 },
     items: [
       { name: "ZHUMIRINHA", description: "(ZHUMIR, LIMÓN FRESCO, AZÚCAR)", price: "$6.00" },
-      { name: "MAI-TAI", description: "(RON BLANCO, RON NEGRO, JUGO DE NARANJA, PINA, LICOR AMARETTO, GRANADINA)", price: "$8.00" },
+      { name: "MAI-TAI", description: "(RON BLANCO, RON NEGRO, JUGO DE NARANJA, PIÑA, LICOR AMARETTO, GRANADINA)", price: "$8.00" },
       { name: "LONG ISLAND", description: "(VODKA, GIN, TRIPLE SEC, TEQUILA, RON BLANCO, COCA-COLA)", price: "$7.00" },
-      { name: "HADA VERDE", description: "(VODKA, RON BLANCO, GIN, BLUE CURAÇAO, LICOR DE MELÓN, LIMÓN, SPRITE)", price: "$7.00" },
+      { name: "HADA VERDE", description: "(VODKA, RON BLANCO, GIN, BLUE CURACAO, LICOR DE MELÓN, LIMÓN FRESCO, ENERGIZANTE)", price: "$7.00" },
       { name: "K-12", description: "(GIN, TEQUILA, TRIPLE SEC, ENERGIZANTE, SPRITE)", price: "$7.00" },
       { name: "JAGGER BOMB DE LA CASA", description: "(LICOR DE HIERBAS, ENERGIZANTE)", price: "$8.00" }
     ],
@@ -318,22 +316,24 @@ const menuSections: MenuSection[] = [
       { name: "MERLOT", description: "", price: "$5.00" },
       { name: "CABERNET SAUVIGNON", description: "", price: "$5.00" },
       { name: "VINO BLANCO", description: "", price: "$5.00" },
-      { name: "TANQUERAY", description: "", price: "$7.00" },
+      { name: "TANQUERAY", description: "", price: "$8.00" },
       { name: "BEFEATER", description: "", price: "$8.00" },
       { name: "BOMBAY", description: "", price: "$9.00" },
       { name: "JOHNNY WALKER RED LABEL", description: "", price: "$5.00" },
-      { name: "JOHNNY WALKER DOUBLE BLACK", description: "", price: "$6.00" },
+      { name: "JOHNNY WALKER DOUBLE BLACK", description: "", price: "$10.00" },
       { name: "JACK DANIEL'S", description: "(TENNESSEE-HONEY-FIRE)", price: "$12.00" },
-      { name: "BUCHANANS", description: "", price: "$8.00" },
-      { name: "CARUPANO 8 AÑOS", description: "", price: "$18.00" },
+      { name: "BUCHANANS", description: "", price: "$12.00" },
+      { name: "DIPLOMÁTICO MANTUANO", description: "", price: "$10.00" },
       { name: "DIPLOMÁTICO RESERVA EXCLUSIVA", description: "", price: "$12.00" },
-      { name: "ZACAPA 12 AÑOS", description: "", price: "$18.00" },
-      { name: "RON DE BOBBY", description: "", price: "$15.00" },
-      { name: "PATRÓN", description: "", price: "$15.00" },
-      { name: "JOSE CUERVO (ORO/PLATA)", description: "", price: "$8.00" },
-      { name: "DE LA CASA", description: "", price: "$5.00" },
-      { name: "ANTIOQUEÑO", description: "", price: "$10.00" },
-      { name: "CACHAZO", description: "", price: "$10.00" }
+      { name: "ABUELO 7 AÑOS", description: "", price: "$8.00" },
+      { name: "ABUELO ANEJO", description: "", price: "$5.00" },
+      { name: "JOSE CUERVO (PLATA)", description: "", price: "$8.00" },
+      { name: "JOSE CUERVO (ORO)", description: "", price: "$8.00" },
+      { name: "DE LA CASA", description: "", price: "$4.00" },
+      { name: "ANTIOQUEÑO", description: "", price: "$5.00" },
+      { name: "CACHACA", description: "", price: "$10.00" },     
+      { name: "PISCO  ", description: "", price: "$10.00" }
+      
     ],
   },
 ]
@@ -366,8 +366,8 @@ export default function MenuPage() {
 
   const handleDownloadMenu = () => {
     const link = document.createElement("a");
-    link.href = "/Pdf/MENU_COCTELES_KALASHNIKOV.pdf"; 
-    link.download = "MENU_COCTELES_KALASHNIKOV.pdf"; 
+    link.href = "/Pdf/MENU_COCTELES_KALASHNIKOV.pdf";
+    link.download = "MENU_COCTELES_KALASHNIKOV.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -542,11 +542,10 @@ function MenuSectionItem({
                       type: "spring",
                       bounce: 0.3,
                     }}
-                    className={`flex justify-center w-full order-1 ${
-                      section.animationDirection === "left" 
-                        ? "lg:order-1" 
-                        : "lg:order-2"
-                    }`}
+                    className={`flex justify-center w-full order-1 ${section.animationDirection === "left"
+                      ? "lg:order-1"
+                      : "lg:order-2"
+                      }`}
                   >
                     <motion.div
                       whileHover={{
@@ -573,7 +572,7 @@ function MenuSectionItem({
                               sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
                             />
                           </div>
-                          
+
                           {/* Imagen para Mobile */}
                           <div className="block lg:hidden relative mx-auto">
                             <Image
@@ -618,7 +617,7 @@ function MenuSectionItem({
                               <span className="text-sm">{section.image}</span>
                             </div>
                           </div>
-                          
+
                           {/* Placeholder para Mobile */}
                           <div
                             className="block lg:hidden bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden mx-auto"
@@ -649,11 +648,10 @@ function MenuSectionItem({
                   </motion.div>
 
                   {/* Contenedor del menú */}
-                  <div className={`space-y-3 md:space-y-4 w-full order-2 ${
-                    section.animationDirection === "left" 
-                      ? "lg:order-2" 
-                      : "lg:order-1"
-                  }`}>
+                  <div className={`space-y-3 md:space-y-4 w-full order-2 ${section.animationDirection === "left"
+                    ? "lg:order-2"
+                    : "lg:order-1"
+                    }`}>
                     {section.items.map((item, itemIndex) => (
                       <motion.div
                         key={itemIndex}
@@ -710,7 +708,7 @@ function MenuSectionItem({
                               sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
                             />
                           </div>
-                          
+
                           {/* Imagen para Mobile */}
                           <div className="block lg:hidden relative">
                             <Image
@@ -741,7 +739,7 @@ function MenuSectionItem({
                           >
                             <span className="text-gray-400 text-sm text-center">{section.image}</span>
                           </div>
-                          
+
                           {/* Placeholder Mobile */}
                           <div
                             className="block lg:hidden bg-gray-800 rounded-lg flex items-center justify-center"
@@ -808,7 +806,7 @@ function Footer() {
     const currentTimeInMinutes: number = hours * 60 + minutes;
 
     const todaySchedule: ScheduleDay = schedule[dayOfWeek];
-    
+
     if (!todaySchedule) {
       return false; // Cerrado los domingos
     }
@@ -937,7 +935,7 @@ function Footer() {
                 <span className="text-red-500">CERRADO</span>
               </div>
             </div>
-            
+
             {/* SECCIÓN DE ESTADO DINÁMICO */}
             <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
               <div className="flex items-center justify-between">
@@ -946,9 +944,9 @@ function Footer() {
                     {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
                   </p>
                   <p className="text-xs text-gray-400">
-                    Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                    Hora actual: {currentTime.toLocaleTimeString('es-EC', {
                       timeZone: 'America/Guayaquil',
-                      hour: '2-digit', 
+                      hour: '2-digit',
                       minute: '2-digit'
                     })}
                   </p>

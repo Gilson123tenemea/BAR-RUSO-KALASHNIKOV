@@ -231,7 +231,3 @@ export function generateDynamicMetadata(searchParams: { open?: string }): Metada
   return baseMetadata;
 }
 
-// Next.js llama automáticamente a esta función en server
-export function generateMetadata({ searchParams }: { searchParams: { open?: string } }) {
-  return generateDynamicMetadata(searchParams);
-}

@@ -331,17 +331,63 @@ const menuSections: MenuSection[] = [
       { name: "JOSE CUERVO (ORO)", description: "", price: "$8.00" },
       { name: "DE LA CASA", description: "", price: "$4.00" },
       { name: "ANTIOQUEÑO", description: "", price: "$5.00" },
-      { name: "CACHACA", description: "", price: "$10.00" },     
+      { name: "CACHACA", description: "", price: "$10.00" },
       { name: "PISCO  ", description: "", price: "$10.00" }
-      
+
     ],
   },
 ]
 
-// ✅ OPTIMIZACIÓN 1: Convierte MenuPage en memoizado y optimiza las funciones
+// ✅ NUEVO: Hook personalizado para precargar imágenes
+const useImagePreloader = (imageUrls: string[]) => {
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
+
+  const preloadImages = useCallback((urls: string[]) => {
+    urls.forEach(url => {
+      if (!loadedImages.has(url) && url.startsWith('/')) {
+        const img = new window.Image()
+        img.onload = () => {
+          setLoadedImages(prev => new Set([...prev, url]))
+        }
+        img.onerror = () => {
+          console.warn(`Failed to preload image: ${url}`)
+        }
+        img.src = url
+      }
+    })
+  }, [loadedImages])
+
+  return { loadedImages, preloadImages }
+}
+
+// ✅ OPTIMIZACIÓN: Convierte MenuPage en memoizado y optimiza las funciones
 export default function MenuPage() {
   const searchParams = useSearchParams()
   const [openSections, setOpenSections] = useState<string[]>(["shots-ruso"])
+  
+  // ✅ NUEVO: Sistema de precarga de imágenes
+  const allImageUrls = useMemo(() => 
+    menuSections
+      .filter(section => section.image.startsWith('/'))
+      .map(section => section.image), 
+    []
+  )
+  
+  const { loadedImages, preloadImages } = useImagePreloader(allImageUrls)
+
+  // ✅ NUEVO: Precargar imágenes al cargar la página
+  useEffect(() => {
+    // Precargar las primeras 3 imágenes inmediatamente
+    const initialImages = allImageUrls.slice(0, 3)
+    preloadImages(initialImages)
+    
+    // Precargar el resto después de un pequeño delay
+    const timer = setTimeout(() => {
+      preloadImages(allImageUrls)
+    }, 500)
+    
+    return () => clearTimeout(timer)
+  }, [allImageUrls, preloadImages])
 
   useEffect(() => {
     const openParam = searchParams.get("open")
@@ -361,12 +407,26 @@ export default function MenuPage() {
     }
   }, [searchParams])
 
-  // ✅ OPTIMIZACIÓN 2: Memoiza la función toggleSection
+  // ✅ OPTIMIZACIÓN: Memoiza la función toggleSection
   const toggleSection = useCallback((sectionId: string) => {
-    setOpenSections((prev) => (prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId]))
-  }, [])
+    setOpenSections((prev) => {
+      const newOpenSections = prev.includes(sectionId) 
+        ? prev.filter((id) => id !== sectionId) 
+        : [...prev, sectionId]
+      
+      // ✅ NUEVO: Precargar imagen cuando se abre una sección
+      if (!prev.includes(sectionId)) {
+        const section = menuSections.find(s => s.id === sectionId)
+        if (section && section.image.startsWith('/')) {
+          preloadImages([section.image])
+        }
+      }
+      
+      return newOpenSections
+    })
+  }, [preloadImages])
 
-  // ✅ OPTIMIZACIÓN 3: Memoiza la función handleDownloadMenu
+  // ✅ OPTIMIZACIÓN: Memoiza la función handleDownloadMenu
   const handleDownloadMenu = useCallback(() => {
     const link = document.createElement("a");
     link.href = "/Pdf/MENU_COCTELES_KALASHNIKOV.pdf";
@@ -385,31 +445,34 @@ export default function MenuPage() {
     >
       <SharedHeader />
       <HeroSection onDownload={handleDownloadMenu} />
-      <MenuSections sections={menuSections} openSections={openSections} onToggle={toggleSection} />
+      <MenuSections 
+        sections={menuSections} 
+        openSections={openSections} 
+        onToggle={toggleSection}
+        loadedImages={loadedImages}
+      />
       <Footer />
       <WhatsAppButton />
     </motion.div>
   )
 }
 
-// ✅ OPTIMIZACIÓN 4: Convierte HeroSection en memoizado y optimiza la imagen
+// ✅ OPTIMIZACIÓN: Convierte HeroSection en memoizado y optimiza la imagen
 const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
   return (
     <section className="relative h-[600px] flex items-center">
-      {/* ✅ CAMBIO PRINCIPAL: Reemplaza el div con backgroundImage por Image de Next.js */}
       <div className="absolute inset-0">
         <Image
           src="/Imagenes/Menu_logo.jpg"
           alt="Menu background"
           fill
-          priority={true} // ✅ Carga prioritaria para imagen principal
+          priority={true}
           className="object-cover"
           sizes="100vw"
-          quality={85} // ✅ Calidad optimizada
+          quality={85}
         />
       </div>
 
-      {/* Resto del código igual */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
 
       <div className="container mx-auto px-4 relative z-20">
@@ -446,15 +509,17 @@ const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
 
 HeroSection.displayName = 'HeroSection'
 
-// ✅ OPTIMIZACIÓN 5: Convierte MenuSections en memoizado
+// ✅ OPTIMIZACIÓN: Convierte MenuSections en memoizado y agrega loadedImages
 const MenuSections = memo(({
   sections,
   openSections,
   onToggle,
+  loadedImages,
 }: {
   sections: MenuSection[]
   openSections: string[]
   onToggle: (id: string) => void
+  loadedImages: Set<string>
 }) => {
   return (
     <section className="py-5 bg-black">
@@ -466,6 +531,7 @@ const MenuSections = memo(({
             isOpen={openSections.includes(section.id)}
             onToggle={() => onToggle(section.id)}
             index={index}
+            isImageLoaded={loadedImages.has(section.image)}
           />
         ))}
       </div>
@@ -475,17 +541,19 @@ const MenuSections = memo(({
 
 MenuSections.displayName = 'MenuSections'
 
-// ✅ OPTIMIZACIÓN 6: Convierte MenuSectionItem en memoizado y optimiza animaciones
+// ✅ OPTIMIZACIÓN: MenuSectionItem con control de carga de imágenes
 const MenuSectionItem = memo(({
   section,
   isOpen,
   onToggle,
   index,
+  isImageLoaded,
 }: {
   section: MenuSection
   isOpen: boolean
   onToggle: () => void
   index: number
+  isImageLoaded: boolean
 }) => {
   const defaultSize = { width: 256, height: 256 }
   const imageSize = section.imageSize || defaultSize
@@ -494,11 +562,10 @@ const MenuSectionItem = memo(({
     <motion.div
       initial={{ y: 30, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
-      viewport={{ once: true, margin: "50px" }} // ✅ Solo animar una vez
-      transition={{ delay: index * 0.02, duration: 0.3 }} // ✅ Delay y duración reducidos
+      viewport={{ once: true, margin: "50px" }}
+      transition={{ delay: index * 0.02, duration: 0.3 }}
       className="mb-4"
     >
-      {/* ✅ OPTIMIZACIÓN 7: Remueve las animaciones del botón que causan lag */}
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between py-4 px-4 md:px-6 bg-gray-900/50 hover:bg-gray-800/50 transition-colors border-b border-gray-800"
@@ -506,7 +573,7 @@ const MenuSectionItem = memo(({
         <div className="flex items-center space-x-4">
           <motion.div 
             animate={{ rotate: isOpen ? 45 : 0 }} 
-            transition={{ duration: 0.15 }} // ✅ Rotación más rápida
+            transition={{ duration: 0.15 }}
           >
             <Plus className="w-6 h-6 text-orange-500" />
           </motion.div>
@@ -514,13 +581,12 @@ const MenuSectionItem = memo(({
         </div>
       </button>
 
-      <AnimatePresence mode="wait"> {/* ✅ Mode wait para mejor rendimiento */}
+      <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
             initial={{
               height: 0,
               opacity: 0,
-              // ✅ QUITA el movimiento X que causa lag
             }}
             animate={{
               height: "auto",
@@ -530,65 +596,98 @@ const MenuSectionItem = memo(({
               height: 0,
               opacity: 0,
             }}
-            transition={{ duration: 0.2, ease: "easeOut" }} // ✅ Más rápido y suave
+            transition={{ duration: 0.2, ease: "easeOut" }}
             className="overflow-hidden bg-gray-900/30"
           >
             <div className="p-4 md:p-6">
               {section.items.length > 0 ? (
                 <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-                  {/* ✅ OPTIMIZACIÓN 8: Simplifica la animación de la imagen */}
                   <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }} // ✅ Animación simplificada
+                    initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.3 }} // ✅ Más rápida
+                    transition={{ delay: 0.1, duration: 0.3 }}
                     className={`flex justify-center w-full order-1 ${section.animationDirection === "left"
                       ? "lg:order-1"
                       : "lg:order-2"
                       }`}
                   >
-                    {/* ✅ OPTIMIZACIÓN 9: Quita el hover complejo que causa lag */}
                     <div className="relative flex justify-center">
                       {section.image.startsWith('/') ? (
                         <div className="relative flex justify-center w-full">
                           {/* Imagen para Desktop */}
                           <div className="hidden lg:block relative">
+                            {/* ✅ NUEVO: Placeholder mientras carga */}
+                            {!isImageLoaded && (
+                              <div
+                                className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center z-10"
+                                style={{
+                                  width: `${imageSize.width}px`,
+                                  height: `${imageSize.height}px`,
+                                  maxWidth: '100%',
+                                  maxHeight: '70vh'
+                                }}
+                              >
+                                <div className="animate-pulse">
+                                  <div className="w-16 h-16 bg-gray-700 rounded-full mb-4"></div>
+                                  <div className="text-gray-500 text-sm text-center">Cargando...</div>
+                                </div>
+                              </div>
+                            )}
                             <Image
                               src={section.image}
                               alt={section.title}
                               width={imageSize.width}
                               height={imageSize.height}
-                              className="object-contain max-w-full h-auto"
+                              className={`object-contain max-w-full h-auto transition-opacity duration-300 ${
+                                isImageLoaded ? 'opacity-100' : 'opacity-0'
+                              }`}
                               style={{
                                 maxWidth: `${imageSize.width}px`,
                                 maxHeight: '70vh'
                               }}
                               sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
-                              loading="lazy" // ✅ Lazy loading
-                              quality={80} // ✅ Calidad optimizada
+                              priority={isOpen} // ✅ Priority si está abierto
+                              quality={85}
                             />
                           </div>
 
                           {/* Imagen para Mobile */}
                           <div className="block lg:hidden relative mx-auto">
+                            {/* ✅ NUEVO: Placeholder móvil */}
+                            {!isImageLoaded && (
+                              <div
+                                className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center z-10"
+                                style={{
+                                  width: '280px',
+                                  height: '300px'
+                                }}
+                              >
+                                <div className="animate-pulse text-center">
+                                  <div className="w-12 h-12 bg-gray-700 rounded-full mb-3 mx-auto"></div>
+                                  <div className="text-gray-500 text-xs">Cargando...</div>
+                                </div>
+                              </div>
+                            )}
                             <Image
                               src={section.image}
                               alt={section.title}
                               width={280}
                               height={300}
-                              className="object-contain w-full h-auto"
+                              className={`object-contain w-full h-auto transition-opacity duration-300 ${
+                                isImageLoaded ? 'opacity-100' : 'opacity-0'
+                              }`}
                               style={{
                                 maxWidth: '280px',
                                 maxHeight: '300px'
                               }}
                               sizes="280px"
-                              loading="lazy"
-                              quality={80}
+                              priority={isOpen}
+                              quality={85}
                             />
                           </div>
                         </div>
                       ) : (
                         <div className="flex justify-center w-full">
-                          {/* Placeholder igual que antes */}
                           <div
                             className="hidden lg:block bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden"
                             style={{
@@ -598,7 +697,6 @@ const MenuSectionItem = memo(({
                               maxHeight: '70vh'
                             }}
                           >
-                            {/* ✅ QUITA la animación infinita del placeholder que consume recursos */}
                             <div className="text-gray-400 text-center z-10">
                               <span className="text-sm">{section.image}</span>
                             </div>
@@ -627,10 +725,10 @@ const MenuSectionItem = memo(({
                     }`}>
                     {section.items.map((item, itemIndex) => (
                       <motion.div
-                        key={`${item.name}-${itemIndex}`} // ✅ Key más específica
+                        key={`${item.name}-${itemIndex}`}
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: itemIndex * 0.02, duration: 0.2 }} // ✅ Más rápido
+                        transition={{ delay: itemIndex * 0.02, duration: 0.2 }}
                         className="border-b border-gray-700 pb-3 md:pb-4"
                       >
                         <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
@@ -652,7 +750,6 @@ const MenuSectionItem = memo(({
                 </div>
               ) : (
                 <div className="text-center py-6 md:py-8">
-                  {/* Misma lógica optimizada para el caso sin items */}
                   <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -663,36 +760,70 @@ const MenuSectionItem = memo(({
                       {section.image.startsWith('/') ? (
                         <>
                           <div className="hidden lg:block relative">
+                            {!isImageLoaded && (
+                              <div
+                                className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center z-10"
+                                style={{
+                                  width: `${imageSize.width}px`,
+                                  height: `${imageSize.height}px`,
+                                  maxWidth: '100%',
+                                  maxHeight: '70vh'
+                                }}
+                              >
+                                <div className="animate-pulse">
+                                  <div className="w-16 h-16 bg-gray-700 rounded-full mb-4"></div>
+                                  <div className="text-gray-500 text-sm text-center">Cargando...</div>
+                                </div>
+                              </div>
+                            )}
                             <Image
                               src={section.image}
                               alt={section.title}
                               width={imageSize.width}
                               height={imageSize.height}
-                              className="object-contain max-w-full h-auto"
+                              className={`object-contain max-w-full h-auto transition-opacity duration-300 ${
+                                isImageLoaded ? 'opacity-100' : 'opacity-0'
+                              }`}
                               style={{
                                 maxWidth: `${imageSize.width}px`,
                                 maxHeight: '70vh'
                               }}
                               sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
-                              loading="lazy"
-                              quality={80}
+                              priority={isOpen}
+                              quality={85}
                             />
                           </div>
 
                           <div className="block lg:hidden relative">
+                            {!isImageLoaded && (
+                              <div
+                                className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center z-10"
+                                style={{
+                                  width: '280px',
+                                  height: '300px'
+                                }}
+                              >
+                                <div className="animate-pulse text-center">
+                                  <div className="w-12 h-12 bg-gray-700 rounded-full mb-3 mx-auto"></div>
+                                  <div className="text-gray-500 text-xs">Cargando...</div>
+                                </div>
+                              </div>
+                            )}
                             <Image
                               src={section.image}
                               alt={section.title}
                               width={280}
                               height={300}
-                              className="object-contain w-full h-auto"
+                              className={`object-contain w-full h-auto transition-opacity duration-300 ${
+                                isImageLoaded ? 'opacity-100' : 'opacity-0'
+                              }`}
                               style={{
                                 maxWidth: '280px',
                                 maxHeight: '300px'
                               }}
                               sizes="280px"
-                              loading="lazy"
-                              quality={80}
+                              priority={isOpen}
+                              quality={85}
                             />
                           </div>
                         </>
@@ -735,8 +866,6 @@ const MenuSectionItem = memo(({
 })
 
 MenuSectionItem.displayName = 'MenuSectionItem'
-
-Footer.displayName = 'Footer'
 
 function Footer() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -849,7 +978,6 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
-              {/* CAMBIO: Usar Link en lugar de <a> */}
               <li><Link href="/" className="hover:text-white">Inicio</Link></li>
               <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
               <li><Link href="/menu" className="hover:text-white">Menú</Link></li>
@@ -927,6 +1055,8 @@ function Footer() {
     </footer>
   );
 }
+
+Footer.displayName = 'Footer'
 
 function WhatsAppButton() {
   const phoneNumber = "593995575335"

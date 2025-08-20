@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   // Meta descripción optimizada con emojis y call-to-action
   description: "⭐ #1 BAR EN CUENCA ⭐ +250 cócteles únicos 🍹 Shots del Ruso 🔥 Mixología premium 🎉 Centro histórico 📍 Reservas: 099-557-5335 ✅ ABIERTO HOY",
   
-  // Keywords expandidas con términos locales y de búsqueda alta
+  // Keywords expandidas con términos locales y de búsqueda alta para llegar a mas cleintes
   keywords: [
     // Términos principales
     "mejor bar cuenca ecuador",

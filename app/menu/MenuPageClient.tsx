@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Download, Facebook, Instagram, Phone } from "lucide-react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation" // ✅ Ahora está protegido por Suspense
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
 

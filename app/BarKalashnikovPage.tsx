@@ -7,8 +7,6 @@ import SharedHeader from "@/components/shared-header"
 import Link from "next/link"
 import Image from 'next/image'
 
-import { metadata as seoMetadata } from './SeoInicio';
-export { seoMetadata as metadata }; // Esto funciona si SeoInicio.ts NO tiene 'use client'
 
 function useCountAnimation(end: number, duration = 2000) {
   const [count, setCount] = useState(0)

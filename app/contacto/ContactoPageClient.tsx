@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef,useEffect} from "react"
+import { useState, useRef, useEffect } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Send } from "lucide-react"
 import Link from "next/link"

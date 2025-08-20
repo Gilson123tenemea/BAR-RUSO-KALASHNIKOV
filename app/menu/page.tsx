@@ -8,8 +8,6 @@ export { metadata };
 // Componente de página del servidor
 export default function MenuPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
       <MenuPageClient />
-    </Suspense>
   );
 }

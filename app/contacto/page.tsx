@@ -6,8 +6,6 @@ export { metadata };
 
 export default function ContactoPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
       <ContactoPageClient />
-    </Suspense>
   );
 }

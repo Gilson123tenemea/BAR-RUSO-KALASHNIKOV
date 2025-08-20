@@ -6,8 +6,6 @@ export { metadata };
 
 export default function SobreNosotrosPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
       <SobreNosotrosPageClient />
-    </Suspense>
   );
 }

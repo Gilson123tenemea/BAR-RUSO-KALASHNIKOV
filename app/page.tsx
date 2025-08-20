@@ -6,8 +6,6 @@ export { metadata };
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
       <BarKalashnikovPage />
-    </Suspense>
   );
 }

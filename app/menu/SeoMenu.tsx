@@ -214,19 +214,24 @@ export const metadata: Metadata = {
   }
 };
 
-// Función helper para generar metadata dinámica basada en parámetros de búsqueda
 export function generateDynamicMetadata(searchParams: { open?: string }): Metadata {
   const baseMetadata = { ...metadata };
-  
+
   if (searchParams.open) {
     const sectionTitle = searchParams.open;
     baseMetadata.title = `${sectionTitle} | Menú Bar Ruso Kalashnikov | Precios Actualizados`;
     baseMetadata.description = `🔥 ${sectionTitle} en Bar Ruso Kalashnikov ✨ Los mejores precios de Cuenca ✨ Ver carta completa y precios actualizados ✨ Reservas: 099-557-5335`;
-    
+
     if (baseMetadata.openGraph) {
       baseMetadata.openGraph.title = `${sectionTitle} | Bar Ruso Kalashnikov`;
+      baseMetadata.openGraph.description = baseMetadata.description;
     }
   }
-  
+
   return baseMetadata;
+}
+
+// Next.js llama automáticamente a esta función en server
+export function generateMetadata({ searchParams }: { searchParams: { open?: string } }) {
+  return generateDynamicMetadata(searchParams);
 }

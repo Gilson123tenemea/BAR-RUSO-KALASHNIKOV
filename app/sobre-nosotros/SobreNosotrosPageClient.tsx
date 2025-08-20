@@ -60,12 +60,38 @@ export default function SobreNosotrosPage() {
   )
 }
 
+// Reemplaza la función HeroSection() completa con esta versión corregida:
+
 function HeroSection() {
+  const [windowDimensions, setWindowDimensions] = useState({ width: 0, height: 0 })
+  const isClient = useIsClient()
+
+  // Obtener dimensiones de ventana solo en el cliente
+  useEffect(() => {
+    if (!isClient) return
+
+    const updateDimensions = () => {
+      setWindowDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+    }
+
+    // Establecer dimensiones iniciales
+    updateDimensions()
+
+    // Opcional: escuchar cambios de tamaño
+    window.addEventListener('resize', updateDimensions)
+    return () => window.removeEventListener('resize', updateDimensions)
+  }, [isClient])
+
   const handleUbicacionClick = useCallback(() => {
-    window.open(
-      "https://www.google.com/maps/place/Bar+Ruso+Kalashnikov/@-2.9053604,-79.0121328,225m/data=!3m1!1e3!4m10!1m2!2m1!1scocteles!3m6!1s0x91cd194baa33c27f:0x1bd14ff355480aa5!8m2!3d-2.9053604!4d-79.0112284!15sCghjb2N0ZWxlc1oKIghjb2N0ZWxlc5IBA2JhcmoBI0NoWkRTVWhOTUc5blMwVkpRMEZuU1VNMmIxbHhlRkZuRUFFqgFICggvbS8wMjRnNhABKgwiCGNvY3RlbGVzKA4yHhABIhpKWkOv7yyP5zgKC63_-P0b64-6vWa_9As5rDIMEAIiCGNvY3RlbGVz4AEA-gEECAAQQA!16s%2Fg%2F11gjj1nnvp?entry=ttu&g_ep=EgoyMDI1MDgxMS4wIKXMDSoASAFQAw%3D%3D",
-      "_blank",
-    )
+    if (typeof window !== 'undefined') {
+      window.open(
+        "https://www.google.com/maps/place/Bar+Ruso+Kalashnikov/@-2.9053604,-79.0121328,225m/data=!3m1!1e3!4m10!1m2!2m1!1scocteles!3m6!1s0x91cd194baa33c27f:0x1bd14ff355480aa5!8m2!3d-2.9053604!4d-79.0112284!15sCghjb2N0ZWxlc1oKIghjb2N0ZWxlc5IBA2JhcmoBI0NoWkRTVWhOTUc5blMwVkpRMEZuU1VNMmIxbHhlRkZuRUFFqgFICggvbS8wMjRnNhABKgwiCGNvY3RlbGVzKA4yHhABIhpKWkOv7yyP5zgKC63_-P0b64-6vWa_9As5rDIMEAIiCGNvY3RlbGVz4AEA-gEECAAQQA!16s%2Fg%2F11gjj1nnvp?entry=ttu&g_ep=EgoyMDI1MDgxMS4wIKXMDSoASAFQAw%3D%3D",
+        "_blank",
+      )
+    }
   }, [])
 
   return (
@@ -229,31 +255,33 @@ function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Efecto de partículas flotantes (opcional) */}
-      <div className="absolute inset-0 z-5 pointer-events-none">
-        {[...Array(3)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-orange-400/30 rounded-full"
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: window.innerHeight + 10,
-              opacity: 0
-            }}
-            animate={{
-              y: -10,
-              opacity: [0, 1, 0],
-              x: Math.random() * window.innerWidth
-            }}
-            transition={{
-              duration: Math.random() * 3 + 4,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-              ease: "linear"
-            }}
-          />
-        ))}
-      </div>
+      {/* Efecto de partículas flotantes (CORREGIDO) - Solo se renderiza en el cliente */}
+      {isClient && windowDimensions.width > 0 && (
+        <div className="absolute inset-0 z-5 pointer-events-none">
+          {[...Array(3)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-orange-400/30 rounded-full"
+              initial={{
+                x: Math.random() * windowDimensions.width,
+                y: windowDimensions.height + 10,
+                opacity: 0
+              }}
+              animate={{
+                y: -10,
+                opacity: [0, 1, 0],
+                x: Math.random() * windowDimensions.width
+              }}
+              transition={{
+                duration: Math.random() * 3 + 4,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+                ease: "linear"
+              }}
+            />
+          ))}
+        </div>
+      )}
     </section>
   )
 }

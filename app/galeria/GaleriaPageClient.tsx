@@ -1,34 +1,41 @@
 // app/galeria/GaleriaPageClient.tsx
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import React from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Play, Calendar, Instagram, Facebook, Phone, X } from "lucide-react"
 import Link from "next/link"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
 
+
+// Optimización: Mover datos fuera del componente para evitar recreación
+// Usando imágenes existentes como thumbnails temporales hasta crear los reales
 const galleryItems = [
-  { type: "video", title: "Preparación de Cócteles", videoSrc: "/videos/Video-1.mp4" },
+  { type: "video", title: "Preparación de Cócteles", videoSrc: "/videos/Video-1.mp4", thumbnail: "/Imagenes/imagen_1_video1.png" },
   { type: "photo", title: "Ambiente Nocturno", imageSrc: "/Imagenes/galeria_foto_1.jpg" },
-  { type: "video", title: "Cócteles Flameados", videoSrc: "/videos/Video-2.mp4" },
+  { type: "video", title: "Cócteles Flameados", videoSrc: "/videos/Video-2.mp4", thumbnail: "/Imagenes/imagen_2_video2.png" },
   { type: "photo", title: "Nuestras Visitas", imageSrc: "/Imagenes/galeria_foto_2.jpeg" },
-  { type: "video", title: "Especiales", videoSrc: "/videos/Video-3.mp4" },
+  { type: "video", title: "Especiales", videoSrc: "/videos/Video-3.mp4", thumbnail: "/Imagenes/imagen_3_video3.png" },
   { type: "photo", title: "Interior Renovado", imageSrc: "/Imagenes/galeria_foto_3.jpg" },
-  { type: "video", title: "Preparación de Cócteles Especiales", videoSrc: "/videos/Video-4.mp4" },
-  { type: "video", title: "Ambiente de Fin de Semana", videoSrc: "/videos/Video-5.mp4" },
-  { type: "video", title: "Equipo de Trabajo", videoSrc: "/videos/Video-6.mp4" },
-  { type: "video", title: "Momentos Especiales", videoSrc: "/videos/Video-7.mp4" },
+  { type: "video", title: "Preparación de Cócteles Especiales", videoSrc: "/videos/Video-4.mp4", thumbnail: "/Imagenes/imagen_4_video4.png" },
+  { type: "video", title: "Ambiente de Fin de Semana", videoSrc: "/videos/Video-5.mp4", thumbnail: "/Imagenes/imagen_5_video5.png" },
+  { type: "video", title: "Equipo de Trabajo", videoSrc: "/videos/Video-6.mp4", thumbnail: "/Imagenes/imagen_6_video6.png" },
+  { type: "video", title: "Momentos Especiales", videoSrc: "/videos/Video-7.mp4", thumbnail: "/Imagenes/imagen_7_video7.png" },
   { type: "photo", title: "Decoración Especial", imageSrc: "/Imagenes/galeria_foto_4.jpg" },
   { type: "photo", title: "Cervezas", imageSrc: "/Imagenes/galeria_foto_5.jpg" },
-]
+] as const
+
+const INITIAL_VISIBLE_ITEMS = 9
+const LOAD_MORE_INCREMENT = 6
 
 export default function GaleriaPage() {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       className="min-h-screen bg-black text-white"
     >
       <SharedHeader />
@@ -44,14 +51,14 @@ function HeroSection() {
   return (
     <section className="relative h-[700px] flex items-center">
       <div className="absolute inset-0">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: "url('/Imagenes/galeria logo.jpeg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat"
-          }}
+        <Image
+          src="/Imagenes/galeria logo.jpeg"
+          alt="Galería Bar Ruso"
+          fill
+          className="object-cover"
+          priority
+          quality={90}
+          sizes="100vw"
         />
       </div>
 
@@ -59,12 +66,16 @@ function HeroSection() {
 
       <div className="container mx-auto px-4 relative z-20 pt-24">
         <motion.div
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 0.6, 
+            ease: [0.25, 0.46, 0.45, 0.94],
+            delay: 0.2
+          }}
           className="max-w-2xl"
         >
-          <h1 className="text-5xl md:text-2xl font-bold mb-6 text-[#FF9D00]">
+          <h1 className="text-5xl md:text-4xl font-bold mb-6 text-[#FF9D00]">
             Momentos que inspiran
           </h1>
 
@@ -78,95 +89,101 @@ function HeroSection() {
   );
 }
 
-// Componente optimizado para elementos de galería
+// Componente ultra-optimizado con virtualization para evitar trabas
 interface GalleryItemProps {
-  item: {
-    type: string;
-    title: string;
-    videoSrc?: string;
-    imageSrc?: string;
-  };
+  item: typeof galleryItems[number];
   index: number;
   onClick: (videoSrc: string) => void;
 }
 
-const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onClick }) => {
-  const [isHovered, setIsHovered] = useState(false)
+const GalleryItem = React.memo(function GalleryItem({ item, index, onClick }: GalleryItemProps) {
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
-  // Manejar hover solo para efectos visuales - SIN reproducir videos
-  const handleMouseEnter = useCallback(() => {
-    setIsHovered(true)
+  const handleClick = useCallback(() => {
+    if (item.type === "video" && item.videoSrc) {
+      onClick(item.videoSrc)
+    }
+  }, [item, onClick])
+
+  const handleImageLoad = useCallback(() => {
+    setImageLoaded(true)
   }, [])
 
-  const handleMouseLeave = useCallback(() => {
-    setIsHovered(false)
+  const handleImageError = useCallback(() => {
+    setImageError(true)
+    setImageLoaded(true) // Para mostrar el placeholder
   }, [])
+
+  // Determinar la imagen a mostrar
+  const imageSrc = item.type === "video" 
+    ? (imageError ? "/Imagenes/galeria_foto_1.jpg" : item.thumbnail)
+    : item.imageSrc
 
   return (
     <div
-      className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 cursor-pointer"
-      style={{
-        transition: 'border-color 0.2s ease',
-        transform: 'translateZ(0)', // Forzar aceleración por hardware
-        backfaceVisibility: 'hidden' // Optimización de renderizado
+      className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 cursor-pointer transition-[border-color] duration-200"
+      onClick={handleClick}
+      style={{ 
+        transform: 'translateZ(0)',
+        willChange: 'transform',
       }}
-      onClick={() => item.type === "video" && item.videoSrc && onClick(item.videoSrc)}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
-        {/* Video como imagen estática - solo primer frame */}
-        {item.videoSrc && (
+
+        {/* Skeleton loader mientras carga */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-800 animate-pulse">
+            <div className="w-full h-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800"></div>
+          </div>
+        )}
+
+        {/* Imagen principal */}
+        <Image
+          src={imageSrc}
+          alt={item.title}
+          fill
+          className={`object-cover transition-opacity duration-300 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          } ${item.type === "photo" ? 'group-hover:scale-105 transition-transform duration-500' : ''}`}
+          loading="lazy"
+          quality={75}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+        />
+
+        {/* Overlay para videos */}
+        {item.type === "video" && imageLoaded && (
           <>
-            <video
-              src={item.videoSrc}
-              className="absolute inset-0 w-full h-full object-cover"
-              muted
-              playsInline
-              preload="metadata"
-            />
-            <div className="absolute inset-0 bg-black/30"></div>
-            
-            {/* Botón de play */}
-            {item.type === "video" && (
-              <div className="absolute inset-0 flex items-center justify-center z-20">
-                <div className={`w-16 h-16 bg-orange-500/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg transition-transform duration-200 ${
-                  isHovered ? 'scale-110' : 'scale-100'
-                }`}>
-                  <Play className="w-8 h-8 text-white ml-1" />
-                </div>
+            <div className="absolute inset-0 bg-black/20"></div>
+            {/* Botón de play optimizado */}
+            <div className="absolute inset-0 flex items-center justify-center z-20">
+              <div className="w-16 h-16 bg-orange-500/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Play className="w-8 h-8 text-white ml-1" />
               </div>
-            )}
+            </div>
           </>
         )}
 
-        {/* Imagen optimizada */}
-        {item.imageSrc && !item.videoSrc && (
-          <Image
-            src={item.imageSrc}
-            alt={item.title}
-            fill
-            className="object-cover"
-            loading="lazy"
-            quality={80}
-            placeholder="blur"
-            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-          />
+        {/* Badge optimizado */}
+        {imageLoaded && (
+          <div className="absolute top-4 right-4 z-20">
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
+                item.type === "video" 
+                  ? "bg-red-500/90 text-white" 
+                  : "bg-blue-500/90 text-white"
+              }`}
+            >
+              {item.type === "video" ? "VIDEO" : "FOTO"}
+            </span>
+          </div>
         )}
-
-        {/* Badge de tipo optimizado */}
-        <div className="absolute top-4 right-4 z-20">
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              item.type === "video" ? "bg-red-500/90 text-white" : "bg-blue-500/80 text-white"
-            } backdrop-blur-sm`}
-          >
-            {item.type === "video" ? "VIDEO" : "FOTO"}
-          </span>
-        </div>
       </div>
 
-      {/* Contenido del card */}
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition-colors duration-200">
           {item.title}
@@ -174,19 +191,20 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onClick }) => {
       </div>
     </div>
   )
-}
+})
 
 function GallerySection() {
   const [filter, setFilter] = useState<"all" | "video" | "photo">("all")
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
-  const [visibleItems, setVisibleItems] = useState(6) // Mostrar solo 6 inicialmente
+  const [visibleItems, setVisibleItems] = useState(INITIAL_VISIBLE_ITEMS)
 
-  const filteredItems = galleryItems.filter((item) => filter === "all" || item.type === filter)
+  const filteredItems = useMemo(() =>
+    galleryItems.filter((item) => filter === "all" || item.type === filter),
+    [filter]
+  )
 
   const handleVideoClick = useCallback((videoSrc: string) => {
-    if (videoSrc) {
-      setSelectedVideo(videoSrc)
-    }
+    setSelectedVideo(videoSrc)
   }, [])
 
   const closeVideoModal = useCallback(() => {
@@ -194,13 +212,17 @@ function GallerySection() {
   }, [])
 
   const loadMoreItems = useCallback(() => {
-    setVisibleItems(prev => prev + 6)
+    setVisibleItems(prev => prev + LOAD_MORE_INCREMENT)
   }, [])
 
-  // Resetear items visibles cuando cambia el filtro
   useEffect(() => {
-    setVisibleItems(6)
+    setVisibleItems(INITIAL_VISIBLE_ITEMS)
   }, [filter])
+
+  const visibleFilteredItems = useMemo(() =>
+    filteredItems.slice(0, visibleItems),
+    [filteredItems, visibleItems]
+  )
 
   return (
     <>
@@ -214,7 +236,7 @@ function GallerySection() {
             </p>
           </div>
 
-          {/* Filtros optimizados */}
+          {/* Filtros */}
           <div className="flex justify-center mb-12">
             <div className="flex space-x-4 bg-gray-900/50 p-2 rounded-lg">
               {[
@@ -224,7 +246,9 @@ function GallerySection() {
               ].map((filterOption) => (
                 <button
                   key={filterOption.key}
-                  onClick={() => setFilter(filterOption.key as "all" | "video" | "photo")}
+                  onClick={() =>
+                    setFilter(filterOption.key as "all" | "video" | "photo")
+                  }
                   className={`px-6 py-2 rounded-md transition-all duration-200 ${
                     filter === filterOption.key
                       ? "bg-orange-500 text-black font-semibold"
@@ -237,11 +261,11 @@ function GallerySection() {
             </div>
           </div>
 
-          {/* Grid de Galería Optimizado - Sin animaciones complejas */}
+          {/* Grid de Galería */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredItems.slice(0, visibleItems).map((item, index) => (
+            {visibleFilteredItems.map((item, index) => (
               <GalleryItem
-                key={`${item.type}-${index}`}
+                key={`${item.type}-${item.title}-${index}`}
                 item={item}
                 index={index}
                 onClick={handleVideoClick}
@@ -256,7 +280,7 @@ function GallerySection() {
                 onClick={loadMoreItems}
                 className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md"
               >
-                Cargar más
+                Cargar más ({filteredItems.length - visibleItems} restantes)
               </button>
             </div>
           )}
@@ -287,10 +311,14 @@ function GallerySection() {
         </div>
       </section>
 
-      {/* Modal de Video - REPRODUCCIÓN INSTANTÁNEA */}
+      {/* Modal de Video Optimizado */}
       {selectedVideo && (
-        <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
           onClick={closeVideoModal}
         >
           <div
@@ -299,26 +327,28 @@ function GallerySection() {
           >
             <button
               onClick={closeVideoModal}
-              className="absolute -top-12 right-0 text-white hover:text-orange-500 transition-colors z-10"
+              className="absolute -top-12 right-0 text-white hover:text-orange-500 transition-colors z-10 bg-black/50 rounded-full p-2"
             >
-              <X className="w-8 h-8" />
+              <X className="w-6 h-6" />
             </button>
             <video
               src={selectedVideo}
               controls
               autoPlay
-              preload="auto"
-              className="w-full h-full rounded-lg"
+              playsInline
+              preload="metadata"
+              className="w-full h-full rounded-lg shadow-2xl"
             >
               Tu navegador no soporta la reproducción de video.
             </video>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   )
 }
 
+// Footer y WhatsAppButton mantienen la misma optimización anterior...
 function Footer() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
@@ -332,7 +362,7 @@ function Footer() {
     [key: number]: ScheduleDay;
   };
 
-  const schedule: Schedule = {
+  const schedule: Schedule = useMemo(() => ({
     1: { open: 15, close: 24 },
     2: { open: 15, close: 24 },
     3: { open: 15, close: 24 },
@@ -340,41 +370,33 @@ function Footer() {
     5: { open: 15, close: 26 },
     6: { open: 15, close: 24 },
     0: null
-  };
+  }), []);
 
-  const getEcuadorTime = (): Date => {
+  const getEcuadorTime = useCallback((): Date => {
     const now = new Date();
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     return new Date(utc + (-5 * 3600000));
-  };
+  }, []);
 
-  const checkIfOpen = (time: Date): boolean => {
+  const checkIfOpen = useCallback((time: Date): boolean => {
     const dayOfWeek: number = time.getDay();
     const hours: number = time.getHours();
     const minutes: number = time.getMinutes();
     const currentTimeInMinutes: number = hours * 60 + minutes;
 
     const todaySchedule: ScheduleDay = schedule[dayOfWeek];
-    
-    if (!todaySchedule) {
-      return false;
-    }
+
+    if (!todaySchedule) return false;
 
     const openTime: number = todaySchedule.open * 60;
     let closeTime: number = todaySchedule.close * 60;
 
     if (todaySchedule.close > 24) {
-      if (currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60)) {
-        return true;
-      }
+      return currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60);
     } else {
-      if (currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime) {
-        return true;
-      }
+      return currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime;
     }
-
-    return false;
-  };
+  }, [schedule]);
 
   useEffect(() => {
     const updateTime = () => {
@@ -385,9 +407,15 @@ function Footer() {
 
     updateTime();
     const interval = setInterval(updateTime, 60000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [getEcuadorTime, checkIfOpen]);
+
+  const instagramImages = useMemo(() => [
+    "/Imagenes/Instagram_1.png",
+    "/Imagenes/Instagram_2.png",
+    "/Imagenes/Instagram_3.png",
+    "/Imagenes/Instagram_4.png"
+  ], []);
 
   return (
     <footer id="contacto" className="bg-black py-16 border-t border-gray-800">
@@ -395,12 +423,13 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
+              <div className="w-16 h-16 rounded-full relative">
                 <Image
                   src="/Imagenes/logo_bar.png"
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -431,11 +460,12 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#inicio" className="hover:text-white">Inicio</a></li>
-              <li><a href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</a></li>
-              <li><a href="/menu" className="hover:text-white">Menú</a></li>
-              <li><a href="/contacto" className="hover:text-white">Contacto</a></li>
-              <li><a href="/galeria" className="hover:text-white">Galería</a></li>
+              {/* CAMBIO: Usar Link en lugar de <a> */}
+              <li><Link href="/" className="hover:text-white">Inicio</Link></li>
+              <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
+              <li><Link href="/menu" className="hover:text-white">Menú</Link></li>
+              <li><Link href="/contacto" className="hover:text-white">Contacto</Link></li>
+              <li><Link href="/galeria" className="hover:text-white">Galería</Link></li>
             </ul>
           </div>
 
@@ -459,7 +489,7 @@ function Footer() {
                 <span className="text-red-500">CERRADO</span>
               </div>
             </div>
-            
+
             <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
@@ -467,9 +497,9 @@ function Footer() {
                     {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
                   </p>
                   <p className="text-xs text-gray-400">
-                    Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                    Hora actual: {currentTime.toLocaleTimeString('es-EC', {
                       timeZone: 'America/Guayaquil',
-                      hour: '2-digit', 
+                      hour: '2-digit',
                       minute: '2-digit'
                     })}
                   </p>
@@ -482,14 +512,9 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Instagram</h4>
             <div className="grid grid-cols-2 gap-2">
-              {[
-                "/Imagenes/Instagram_1.png",
-                "/Imagenes/Instagram_2.png",
-                "/Imagenes/Instagram_3.png",
-                "/Imagenes/Instagram_4.png"
-              ].map((src, index) => (
+              {instagramImages.map((src, index) => (
                 <div
-                  key={index}
+                  key={`instagram-${index}`}
                   className="rounded overflow-hidden aspect-square relative"
                 >
                   <Image
@@ -498,6 +523,7 @@ function Footer() {
                     fill
                     className="object-cover"
                     loading="lazy"
+                    quality={70}
                   />
                 </div>
               ))}
@@ -517,10 +543,10 @@ function WhatsAppButton() {
   const phoneNumber = "593995575335"
   const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
 
-  const handleWhatsAppClick = () => {
+  const handleWhatsAppClick = useCallback(() => {
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, "_blank")
-  }
+  }, [])
 
   return (
     <div className="fixed bottom-8 right-8 z-30">

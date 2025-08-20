@@ -66,7 +66,7 @@ function HeroSection() {
             Hablemos de tu próxima visita
           </h1>
 
-          <p className="text-gray-300 text-lg mb-8 max-w-md">
+          <p className="text-gray-300 text-sm mb-10 max-w-xs">
             Estamos aquí para responder tus preguntas y brindarte la información que necesitas.
             Ven a disfrutar de una velada perfecta desde esta noche.
           </p>

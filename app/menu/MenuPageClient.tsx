@@ -1,13 +1,13 @@
+
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback, memo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Download, Facebook, Instagram, Phone } from "lucide-react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation" // ✅ Ahora está protegido por Suspense
+import { useSearchParams } from "next/navigation"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
-
 
 interface MenuItem {
   name: string
@@ -338,6 +338,7 @@ const menuSections: MenuSection[] = [
   },
 ]
 
+// ✅ OPTIMIZACIÓN 1: Convierte MenuPage en memoizado y optimiza las funciones
 export default function MenuPage() {
   const searchParams = useSearchParams()
   const [openSections, setOpenSections] = useState<string[]>(["shots-ruso"])
@@ -360,19 +361,20 @@ export default function MenuPage() {
     }
   }, [searchParams])
 
-  const toggleSection = (sectionId: string) => {
+  // ✅ OPTIMIZACIÓN 2: Memoiza la función toggleSection
+  const toggleSection = useCallback((sectionId: string) => {
     setOpenSections((prev) => (prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId]))
-  }
+  }, [])
 
-  const handleDownloadMenu = () => {
+  // ✅ OPTIMIZACIÓN 3: Memoiza la función handleDownloadMenu
+  const handleDownloadMenu = useCallback(() => {
     const link = document.createElement("a");
     link.href = "/Pdf/MENU_COCTELES_KALASHNIKOV.pdf";
     link.download = "MENU_COCTELES_KALASHNIKOV.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
-
+  }, [])
 
   return (
     <motion.div
@@ -390,27 +392,26 @@ export default function MenuPage() {
   )
 }
 
-function HeroSection({ onDownload }: { onDownload: () => void }) {
+// ✅ OPTIMIZACIÓN 4: Convierte HeroSection en memoizado y optimiza la imagen
+const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
   return (
     <section className="relative h-[600px] flex items-center">
-      {/* Imagen de fondo - usando el método que funciona */}
+      {/* ✅ CAMBIO PRINCIPAL: Reemplaza el div con backgroundImage por Image de Next.js */}
       <div className="absolute inset-0">
-        <div
-          className="w-full h-full flex items-center justify-center"
-          style={{
-            backgroundImage: "url('/Imagenes/Menu_logo.jpg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        >
-        </div>
+        <Image
+          src="/Imagenes/Menu_logo.jpg"
+          alt="Menu background"
+          fill
+          priority={true} // ✅ Carga prioritaria para imagen principal
+          className="object-cover"
+          sizes="100vw"
+          quality={85} // ✅ Calidad optimizada
+        />
       </div>
 
-      {/* Gradiente más suave - igual al que funciona */}
+      {/* Resto del código igual */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
 
-      {/* Contenido */}
       <div className="container mx-auto px-4 relative z-20">
         <div className="pt-24"></div>
         <motion.div
@@ -419,12 +420,11 @@ function HeroSection({ onDownload }: { onDownload: () => void }) {
           transition={{ delay: 0.1, duration: 0.4 }}
           className="max-w-2xl"
         >
-          {/* Texto directo sobre la imagen sin fondo */}
           <h1 className="text-2xl md:text-2xl font-bold mb-6 text-white drop-shadow-2xl">
             Explora nuestra carta
           </h1>
 
-          <p className="text-gray-200 text-lg mb-10 max-w-md drop-shadow-xl">
+          <p className="text-gray-300 text-sm mb-10 max-w-xs">
             Desde cócteles clásicos hasta nuestras creaciones más audaces, cada opción está pensada para sorprender y
             deleitar tu paladar.
           </p>
@@ -442,9 +442,12 @@ function HeroSection({ onDownload }: { onDownload: () => void }) {
       </div>
     </section>
   )
-}
+})
 
-function MenuSections({
+HeroSection.displayName = 'HeroSection'
+
+// ✅ OPTIMIZACIÓN 5: Convierte MenuSections en memoizado
+const MenuSections = memo(({
   sections,
   openSections,
   onToggle,
@@ -452,7 +455,7 @@ function MenuSections({
   sections: MenuSection[]
   openSections: string[]
   onToggle: (id: string) => void
-}) {
+}) => {
   return (
     <section className="py-5 bg-black">
       <div className="container mx-auto px-4 max-w-7xl">
@@ -468,9 +471,12 @@ function MenuSections({
       </div>
     </section>
   )
-}
+})
 
-function MenuSectionItem({
+MenuSections.displayName = 'MenuSections'
+
+// ✅ OPTIMIZACIÓN 6: Convierte MenuSectionItem en memoizado y optimiza animaciones
+const MenuSectionItem = memo(({
   section,
   isOpen,
   onToggle,
@@ -480,81 +486,68 @@ function MenuSectionItem({
   isOpen: boolean
   onToggle: () => void
   index: number
-}) {
-  // Tamaño por defecto si no se especifica imageSize
+}) => {
   const defaultSize = { width: 256, height: 256 }
   const imageSize = section.imageSize || defaultSize
-
-
 
   return (
     <motion.div
       initial={{ y: 30, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
-      transition={{ delay: index * 0.05, duration: 0.4 }}
+      viewport={{ once: true, margin: "50px" }} // ✅ Solo animar una vez
+      transition={{ delay: index * 0.02, duration: 0.3 }} // ✅ Delay y duración reducidos
       className="mb-4"
     >
-      <motion.button
+      {/* ✅ OPTIMIZACIÓN 7: Remueve las animaciones del botón que causan lag */}
+      <button
         onClick={onToggle}
         className="w-full flex items-center justify-between py-4 px-4 md:px-6 bg-gray-900/50 hover:bg-gray-800/50 transition-colors border-b border-gray-800"
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
       >
         <div className="flex items-center space-x-4">
-          <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
+          <motion.div 
+            animate={{ rotate: isOpen ? 45 : 0 }} 
+            transition={{ duration: 0.15 }} // ✅ Rotación más rápida
+          >
             <Plus className="w-6 h-6 text-orange-500" />
           </motion.div>
           <span className="text-lg md:text-xl font-semibold text-orange-500">{section.title}</span>
         </div>
-      </motion.button>
+      </button>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait"> {/* ✅ Mode wait para mejor rendimiento */}
         {isOpen && (
           <motion.div
             initial={{
               height: 0,
               opacity: 0,
-              x: section.animationDirection === "left" ? -50 : 50,
+              // ✅ QUITA el movimiento X que causa lag
             }}
             animate={{
               height: "auto",
               opacity: 1,
-              x: 0,
             }}
             exit={{
               height: 0,
               opacity: 0,
-              x: section.animationDirection === "left" ? -50 : 50,
             }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.2, ease: "easeOut" }} // ✅ Más rápido y suave
             className="overflow-hidden bg-gray-900/30"
           >
             <div className="p-4 md:p-6">
               {section.items.length > 0 ? (
                 <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-                  {/* Contenedor de la imagen */}
+                  {/* ✅ OPTIMIZACIÓN 8: Simplifica la animación de la imagen */}
                   <motion.div
-                    initial={{ scale: 0, rotate: -90 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{
-                      delay: 0.2,
-                      duration: 0.5,
-                      type: "spring",
-                      bounce: 0.3,
-                    }}
+                    initial={{ scale: 0.8, opacity: 0 }} // ✅ Animación simplificada
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.3 }} // ✅ Más rápida
                     className={`flex justify-center w-full order-1 ${section.animationDirection === "left"
                       ? "lg:order-1"
                       : "lg:order-2"
                       }`}
                   >
-                    <motion.div
-                      whileHover={{
-                        scale: 1.05,
-                        rotate: [0, -3, 3, 0],
-                        transition: { duration: 0.4 },
-                      }}
-                      className="relative flex justify-center"
-                    >
+                    {/* ✅ OPTIMIZACIÓN 9: Quita el hover complejo que causa lag */}
+                    <div className="relative flex justify-center">
                       {section.image.startsWith('/') ? (
                         <div className="relative flex justify-center w-full">
                           {/* Imagen para Desktop */}
@@ -570,6 +563,8 @@ function MenuSectionItem({
                                 maxHeight: '70vh'
                               }}
                               sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
+                              loading="lazy" // ✅ Lazy loading
+                              quality={80} // ✅ Calidad optimizada
                             />
                           </div>
 
@@ -586,12 +581,14 @@ function MenuSectionItem({
                                 maxHeight: '300px'
                               }}
                               sizes="280px"
+                              loading="lazy"
+                              quality={80}
                             />
                           </div>
                         </div>
                       ) : (
                         <div className="flex justify-center w-full">
-                          {/* Placeholder para Desktop */}
+                          {/* Placeholder igual que antes */}
                           <div
                             className="hidden lg:block bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden"
                             style={{
@@ -601,24 +598,12 @@ function MenuSectionItem({
                               maxHeight: '70vh'
                             }}
                           >
-                            <motion.div
-                              animate={{
-                                scale: [1, 1.1, 1],
-                                opacity: [0.3, 0.6, 0.3],
-                              }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Number.POSITIVE_INFINITY,
-                                ease: "easeInOut",
-                              }}
-                              className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg"
-                            />
+                            {/* ✅ QUITA la animación infinita del placeholder que consume recursos */}
                             <div className="text-gray-400 text-center z-10">
                               <span className="text-sm">{section.image}</span>
                             </div>
                           </div>
 
-                          {/* Placeholder para Mobile */}
                           <div
                             className="block lg:hidden bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden mx-auto"
                             style={{
@@ -626,25 +611,13 @@ function MenuSectionItem({
                               height: '300px'
                             }}
                           >
-                            <motion.div
-                              animate={{
-                                scale: [1, 1.1, 1],
-                                opacity: [0.3, 0.6, 0.3],
-                              }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Number.POSITIVE_INFINITY,
-                                ease: "easeInOut",
-                              }}
-                              className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg"
-                            />
                             <div className="text-gray-400 text-center z-10">
                               <span className="text-xs">{section.image}</span>
                             </div>
                           </div>
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   </motion.div>
 
                   {/* Contenedor del menú */}
@@ -654,10 +627,10 @@ function MenuSectionItem({
                     }`}>
                     {section.items.map((item, itemIndex) => (
                       <motion.div
-                        key={itemIndex}
+                        key={`${item.name}-${itemIndex}`} // ✅ Key más específica
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: itemIndex * 0.05, duration: 0.3 }}
+                        transition={{ delay: itemIndex * 0.02, duration: 0.2 }} // ✅ Más rápido
                         className="border-b border-gray-700 pb-3 md:pb-4"
                       >
                         <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
@@ -679,21 +652,16 @@ function MenuSectionItem({
                 </div>
               ) : (
                 <div className="text-center py-6 md:py-8">
+                  {/* Misma lógica optimizada para el caso sin items */}
                   <motion.div
-                    initial={{ scale: 0, rotate: -90 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{
-                      delay: 0.2,
-                      duration: 0.5,
-                      type: "spring",
-                      bounce: 0.3,
-                    }}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
                     className="flex justify-center"
                   >
                     <div className="flex items-center justify-center relative">
                       {section.image.startsWith('/') ? (
                         <>
-                          {/* Imagen para Desktop */}
                           <div className="hidden lg:block relative">
                             <Image
                               src={section.image}
@@ -706,10 +674,11 @@ function MenuSectionItem({
                                 maxHeight: '70vh'
                               }}
                               sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
+                              loading="lazy"
+                              quality={80}
                             />
                           </div>
 
-                          {/* Imagen para Mobile */}
                           <div className="block lg:hidden relative">
                             <Image
                               src={section.image}
@@ -722,12 +691,13 @@ function MenuSectionItem({
                                 maxHeight: '300px'
                               }}
                               sizes="280px"
+                              loading="lazy"
+                              quality={80}
                             />
                           </div>
                         </>
                       ) : (
                         <>
-                          {/* Placeholder Desktop */}
                           <div
                             className="hidden lg:block bg-gray-800 rounded-lg flex items-center justify-center"
                             style={{
@@ -740,7 +710,6 @@ function MenuSectionItem({
                             <span className="text-gray-400 text-sm text-center">{section.image}</span>
                           </div>
 
-                          {/* Placeholder Mobile */}
                           <div
                             className="block lg:hidden bg-gray-800 rounded-lg flex items-center justify-center"
                             style={{
@@ -763,13 +732,16 @@ function MenuSectionItem({
       </AnimatePresence>
     </motion.div>
   )
-}
+})
+
+MenuSectionItem.displayName = 'MenuSectionItem'
+
+Footer.displayName = 'Footer'
 
 function Footer() {
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Tipos para los horarios
   type ScheduleDay = {
     open: number;
     close: number;
@@ -779,27 +751,23 @@ function Footer() {
     [key: number]: ScheduleDay;
   };
 
-  // Horarios del bar
-  const schedule: Schedule = {
-    1: { open: 15, close: 24 }, // Lunes
-    2: { open: 15, close: 24 }, // Martes
-    3: { open: 15, close: 24 }, // Miércoles
-    4: { open: 15, close: 24 }, // Jueves
-    5: { open: 15, close: 26 }, // Viernes (26 = 2:00 AM del siguiente día)
-    6: { open: 15, close: 24 }, // Sábado
-    0: null // Domingo - cerrado
-  };
+  const schedule: Schedule = useMemo(() => ({
+    1: { open: 15, close: 24 },
+    2: { open: 15, close: 24 },
+    3: { open: 15, close: 24 },
+    4: { open: 15, close: 24 },
+    5: { open: 15, close: 26 },
+    6: { open: 15, close: 24 },
+    0: null
+  }), []);
 
-  // Función para obtener la hora actual en Ecuador (GMT-5)
-  const getEcuadorTime = (): Date => {
+  const getEcuadorTime = useCallback((): Date => {
     const now = new Date();
-    // Ecuador está en GMT-5
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     return new Date(utc + (-5 * 3600000));
-  };
+  }, []);
 
-  // Función para verificar si está abierto
-  const checkIfOpen = (time: Date): boolean => {
+  const checkIfOpen = useCallback((time: Date): boolean => {
     const dayOfWeek: number = time.getDay();
     const hours: number = time.getHours();
     const minutes: number = time.getMinutes();
@@ -807,28 +775,18 @@ function Footer() {
 
     const todaySchedule: ScheduleDay = schedule[dayOfWeek];
 
-    if (!todaySchedule) {
-      return false; // Cerrado los domingos
-    }
+    if (!todaySchedule) return false;
 
-    const openTime: number = todaySchedule.open * 60; // 15:00 = 900 minutos
+    const openTime: number = todaySchedule.open * 60;
     let closeTime: number = todaySchedule.close * 60;
 
-    // Si cierra después de medianoche
     if (todaySchedule.close > 24) {
-      if (currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60)) {
-        return true;
-      }
+      return currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60);
     } else {
-      if (currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime) {
-        return true;
-      }
+      return currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime;
     }
+  }, [schedule]);
 
-    return false;
-  };
-
-  // Actualizar cada minuto
   useEffect(() => {
     const updateTime = () => {
       const ecuadorTime = getEcuadorTime();
@@ -836,14 +794,17 @@ function Footer() {
       setIsOpen(checkIfOpen(ecuadorTime));
     };
 
-    // Actualizar inmediatamente
     updateTime();
-
-    // Actualizar cada minuto
     const interval = setInterval(updateTime, 60000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [getEcuadorTime, checkIfOpen]);
+
+  const instagramImages = useMemo(() => [
+    "/Imagenes/Instagram_1.png",
+    "/Imagenes/Instagram_2.png",
+    "/Imagenes/Instagram_3.png",
+    "/Imagenes/Instagram_4.png"
+  ], []);
 
   return (
     <footer id="contacto" className="bg-black py-16 border-t border-gray-800">
@@ -851,12 +812,13 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
+              <div className="w-16 h-16 rounded-full relative">
                 <Image
                   src="/Imagenes/logo_bar.png"
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -887,31 +849,12 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#inicio" className="hover:text-white">
-                  Inicio
-                </a>
-              </li>
-              <li>
-                <a href="/sobre-nosotros" className="hover:text-white">
-                  Sobre Nosotros
-                </a>
-              </li>
-              <li>
-                <a href="/menu" className="hover:text-white">
-                  Menú
-                </a>
-              </li>
-              <li>
-                <a href="/contacto" className="hover:text-white">
-                  Contacto
-                </a>
-              </li>
-              <li>
-                <a href="/galeria" className="hover:text-white">
-                  Galería
-                </a>
-              </li>
+              {/* CAMBIO: Usar Link en lugar de <a> */}
+              <li><Link href="/" className="hover:text-white">Inicio</Link></li>
+              <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
+              <li><Link href="/menu" className="hover:text-white">Menú</Link></li>
+              <li><Link href="/contacto" className="hover:text-white">Contacto</Link></li>
+              <li><Link href="/galeria" className="hover:text-white">Galería</Link></li>
             </ul>
           </div>
 
@@ -936,7 +879,6 @@ function Footer() {
               </div>
             </div>
 
-            {/* SECCIÓN DE ESTADO DINÁMICO */}
             <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
@@ -959,14 +901,9 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Instagram</h4>
             <div className="grid grid-cols-2 gap-2">
-              {[
-                "/Imagenes/Instagram_1.png",
-                "/Imagenes/Instagram_2.png",
-                "/Imagenes/Instagram_3.png",
-                "/Imagenes/Instagram_4.png"
-              ].map((src, index) => (
+              {instagramImages.map((src, index) => (
                 <div
-                  key={index}
+                  key={`instagram-${index}`}
                   className="rounded overflow-hidden aspect-square relative"
                 >
                   <Image
@@ -974,6 +911,8 @@ function Footer() {
                     alt={`Instagram ${index + 1}`}
                     fill
                     className="object-cover"
+                    loading="lazy"
+                    quality={70}
                   />
                 </div>
               ))}

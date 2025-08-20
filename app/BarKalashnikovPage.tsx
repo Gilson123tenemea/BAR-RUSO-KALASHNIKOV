@@ -1,18 +1,64 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Facebook, Instagram, Phone } from "lucide-react"
 import SharedHeader from "@/components/shared-header"
 import Link from "next/link"
 import Image from 'next/image'
 
+// Hook optimizado para precargar imágenes
+function useImagePreloader(imageUrls: string[]) {
+  const [loadedImages, setLoadedImages] = useState(new Set<string>())
+  const [isLoading, setIsLoading] = useState(true)
+  const [errors, setErrors] = useState(new Set<string>())
+
+  useEffect(() => {
+    if (!imageUrls || imageUrls.length === 0) {
+      setIsLoading(false)
+      return
+    }
+
+    console.log('🚀 Iniciando precarga de', imageUrls.length, 'imágenes en paralelo')
+    setIsLoading(true)
+    
+    // CARGA PARALELA - todas las imágenes al mismo tiempo
+    const imagePromises = imageUrls.map((url, index) => {
+      return new Promise<void>((resolve) => {
+        const img = new window.Image()
+        
+        img.onload = () => {
+          console.log(`✅ Imagen ${index + 1}/${imageUrls.length} cargada:`, url)
+          setLoadedImages(prev => new Set([...prev, url]))
+          resolve()
+        }
+        
+        img.onerror = () => {
+          console.error(`❌ Error cargando imagen ${index + 1}:`, url)
+          setErrors(prev => new Set([...prev, url]))
+          resolve() // Continúa aunque falle
+        }
+        
+        img.src = url
+      })
+    })
+
+    // Esperar a que todas terminen
+    Promise.all(imagePromises).then(() => {
+      console.log('🎉 Precarga completada. Éxito:', loadedImages.size, 'Errores:', errors.size)
+      setIsLoading(false)
+    })
+
+  }, [imageUrls.join(',')]) // Dependencia estable
+
+  return { loadedImages, isLoading, errors }
+}
 
 function useCountAnimation(end: number, duration = 2000) {
   const [count, setCount] = useState(0)
   const [hasAnimated, setHasAnimated] = useState(false)
 
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
     if (hasAnimated) return
 
     setHasAnimated(true)
@@ -24,7 +70,6 @@ function useCountAnimation(end: number, duration = 2000) {
       const elapsed = now - startTime
       const progress = Math.min(elapsed / duration, 1)
 
-      // Easing function for smooth animation
       const easeOutQuart = 1 - Math.pow(1 - progress, 4)
       const currentValue = Math.floor(startValue + (end - startValue) * easeOutQuart)
 
@@ -36,7 +81,7 @@ function useCountAnimation(end: number, duration = 2000) {
     }
 
     requestAnimationFrame(animate)
-  }
+  }, [end, duration, hasAnimated])
 
   return { count, startAnimation }
 }
@@ -48,7 +93,7 @@ export default function BarKalashnikovPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false)
-    }, 3000)
+    }, 2000) // Reducido de 3000 a 2000
     return () => clearTimeout(timer)
   }, [])
 
@@ -58,7 +103,7 @@ export default function BarKalashnikovPage() {
       setScrolled(isScrolled)
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true }) // passive para mejor performance
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -79,7 +124,7 @@ export default function BarKalashnikovPage() {
           <MenuSection />
           <BarInteriorSection />
           <StatsSection />
-          <LocalSection />
+          <OptimizedLocalSection />
           <Footer />
           <WhatsAppButton />
         </motion.div>
@@ -108,7 +153,6 @@ function LoadingScreen() {
           }}
           className="w-32 h-32 mx-auto mb-8 relative"
         >
-          {/* Logo en el centro */}
           <Image
             src="/Imagenes/logo_bar.png"
             alt="Bar Ruso Kalashnikov"
@@ -116,7 +160,6 @@ function LoadingScreen() {
             className="object-contain rounded-full"
             priority
           />
-          {/* Borde giratorio */}
           <div className="absolute inset-0 w-full h-full rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
         </motion.div>
 
@@ -240,6 +283,8 @@ function WelcomeSection() {
                 alt="Moscow Mule en copa metálica"
                 fill
                 className="object-cover rounded-lg"
+                loading="lazy"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
           </motion.div>
@@ -270,13 +315,13 @@ function WelcomeSection() {
 }
 
 function MenuSection() {
-  const menuItems = [
+  const menuItems = useMemo(() => [
     { name: "Shots del Ruso", image: "/Imagenes/Shots del Ruso.png" },
     { name: "Cócteles Flameados", image: "/Imagenes/Cocteles_Flameados.png" },
     { name: "Especiales", image: "/Imagenes/Especiales.png" },
     { name: "Cervezas Artesanales", image: "/Imagenes/Cervezas_Artesanales.png" },
     { name: "Cócteles Sin Alcohol", image: "/Imagenes/Cocteles_sin_alcohol.png" },
-  ]
+  ], [])
 
   return (
     <section id="menu" className="py-8 bg-black">
@@ -310,6 +355,8 @@ function MenuSection() {
                     alt={item.name}
                     fill
                     className="object-contain"
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, 20vw"
                   />
                 </div>
               </div>
@@ -330,7 +377,6 @@ function BarInteriorSection() {
   return (
     <section className="py-10 bg-black relative">
       <div className="container mx-auto px-4 relative z-10">
-        {/* Imagen del local */}
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
@@ -343,11 +389,12 @@ function BarInteriorSection() {
               alt="Interior del Bar Ruso Kalashnikov"
               fill
               className="object-cover"
+              loading="lazy"
+              sizes="(max-width: 768px) 100vw, 100vw"
             />
           </div>
         </motion.div>
 
-        {/* Textos */}
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
@@ -367,17 +414,17 @@ function BarInteriorSection() {
 }
 
 function StatsSection() {
-  const rating = useCountAnimation(44, 2000)  // Cambié de 4.8 a 44
+  const rating = useCountAnimation(44, 2000)
   const reviews = useCountAnimation(127, 2500)
   const cocktails = useCountAnimation(50, 2200)
   const followers = useCountAnimation(3909, 3000)
 
-  const stats = [
+  const stats = useMemo(() => [
     { hook: rating, display: "4.4", label: "Calificación de Google" },
     { hook: reviews, display: "127+", label: "Reseñas" },
     { hook: cocktails, display: "50+", label: "Cócteles Únicos" },
     { hook: followers, display: "3909", label: "Seguidores" },
-  ]
+  ], [rating, reviews, cocktails, followers])
 
   return (
     <section className="py-10 bg-black">
@@ -401,7 +448,7 @@ function StatsSection() {
             >
               <div className="text-4xl md:text-5xl font-bold text-orange-500 mb-2">
                 {index === 0
-                  ? (stat.hook.count / 10).toFixed(1)  // 44 / 10 = 4.4
+                  ? (stat.hook.count / 10).toFixed(1)
                   : index === 1
                     ? `${stat.hook.count}+`
                     : index === 2
@@ -417,26 +464,41 @@ function StatsSection() {
   )
 }
 
-function LocalSection() {
-  const [currentImage, setCurrentImage] = useState(0)
-
-  const images = [
+// ✅ SECCIÓN COMPLETAMENTE OPTIMIZADA
+function OptimizedLocalSection() {
+  const images = useMemo(() => [
     '/Imagenes/Inicio_1.jpg',
     '/Imagenes/Inicio_2.jpg',
     '/Imagenes/Inicio_3.jpg',
     '/Imagenes/Inicio_4.jpg',
     '/Imagenes/Inicio_5.jpg'
-  ]
+  ], [])
 
-  console.log('Imagen actual:', images[currentImage])
+  const { loadedImages, isLoading } = useImagePreloader(images)
+  const [currentIndex, setCurrentIndex] = useState(0)
 
+  // Solo cambiar imagen cuando esté cargada
+  const nextImage = useCallback(() => {
+    setCurrentIndex(prev => {
+      const next = (prev + 1) % images.length
+      // Solo avanzar si la siguiente imagen ya está cargada
+      if (loadedImages.has(images[next])) {
+        console.log('📱 Cambiando a imagen:', images[next])
+        return next
+      }
+      console.log('⏳ Esperando carga de:', images[next])
+      return prev
+    })
+  }, [images, loadedImages])
+
+  // Auto-avance solo cuando las imágenes estén listas
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length)
-    }, 3000)
+    if (isLoading || images.length <= 1) return
 
+    console.log('🔄 Iniciando auto-avance del carrusel')
+    const interval = setInterval(nextImage, 4000) // Aumentado a 4 segundos
     return () => clearInterval(interval)
-  }, [images.length])
+  }, [isLoading, nextImage, images.length])
 
   return (
     <section id="sobre-nosotros" className="py-10 bg-black">
@@ -449,21 +511,52 @@ function LocalSection() {
             className="rounded-3xl p-8 flex items-center justify-center h-[400px]"
           >
             <div className="w-full h-80 rounded-lg relative overflow-hidden">
-              <Image
-                src={images[currentImage]}
-                alt={`Imagen del local ${currentImage + 1}`}
-                fill
-                className="object-cover rounded-lg transition-opacity duration-500"
-                quality={100}
-                priority={true}
-                sizes="(max-width: 768px) 100vw, 50vw"
-                onError={() => console.log('Error cargando imagen:', images[currentImage])}
-                onLoad={() => console.log('Imagen cargada:', images[currentImage])}
-              />
+              {isLoading ? (
+                // Estado de carga
+                <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mb-4"></div>
+                    <p className="text-gray-400 text-sm">
+                      Cargando imágenes... ({loadedImages.size}/{images.length})
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                // Carrusel optimizado
+                <Image
+                  src={images[currentIndex]}
+                  alt={`Vista del local ${currentIndex + 1}`}
+                  fill
+                  className="object-cover rounded-lg transition-opacity duration-500"
+                  quality={85} // Reducido de 100 a 85
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  style={{
+                    opacity: loadedImages.has(images[currentIndex]) ? 1 : 0.5
+                  }}
+                />
+              )}
+              
+              {/* Indicadores de progreso */}
+              {!isLoading && (
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                  {images.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentIndex ? 'bg-orange-500' : 'bg-white/30'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
 
-          <motion.div initial={{ x: 50, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }}>
+          <motion.div 
+            initial={{ x: 50, opacity: 0 }} 
+            whileInView={{ x: 0, opacity: 1 }} 
+            transition={{ duration: 0.8 }}
+          >
             <p className="text-orange-500 text-sm font-semibold mb-4">NUESTRO LOCAL</p>
             <p className="text-gray-300 leading-relaxed mb-6">
               Nuestra coctelería une la elegancia de la tradición rusa con la innovación contemporánea, creando bebidas que combinan destilados selectos, 
@@ -481,11 +574,11 @@ function LocalSection() {
     </section>
   )
 }
+
 function Footer() {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // Tipos para los horarios
   type ScheduleDay = {
     open: number;
     close: number;
@@ -495,27 +588,23 @@ function Footer() {
     [key: number]: ScheduleDay;
   };
 
-  // Horarios del bar
-  const schedule: Schedule = {
-    1: { open: 15, close: 24 }, // Lunes
-    2: { open: 15, close: 24 }, // Martes
-    3: { open: 15, close: 24 }, // Miércoles
-    4: { open: 15, close: 24 }, // Jueves
-    5: { open: 15, close: 26 }, // Viernes (26 = 2:00 AM del siguiente día)
-    6: { open: 15, close: 24 }, // Sábado
-    0: null // Domingo - cerrado
-  };
+  const schedule: Schedule = useMemo(() => ({
+    1: { open: 15, close: 24 },
+    2: { open: 15, close: 24 },
+    3: { open: 15, close: 24 },
+    4: { open: 15, close: 24 },
+    5: { open: 15, close: 26 },
+    6: { open: 15, close: 24 },
+    0: null
+  }), [])
 
-  // Función para obtener la hora actual en Ecuador (GMT-5)
-  const getEcuadorTime = (): Date => {
+  const getEcuadorTime = useCallback((): Date => {
     const now = new Date();
-    // Ecuador está en GMT-5
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     return new Date(utc + (-5 * 3600000));
-  };
+  }, [])
 
-  // Función para verificar si está abierto
-  const checkIfOpen = (time: Date): boolean => {
+  const checkIfOpen = useCallback((time: Date): boolean => {
     const dayOfWeek: number = time.getDay();
     const hours: number = time.getHours();
     const minutes: number = time.getMinutes();
@@ -524,13 +613,12 @@ function Footer() {
     const todaySchedule: ScheduleDay = schedule[dayOfWeek];
     
     if (!todaySchedule) {
-      return false; // Cerrado los domingos
+      return false;
     }
 
-    const openTime: number = todaySchedule.open * 60; // 15:00 = 900 minutos
+    const openTime: number = todaySchedule.open * 60;
     let closeTime: number = todaySchedule.close * 60;
 
-    // Si cierra después de medianoche
     if (todaySchedule.close > 24) {
       if (currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60)) {
         return true;
@@ -542,9 +630,8 @@ function Footer() {
     }
 
     return false;
-  };
+  }, [schedule])
 
-  // Actualizar cada minuto
   useEffect(() => {
     const updateTime = () => {
       const ecuadorTime = getEcuadorTime();
@@ -552,14 +639,17 @@ function Footer() {
       setIsOpen(checkIfOpen(ecuadorTime));
     };
 
-    // Actualizar inmediatamente
     updateTime();
-
-    // Actualizar cada minuto
     const interval = setInterval(updateTime, 60000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [getEcuadorTime, checkIfOpen]);
+
+  const instagramImages = useMemo(() => [
+    "/Imagenes/Instagram_1.png",
+    "/Imagenes/Instagram_2.png",
+    "/Imagenes/Instagram_3.png",
+    "/Imagenes/Instagram_4.png"
+  ], [])
 
   return (
     <footer id="contacto" className="bg-black py-16 border-t border-gray-800">
@@ -573,6 +663,7 @@ function Footer() {
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -603,31 +694,11 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#inicio" className="hover:text-white">
-                  Inicio
-                </a>
-              </li>
-              <li>
-                <a href="/sobre-nosotros" className="hover:text-white">
-                  Sobre Nosotros
-                </a>
-              </li>
-              <li>
-                <a href="/menu" className="hover:text-white">
-                  Menú
-                </a>
-              </li>
-              <li>
-                <a href="/contacto" className="hover:text-white">
-                  Contacto
-                </a>
-              </li>
-              <li>
-                <a href="/galeria" className="hover:text-white">
-                  Galería
-                </a>
-              </li>
+              <li><a href="#inicio" className="hover:text-white">Inicio</a></li>
+              <li><a href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</a></li>
+              <li><a href="/menu" className="hover:text-white">Menú</a></li>
+              <li><a href="/contacto" className="hover:text-white">Contacto</a></li>
+              <li><a href="/galeria" className="hover:text-white">Galería</a></li>
             </ul>
           </div>
 
@@ -652,7 +723,6 @@ function Footer() {
               </div>
             </div>
             
-            {/* SECCIÓN DE ESTADO DINÁMICO */}
             <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
@@ -675,12 +745,7 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Instagram</h4>
             <div className="grid grid-cols-2 gap-2">
-              {[
-                "/Imagenes/Instagram_1.png",
-                "/Imagenes/Instagram_2.png",
-                "/Imagenes/Instagram_3.png",
-                "/Imagenes/Instagram_4.png"
-              ].map((src, index) => (
+              {instagramImages.map((src, index) => (
                 <div
                   key={index}
                   className="rounded overflow-hidden aspect-square relative"
@@ -690,6 +755,8 @@ function Footer() {
                     alt={`Instagram ${index + 1}`}
                     fill
                     className="object-cover"
+                    loading="lazy"
+                    sizes="(max-width: 768px) 25vw, 12vw"
                   />
                 </div>
               ))}
@@ -709,10 +776,10 @@ function WhatsAppButton() {
   const phoneNumber = "593995575335"
   const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
 
-  const handleWhatsAppClick = () => {
+  const handleWhatsAppClick = useCallback(() => {
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, "_blank")
-  }
+  }, [phoneNumber, message])
 
   return (
     <motion.div
@@ -724,6 +791,7 @@ function WhatsAppButton() {
       <button
         onClick={handleWhatsAppClick}
         className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
+        aria-label="Contactar por WhatsApp"
       >
         <Phone className="w-6 h-6 text-white" />
       </button>

@@ -1,5 +1,3 @@
-
-// app/sobre-nosotros/SobreNosotrosPageClient.tsx
 "use client"
 
 import { motion } from "framer-motion"
@@ -7,7 +5,7 @@ import { MapPin, Star, Facebook, Instagram, Phone, Wine, Users, Sparkles } from 
 import Link from "next/link"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useRef, memo } from "react"
 
 const testimonials = [
   {
@@ -30,14 +28,25 @@ const testimonials = [
   },
 ]
 
+// Animaciones optimizadas con menos propiedades
+const fadeInVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+}
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
 export default function SobreNosotrosPage() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
-      className="min-h-screen bg-black text-white overflow-x-hidden" 
-    >
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <SharedHeader />
       <HeroSection />
       <ExperienceSection />
@@ -47,93 +56,365 @@ export default function SobreNosotrosPage() {
       <TestimonialsSection />
       <Footer />
       <WhatsAppButton />
-    </motion.div>
+    </div>
   )
 }
 
 function HeroSection() {
-  const handleUbicacionClick = () => {
+  const handleUbicacionClick = useCallback(() => {
     window.open(
-      "https://www.google.com/maps/place/Bar+Ruso+Kalashnikov/@-2.9053604,-79.0121328,225m/data=!3m1!1e3!4m10!1m2!2m1!1scocteles!3m6!1s0x91cd194baa33c27f:0x1bd14ff355480aa5!8m2!3d-2.9053604!4d-79.0112284!15sCghjb2N0ZWxlc1oKIghjb2N0ZWxlc5IBA2JhcpoBI0NoWkRTVWhOTUc5blMwVkpRMEZuU1VNMmIxbHhlRkZuRUFFqgFICggvbS8wMjRnNhABKgwiCGNvY3RlbGVzKA4yHhABIhpKWkOv7yyP5zgKC63_-P0b64-6vWa_9As5rDIMEAIiCGNvY3RlbGVz4AEA-gEECAAQQA!16s%2Fg%2F11gjj1nnvp?entry=ttu&g_ep=EgoyMDI1MDgxMS4wIKXMDSoASAFQAw%3D%3D",
+      "https://www.google.com/maps/place/Bar+Ruso+Kalashnikov/@-2.9053604,-79.0121328,225m/data=!3m1!1e3!4m10!1m2!2m1!1scocteles!3m6!1s0x91cd194baa33c27f:0x1bd14ff355480aa5!8m2!3d-2.9053604!4d-79.0112284!15sCghjb2N0ZWxlc1oKIghjb2N0ZWxlc5IBA2JhcmoBI0NoWkRTVWhOTUc5blMwVkpRMEZuU1VNMmIxbHhlRkZuRUFFqgFICggvbS8wMjRnNhABKgwiCGNvY3RlbGVzKA4yHhABIhpKWkOv7yyP5zgKC63_-P0b64-6vWa_9As5rDIMEAIiCGNvY3RlbGVz4AEA-gEECAAQQA!16s%2Fg%2F11gjj1nnvp?entry=ttu&g_ep=EgoyMDI1MDgxMS4wIKXMDSoASAFQAw%3D%3D",
       "_blank",
     )
-  }
+  }, [])
 
   return (
-    <section id="hero" className="relative h-[600px] flex items-center">
-      <div className="absolute inset-0">
-        <div
-          className="w-full h-full bg-gradient-to-br from-amber-900/40 via-orange-500/30 to-red-800/50 flex items-center justify-center"
-          style={{
-            backgroundImage: "url('/Imagenes/sobre nosotros logo.jpg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
+    <section id="hero" className="relative h-[600px] flex items-center overflow-hidden">
+      {/* Imagen de fondo con animación */}
+      <motion.div 
+        className="absolute inset-0"
+        initial={{ scale: 1.1, opacity: 0.7 }}
+        animate={{ 
+          scale: 1, 
+          opacity: 1,
+          transition: {
+            duration: 2,
+            ease: "easeOut"
+          }
+        }}
+      >
+        <div className="w-full h-full relative">
+          <Image
+            src="/Imagenes/sobre nosotros logo.jpg"
+            alt="Bar Ruso Kalashnikov"
+            fill
+            className="object-cover"
+            priority
+            quality={85}
+            sizes="100vw"
+          />
+        </div>
+      </motion.div>
+
+      {/* Overlay con animación de cortina */}
+      <motion.div 
+        className="absolute inset-0 z-10"
+        initial={{ 
+          opacity: 0,
+          background: "linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%)"
+        }}
+        animate={{ 
+          opacity: 1,
+          background: "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, transparent 100%)",
+          transition: {
+            duration: 1.5,
+            ease: "easeInOut",
+            delay: 0.3
+          }
+        }}
+      />
+
+      {/* Contenido principal con animaciones desde la izquierda */}
+      <div className="container mx-auto px-4 relative z-20 pt-24">
+        <motion.div 
+          className="max-w-2xl"
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ 
+            opacity: 1, 
+            x: 0,
+            transition: {
+              duration: 0.8,
+              ease: "easeOut",
+              staggerChildren: 0.15
+            }
           }}
         >
-          <div className="text-center text-gray-400">
-            <div className="w-full h-full bg-gray-800/20 flex items-center justify-center">
-            </div>
-          </div>
-        </div>
-      </div>
+          {/* Títulos con animación individual desde la izquierda */}
+          <motion.h1 
+            className="text-5xl md:text-2xl font-bold mb-0"
+            initial={{ opacity: 0, x: -80 }}
+            animate={{ 
+              opacity: 1, 
+              x: 0,
+              transition: {
+                duration: 0.7,
+                ease: "easeOut",
+                delay: 0.2
+              }
+            }}
+          >
+            Más que un bar, una{" "}
+          </motion.h1>
+          
+          <motion.h1 
+            className="text-5xl md:text-2xl font-bold mb-6 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent"
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ 
+              opacity: 1, 
+              x: 0,
+              transition: {
+                duration: 0.8,
+                ease: "easeOut",
+                delay: 0.4
+              }
+            }}
+          >
+            experiencia
+          </motion.h1>
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
-
-      <div className="container mx-auto px-4 relative z-20 pt-24">
-        <motion.div
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-          className="max-w-2xl"
-        >
-          <h1 className="text-5xl md:text-2xl font-bold mb-0">Más que un bar, una </h1>
-          <h1 className="text-5xl md:text-2xl font-bold mb-6">experiencia</h1>
-
-          <p className="text-gray-300 text-lg mb-8 max-w-md">
+          {/* Descripción con animación desde la izquierda */}
+          <motion.p 
+            className="text-gray-300 text-sm mb-10 max-w-xs"
+            initial={{ opacity: 0, x: -60 }}
+            animate={{ 
+              opacity: 1, 
+              x: 0,
+              transition: {
+                duration: 0.6,
+                ease: "easeOut",
+                delay: 0.6
+              }
+            }}
+          >
             Un espacio donde la creatividad, el ambiente y la coctelería de autor se unen para ofrecerte momentos
             inolvidables.
-          </p>
+          </motion.p>
 
+          {/* Botón con animación desde la izquierda */}
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             onClick={handleUbicacionClick}
-            className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors flex items-center space-x-2 rounded-md"
+            className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors flex items-center space-x-2 rounded-md shadow-lg"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ 
+              opacity: 1, 
+              x: 0,
+              transition: {
+                duration: 0.7,
+                ease: "easeOut",
+                delay: 0.8
+              }
+            }}
+            whileHover={{
+              scale: 1.05,
+              x: 5,
+              transition: {
+                duration: 0.2,
+                ease: "easeInOut"
+              }
+            }}
+            whileTap={{
+              scale: 0.98,
+              x: 0,
+              transition: {
+                duration: 0.1
+              }
+            }}
           >
-            <MapPin className="w-5 h-5" />
+            <motion.div
+              animate={{ 
+                rotate: [0, 10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut"
+              }}
+            >
+              <MapPin className="w-5 h-5" />
+            </motion.div>
             <span>Ubicación</span>
           </motion.button>
         </motion.div>
+      </div>
+
+      {/* Efecto de partículas flotantes (opcional) */}
+      <div className="absolute inset-0 z-5 pointer-events-none">
+        {[...Array(3)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-orange-400/30 rounded-full"
+            initial={{
+              x: Math.random() * window.innerWidth,
+              y: window.innerHeight + 10,
+              opacity: 0
+            }}
+            animate={{
+              y: -10,
+              opacity: [0, 1, 0],
+              x: Math.random() * window.innerWidth
+            }}
+            transition={{
+              duration: Math.random() * 3 + 4,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+              ease: "linear"
+            }}
+          />
+        ))}
       </div>
     </section>
   )
 }
 
+// Hook para detectar si estamos en el cliente
+const useIsClient = () => {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  return isClient
+}
+
+// Hook para intersection observer mejorado
+const useIntersectionObserver = (options = {}) => {
+  const [isIntersecting, setIsIntersecting] = useState(false)
+  const [node, setNode] = useState<Element | null>(null)
+  const isClient = useIsClient()
+
+  useEffect(() => {
+    if (!node || !isClient) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsIntersecting(entry.isIntersecting),
+      { threshold: 0.3, ...options }
+    )
+
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [node, isClient, options])
+
+  return [setNode, isIntersecting, isClient] as const
+}
+
+// Componente de video optimizado sin problemas de hidratación
+const OptimizedVideo = memo(({ src, className = "" }: { src: string; className?: string }) => {
+  const [videoLoaded, setVideoLoaded] = useState(false)
+  const [error, setError] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const isClient = useIsClient()
+
+  const handleCanPlay = useCallback(() => {
+    setVideoLoaded(true)
+    setError(false)
+  }, [])
+
+  const handleError = useCallback(() => {
+    setError(true)
+    setVideoLoaded(false)
+  }, [])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !isClient) return
+
+    const handleLoadedData = () => {
+      setVideoLoaded(true)
+      setError(false)
+    }
+
+    video.addEventListener('loadeddata', handleLoadedData)
+    video.addEventListener('canplay', handleCanPlay)
+    video.addEventListener('error', handleError)
+
+    // Si el video ya está cargado (caso de recarga de página)
+    if (video.readyState >= 2) {
+      handleLoadedData()
+    }
+
+    return () => {
+      video.removeEventListener('loadeddata', handleLoadedData)
+      video.removeEventListener('canplay', handleCanPlay)
+      video.removeEventListener('error', handleError)
+    }
+  }, [isClient, handleCanPlay, handleError])
+
+  // No renderizar nada hasta que estemos en el cliente
+  if (!isClient) {
+    return (
+      <div className={`relative rounded-lg overflow-hidden ${className}`}>
+        <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
+          <div className="text-gray-400 text-sm">Cargando...</div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`relative rounded-lg overflow-hidden ${className}`}>
+      <video
+        ref={videoRef}
+        className="w-full h-full object-cover rounded-lg"
+        autoPlay
+        muted
+        loop
+        playsInline
+        controls={false}
+        preload="metadata"
+        style={{
+          opacity: videoLoaded ? 1 : 0,
+          transition: 'opacity 0.5s ease-in-out'
+        }}
+      >
+        <source src={src} type="video/mp4" />
+        Tu navegador no soporta el elemento video.
+      </video>
+      
+      {!videoLoaded && !error && (
+        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center rounded-lg">
+          <div className="flex flex-col items-center space-y-2">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+            <div className="text-gray-400 text-sm">Cargando video...</div>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center rounded-lg">
+          <div className="text-gray-400 text-sm text-center">
+            <p>Error al cargar el video</p>
+            <button 
+              onClick={() => {
+                setError(false)
+                setVideoLoaded(false)
+                const video = videoRef.current
+                if (video) {
+                  video.load()
+                }
+              }}
+              className="mt-2 text-orange-500 hover:text-orange-400 underline text-xs"
+            >
+              Intentar de nuevo
+            </button>
+          </div>
+        </div>
+      )}
+      
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none rounded-lg"></div>
+    </div>
+  )
+})
+
+OptimizedVideo.displayName = 'OptimizedVideo'
+
 function ExperienceSection() {
+  const [setRef, isIntersecting, isClient] = useIntersectionObserver()
+
   return (
     <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="relative">
+          <div className="relative" ref={setRef}>
             <div className="relative overflow-hidden rounded-lg">
-              {/* Contenedor del video - puedes ajustar las dimensiones aquí */}
               <div className="w-full max-w-sm mx-auto h-150 relative rounded-lg overflow-hidden">
-                <video
-                  className="w-full h-full object-cover rounded-lg"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  controls={false}
-                  preload="auto"
-                >
-                  <source src="/videos/e.mp4" type="video/mp4" />
-                  Tu navegador no soporta el elemento video.
-                </video>
-
-                {/* Overlay opcional con gradiente suave */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none rounded-lg"></div>
+                {/* Renderizar siempre, pero con estado de carga inicial */}
+                <OptimizedVideo 
+                  src="/videos/e.mp4" 
+                  className="w-full h-full"
+                />
               </div>
             </div>
           </div>
@@ -157,7 +438,6 @@ function ExperienceSection() {
               </p>
             </div>
           </div>
-
         </div>
       </div>
     </section>
@@ -169,12 +449,7 @@ function HistorySection() {
     <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6"
-          >
+          <div className="space-y-6">
             <h2 className="text-3xl font-bold text-orange-500">Nuestra historia</h2>
             <div className="space-y-4 text-gray-300">
               <p>
@@ -186,19 +461,10 @@ function HistorySection() {
                 cliente viva su propia experiencia.
               </p>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ x: 50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative"
-          >
-            <motion.div
-              whileHover={{ scale: 1.02, rotate: -1 }}
-              transition={{ duration: 0.3 }}
-              className="relative overflow-hidden rounded-lg"
-            >
+          <div className="relative">
+            <div className="relative overflow-hidden rounded-lg">
               <div
                 className="w-full h-100 bg-gradient-to-br from-blue-900/60 via-cyan-800/50 to-teal-600/40 flex items-center justify-center relative"
                 style={{
@@ -208,23 +474,11 @@ function HistorySection() {
                   backgroundRepeat: 'no-repeat'
                 }}
               >
-                <motion.div
-                  animate={{
-                    scale: [1, 1.05, 1],
-                    opacity: [0.4, 0.8, 0.4],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20"
-                />
-                {/* Overlay oscuro para mejor contraste si hay texto en la imagen */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20" />
                 <div className="absolute inset-0 bg-black/30"></div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -258,24 +512,16 @@ function FeaturesSection() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ y: 50, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              whileHover={{ y: -10, scale: 1.02 }}
               className="text-center p-6 bg-black/50 rounded-lg border border-gray-800 hover:border-orange-500/50 transition-all duration-300"
             >
-              <motion.div
-                whileHover={{ scale: 1.2, rotate: 10 }}
-                transition={{ duration: 0.3 }}
-                className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg"
-              >
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
                 <feature.icon className="w-8 h-8 text-white" />
-              </motion.div>
+              </div>
               <h3 className="text-xl font-bold text-orange-500 mb-4">{feature.title}</h3>
               <p className="text-gray-300 leading-relaxed">{feature.description}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
@@ -284,34 +530,31 @@ function FeaturesSection() {
 }
 
 function TeamSection() {
+  const [setRef, isIntersecting, isClient] = useIntersectionObserver()
+
   return (
     <section className="py-10 bg-gray-900/30">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="relative">
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          className="grid md:grid-cols-2 gap-12 items-center"
+        >
+          <motion.div variants={fadeInVariants} className="relative" ref={setRef}>
             <div className="relative overflow-hidden rounded-lg">
-              {/* Contenedor del video - puedes ajustar las dimensiones aquí */}
               <div className="w-full max-w-sm mx-auto h-150 relative rounded-lg overflow-hidden">
-                <video
-                  className="w-full h-full object-cover rounded-lg"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  controls={false}
-                  preload="auto"
-                >
-                  <source src="/videos/d.mp4" type="video/mp4" />
-                  Tu navegador no soporta el elemento video.
-                </video>
-
-                {/* Overlay opcional con gradiente suave */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none rounded-lg"></div>
+                {/* Renderizar siempre, pero con estado de carga inicial */}
+                <OptimizedVideo 
+                  src="/videos/d.mp4" 
+                  className="w-full h-full"
+                />
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="space-y-8">
+          <motion.div variants={fadeInVariants} className="space-y-8">
             <div className="bg-[#010510] rounded-2xl p-6">
               <h3 className="text-2xl font-bold text-orange-500 mb-4">
                 Equipo experto en coctelería
@@ -329,36 +572,26 @@ function TeamSection() {
                 Desde clásicos rusos hasta creaciones de autor, cada trago refleja dedicación, tradición y un toque contemporáneo que te invita a volver.
               </p>
             </div>
-          </div>
-
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   )
 }
 
-function TestimonialsSection() {
+const TestimonialsSection = memo(function TestimonialsSection() {
   return (
     <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12">
           <p className="text-orange-500 text-sm font-semibold mb-2">TESTIMONIOS</p>
           <h2 className="text-2xl font-bold">Lo que dicen nuestros clientes</h2>
-        </motion.div>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ y: 50, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              whileHover={{ y: -5, scale: 1.02 }}
               className="bg-gray-900/50 p-6 rounded-lg border border-gray-800 hover:border-orange-500/50 transition-all duration-300"
             >
               <div className="flex mb-4">
@@ -373,64 +606,49 @@ function TestimonialsSection() {
                 <p className="font-semibold text-white">{testimonial.name}</p>
                 <p className="text-gray-400 text-sm">{testimonial.time}</p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
     </section>
   )
-}
+})
 
-function Footer() {
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+// Hook optimizado para el reloj sin problemas de hidratación
+const useEcuadorTime = () => {
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const isClient = useIsClient()
 
-  // Tipos para los horarios
-  type ScheduleDay = {
-    open: number;
-    close: number;
-  } | null;
-
-  type Schedule = {
-    [key: number]: ScheduleDay;
-  };
-
-  // Horarios del bar
-  const schedule: Schedule = {
+  const schedule = {
     1: { open: 15, close: 24 }, // Lunes
     2: { open: 15, close: 24 }, // Martes
     3: { open: 15, close: 24 }, // Miércoles
     4: { open: 15, close: 24 }, // Jueves
-    5: { open: 15, close: 26 }, // Viernes (26 = 2:00 AM del siguiente día)
+    5: { open: 15, close: 26 }, // Viernes
     6: { open: 15, close: 24 }, // Sábado
-    0: null // Domingo - cerrado
+    0: null // Domingo
   };
 
-  // Función para obtener la hora actual en Ecuador (GMT-5)
-  const getEcuadorTime = (): Date => {
+  const getEcuadorTime = useCallback((): Date => {
     const now = new Date();
-    // Ecuador está en GMT-5
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
     return new Date(utc + (-5 * 3600000));
-  };
+  }, []);
 
-  // Función para verificar si está abierto
-  const checkIfOpen = (time: Date): boolean => {
-    const dayOfWeek: number = time.getDay();
-    const hours: number = time.getHours();
-    const minutes: number = time.getMinutes();
-    const currentTimeInMinutes: number = hours * 60 + minutes;
+  const checkIfOpen = useCallback((time: Date): boolean => {
+    const dayOfWeek = time.getDay();
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
+    const currentTimeInMinutes = hours * 60 + minutes;
 
-    const todaySchedule: ScheduleDay = schedule[dayOfWeek];
+    const todaySchedule = schedule[dayOfWeek as keyof typeof schedule];
     
-    if (!todaySchedule) {
-      return false; // Cerrado los domingos
-    }
+    if (!todaySchedule) return false;
 
-    const openTime: number = todaySchedule.open * 60; // 15:00 = 900 minutos
-    let closeTime: number = todaySchedule.close * 60;
+    const openTime = todaySchedule.open * 60;
+    let closeTime = todaySchedule.close * 60;
 
-    // Si cierra después de medianoche
     if (todaySchedule.close > 24) {
       if (currentTimeInMinutes >= openTime || currentTimeInMinutes <= (closeTime - 24 * 60)) {
         return true;
@@ -442,24 +660,27 @@ function Footer() {
     }
 
     return false;
-  };
+  }, []);
 
-  // Actualizar cada minuto
   useEffect(() => {
+    if (!isClient) return
+
     const updateTime = () => {
       const ecuadorTime = getEcuadorTime();
       setCurrentTime(ecuadorTime);
       setIsOpen(checkIfOpen(ecuadorTime));
     };
 
-    // Actualizar inmediatamente
     updateTime();
-
-    // Actualizar cada minuto
     const interval = setInterval(updateTime, 60000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [isClient, getEcuadorTime, checkIfOpen]);
+
+  return { currentTime, isOpen, isClient };
+};
+
+function Footer() {
+  const { currentTime, isOpen, isClient } = useEcuadorTime();
 
   return (
     <footer id="contacto" className="bg-black py-16 border-t border-gray-800">
@@ -473,6 +694,8 @@ function Footer() {
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"
+                  loading="lazy"
+                  sizes="64px"
                 />
               </div>
             </div>
@@ -503,31 +726,11 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#inicio" className="hover:text-white">
-                  Inicio
-                </a>
-              </li>
-              <li>
-                <a href="/sobre-nosotros" className="hover:text-white">
-                  Sobre Nosotros
-                </a>
-              </li>
-              <li>
-                <a href="/menu" className="hover:text-white">
-                  Menú
-                </a>
-              </li>
-              <li>
-                <a href="/contacto" className="hover:text-white">
-                  Contacto
-                </a>
-              </li>
-              <li>
-                <a href="/galeria" className="hover:text-white">
-                  Galería
-                </a>
-              </li>
+              <li><a href="#inicio" className="hover:text-white">Inicio</a></li>
+              <li><a href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</a></li>
+              <li><a href="/menu" className="hover:text-white">Menú</a></li>
+              <li><a href="/contacto" className="hover:text-white">Contacto</a></li>
+              <li><a href="/galeria" className="hover:text-white">Galería</a></li>
             </ul>
           </div>
 
@@ -552,20 +755,21 @@ function Footer() {
               </div>
             </div>
             
-            {/* SECCIÓN DE ESTADO DINÁMICO */}
             <div className="mt-4 p-3 rounded-lg bg-gray-900 border border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
                     {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
                   </p>
-                  <p className="text-xs text-gray-400">
-                    Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
-                      timeZone: 'America/Guayaquil',
-                      hour: '2-digit', 
-                      minute: '2-digit'
-                    })}
-                  </p>
+                  {isClient && currentTime && (
+                    <p className="text-xs text-gray-400">
+                      Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                        timeZone: 'America/Guayaquil',
+                        hour: '2-digit', 
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  )}
                 </div>
                 <div className={`w-3 h-3 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></div>
               </div>
@@ -590,6 +794,8 @@ function Footer() {
                     alt={`Instagram ${index + 1}`}
                     fill
                     className="object-cover"
+                    loading="lazy"
+                    sizes="(max-width: 768px) 25vw, 12vw"
                   />
                 </div>
               ))}
@@ -605,28 +811,23 @@ function Footer() {
   );
 }
 
-function WhatsAppButton() {
+const WhatsAppButton = memo(function WhatsAppButton() {
   const phoneNumber = "593995575335"
   const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
 
-  const handleWhatsAppClick = () => {
+  const handleWhatsAppClick = useCallback(() => {
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, "_blank")
-  }
+  }, [phoneNumber, message])
 
   return (
-    <motion.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ delay: 0.4, duration: 0.3 }}
-      className="fixed bottom-8 right-8 z-30"
-    >
+    <div className="fixed bottom-8 right-8 z-30">
       <button
         onClick={handleWhatsAppClick}
         className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
       >
         <Phone className="w-6 h-6 text-white" />
       </button>
-    </motion.div>
+    </div>
   )
-}
+})

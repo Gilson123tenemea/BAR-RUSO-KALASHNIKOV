@@ -479,32 +479,13 @@ function Footer() {
 
           <div>
             <h4 className="font-semibold mb-4">Páginas</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#inicio" className="hover:text-white">
-                  Inicio
-                </a>
-              </li>
-              <li>
-                <a href="/sobre-nosotros" className="hover:text-white">
-                  Sobre Nosotros
-                </a>
-              </li>
-              <li>
-                <a href="/menu" className="hover:text-white">
-                  Menú
-                </a>
-              </li>
-              <li>
-                <a href="/contacto" className="hover:text-white">
-                  Contacto
-                </a>
-              </li>
-              <li>
-                <a href="/galeria" className="hover:text-white">
-                  Galería
-                </a>
-              </li>
+             <ul className="space-y-2 text-gray-400">
+              {/* CAMBIO: Usar Link en lugar de <a> */}
+              <li><Link href="/" className="hover:text-white">Inicio</Link></li>
+              <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
+              <li><Link href="/menu" className="hover:text-white">Menú</Link></li>
+              <li><Link href="/contacto" className="hover:text-white">Contacto</Link></li>
+              <li><Link href="/galeria" className="hover:text-white">Galería</Link></li>
             </ul>
           </div>
 

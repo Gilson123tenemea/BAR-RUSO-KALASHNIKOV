@@ -1,4 +1,3 @@
-// 2. Componente LanguageSelector (src/components/LanguageSelector.tsx)
 "use client"
 
 import { useState, useRef, useEffect } from 'react'
@@ -7,9 +6,9 @@ import { ChevronDown, Globe } from 'lucide-react'
 import { useLanguage } from './LanguageContext'
 
 const languages = [
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' }
+  { code: 'es', name: 'Español', flag: '🇪🇸', initial: 'ES' },
+  { code: 'en', name: 'English', flag: '🇺🇸', initial: 'EN' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺', initial: 'RU' }
 ] as const
 
 export default function LanguageSelector() {
@@ -44,8 +43,10 @@ export default function LanguageSelector() {
         whileTap={{ scale: 0.98 }}
       >
         <Globe className="w-4 h-4 text-orange-500" />
-        <span className="text-sm font-medium">{currentLang.flag}</span>
-        <span className="hidden sm:block text-sm">{currentLang.name}</span>
+        {/* Mostrar bandera en desktop, iniciales en móvil */}
+        <span className="text-sm font-medium md:hidden">{currentLang.initial}</span>
+        <span className="hidden md:block text-sm font-medium">{currentLang.flag}</span>
+        <span className="hidden lg:block text-sm">{currentLang.name}</span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -77,7 +78,9 @@ export default function LanguageSelector() {
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ x: 4 }}
               >
-                <span className="text-lg">{language.flag}</span>
+                {/* Mostrar bandera en desktop, iniciales en móvil */}
+                <span className="text-lg md:hidden font-bold">{language.initial}</span>
+                <span className="hidden md:block text-lg">{language.flag}</span>
                 <span className="text-sm font-medium">{language.name}</span>
                 {currentLanguage === language.code && (
                   <motion.div

@@ -80,13 +80,8 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
     setMobileMenuOpen(false)
   }, [])
 
-  const handleMobileContactClick = useCallback(() => {
-    handleContactClick()
-    closeMobileMenu()
-  }, [handleContactClick, closeMobileMenu])
-
   const headerClasses = useMemo(() => 
-    `fixed top-0 w-full z-40 py-4 transition-all duration-300 ${
+    `fixed top-0 w-full z-50 py-4 transition-all duration-300 ${
       scrolled ? "bg-black/95 backdrop-blur-sm" : "bg-transparent"
     }`, [scrolled]
   )
@@ -180,7 +175,7 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
           ))}
         </motion.nav>
 
-        {/* Selector de idiomas reemplaza al botón de contactar */}
+        {/* Selector de idiomas reemplaza completamente al botón de contactar */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -189,7 +184,6 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
             delay: 0.5,
             ease: [0.25, 0.46, 0.45, 0.94]
           }}
-          className="hidden md:block"
         >
           <LanguageSelector />
         </motion.div>
@@ -214,7 +208,7 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
         </motion.button>
       </div>
 
-      {/* Mobile Menu actualizado */}
+      {/* Mobile Menu sin botón de contactar */}
       {mobileMenuOpen && (
         <motion.div
           initial={{ opacity: 0, y: -20, height: 0 }}
@@ -252,35 +246,6 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
                   </Link>
                 </motion.div>
               ))}
-              
-              {/* Botón de contactar en móvil */}
-              <motion.button
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ 
-                  duration: 0.2, 
-                  delay: navItems.length * 0.05,
-                  ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-                onClick={handleMobileContactClick}
-                className="border border-orange-500 px-6 py-2 hover:bg-orange-500 hover:text-black transition-all duration-200 rounded-md text-center hover:scale-[1.02]"
-              >
-                {t('header.contact')}
-              </motion.button>
-
-              {/* Selector de idiomas en móvil */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ 
-                  duration: 0.2, 
-                  delay: (navItems.length + 1) * 0.05,
-                  ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-                className="flex justify-center pt-2"
-              >
-                <LanguageSelector />
-              </motion.div>
             </nav>
           </div>
         </motion.div>

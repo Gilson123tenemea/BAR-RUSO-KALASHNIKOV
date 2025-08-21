@@ -4,6 +4,7 @@ import { Inter, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import Script from "next/script" 
 import Analytics from "@/components/Analytics" 
+import { LanguageProvider } from "@/components/LanguageContext" // 👈 Agregar esta línea
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     "La experiencia nocturna más exclusiva de Cuenca. Más de 250 cócteles únicos en un ambiente sofisticado.",
   generator: 'Gilson.Tenemea',
   icons: {
-    icon: '/Imagenes/logo_bar.png',        // 👈 solo tu logo
+    icon: '/Imagenes/logo_bar.png',
     shortcut: '/Imagenes/logo_bar.png',
     apple: '/Imagenes/logo_bar.png',
   },
@@ -36,8 +37,8 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/Imagenes/logo_bar.png',     // 👈 solo tu logo
-        width: 1200,                       // mejor usa proporción estándar
+        url: '/Imagenes/logo_bar.png',
+        width: 1200,
         height: 630,
         alt: 'Logo del Bar Ruso Kalashnikov',
       },
@@ -47,10 +48,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Bar Ruso Kalashnikov",
     description: "Cócteles premium y ambiente exclusivo en Cuenca.",
-    images: ["/Imagenes/logo_bar.png"],   // 👈 solo tu logo
+    images: ["/Imagenes/logo_bar.png"],
   },
 }
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -71,8 +71,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
       </head>
       <body className="font-sans">
-        {children}
-        <Analytics /> {/* 👈 aquí lo activamos */}
+        <LanguageProvider> {/* 👈 Envolver aquí */}
+          {children}
+          <Analytics />
+        </LanguageProvider> {/* 👈 Cerrar aquí */}
       </body>
     </html>
   )

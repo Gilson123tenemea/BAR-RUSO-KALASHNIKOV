@@ -1,3 +1,4 @@
+// 3. Header actualizado con el selector de idiomas
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react"
@@ -6,12 +7,13 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import Image from 'next/image'
+import LanguageSelector from './LanguageSelector'
+import { useLanguage } from './LanguageContext'
 
 interface SharedHeaderProps {
   scrolled?: boolean
 }
 
-// Precargar el logo inmediatamente
 const preloadLogo = () => {
   if (typeof window !== 'undefined') {
     const link = document.createElement('link')
@@ -27,23 +29,21 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [logoLoaded, setLogoLoaded] = useState(false)
   const pathname = usePathname()
+  const { t } = useLanguage()
 
-  // Use external scrolled state if provided, otherwise use internal
   const scrolled = externalScrolled !== undefined ? externalScrolled : internalScrolled
 
-  // Memoizar elementos estáticos para evitar re-renders
+  // Elementos de navegación ahora usando traducciones
   const navItems = useMemo(() => [
-    { href: "/", label: "Inicio" },
-    { href: "/menu", label: "Menú" },
-    { href: "/sobre-nosotros", label: "Sobre Nosotros" },
-    { href: "/contacto", label: "Contacto" },
-    { href: "/galeria", label: "Galería" },
-  ], [])
+    { href: "/", label: t('nav.home') },
+    { href: "/menu", label: t('nav.menu') },
+    { href: "/sobre-nosotros", label: t('nav.about') },
+    { href: "/contacto", label: t('nav.contact') },
+    { href: "/galeria", label: t('nav.gallery') },
+  ], [t])
 
-  // Precargar logo al montar el componente
   useEffect(() => {
     preloadLogo()
-    // Precargar imagen inmediatamente
     const img = new window.Image()
     img.onload = () => setLogoLoaded(true)
     img.src = '/Imagenes/logo_bar.png'
@@ -67,10 +67,10 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
 
   const handleContactClick = useCallback(() => {
     const phoneNumber = "593995575335"
-    const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
+    const message = t('whatsapp.message')
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, "_blank")
-  }, [])
+  }, [t])
 
   const toggleMobileMenu = useCallback(() => {
     setMobileMenuOpen(prev => !prev)
@@ -85,7 +85,6 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
     closeMobileMenu()
   }, [handleContactClick, closeMobileMenu])
 
-  // Optimizar las clases CSS con useMemo
   const headerClasses = useMemo(() => 
     `fixed top-0 w-full z-40 py-4 transition-all duration-300 ${
       scrolled ? "bg-black/95 backdrop-blur-sm" : "bg-transparent"
@@ -107,10 +106,9 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
         <Link 
           href="/" 
           className="flex items-center space-x-4"
-          style={{ transform: 'translateZ(0)' }} // Optimización GPU
+          style={{ transform: 'translateZ(0)' }}
         >
           <div className="w-16 h-16 rounded-full flex items-center justify-center relative overflow-hidden">
-            {/* Placeholder mientras carga el logo */}
             {!logoLoaded && (
               <div className="w-full h-full bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-full animate-pulse flex items-center justify-center">
                 <div className="w-8 h-8 bg-orange-500/40 rounded-full"></div>
@@ -182,7 +180,8 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
           ))}
         </motion.nav>
 
-        <motion.button
+        {/* Selector de idiomas reemplaza al botón de contactar */}
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ 
@@ -190,11 +189,10 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
             delay: 0.5,
             ease: [0.25, 0.46, 0.45, 0.94]
           }}
-          onClick={handleContactClick}
-          className="hidden md:block border border-orange-500 px-6 py-2 hover:bg-orange-500 hover:text-black transition-all duration-200 rounded-md hover:scale-105"
+          className="hidden md:block"
         >
-          Contactar
-        </motion.button>
+          <LanguageSelector />
+        </motion.div>
 
         <motion.button 
           initial={{ opacity: 0, rotate: -90 }}
@@ -216,7 +214,7 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
         </motion.button>
       </div>
 
-      {/* Mobile Menu optimizado */}
+      {/* Mobile Menu actualizado */}
       {mobileMenuOpen && (
         <motion.div
           initial={{ opacity: 0, y: -20, height: 0 }}
@@ -255,6 +253,7 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
                 </motion.div>
               ))}
               
+              {/* Botón de contactar en móvil */}
               <motion.button
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -266,8 +265,22 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
                 onClick={handleMobileContactClick}
                 className="border border-orange-500 px-6 py-2 hover:bg-orange-500 hover:text-black transition-all duration-200 rounded-md text-center hover:scale-[1.02]"
               >
-                Contactar
+                {t('header.contact')}
               </motion.button>
+
+              {/* Selector de idiomas en móvil */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ 
+                  duration: 0.2, 
+                  delay: (navItems.length + 1) * 0.05,
+                  ease: [0.25, 0.46, 0.45, 0.94]
+                }}
+                className="flex justify-center pt-2"
+              >
+                <LanguageSelector />
+              </motion.div>
             </nav>
           </div>
         </motion.div>

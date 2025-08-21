@@ -338,34 +338,116 @@ const menuSections: MenuSection[] = [
   },
 ]
 
-// ✅ NUEVO: Hook personalizado para precargar imágenes
-const useImagePreloader = (imageUrls: string[]) => {
+const useImagePreloader = () => {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
+  const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set())
 
-  const preloadImages = useCallback((urls: string[]) => {
-    urls.forEach(url => {
-      if (!loadedImages.has(url) && url.startsWith('/')) {
-        const img = new window.Image()
-        img.onload = () => {
-          setLoadedImages(prev => new Set([...prev, url]))
-        }
-        img.onerror = () => {
-          console.warn(`Failed to preload image: ${url}`)
-        }
-        img.src = url
+  const preloadImage = useCallback((url: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if (loadedImages.has(url)) {
+        resolve()
+        return
       }
-    })
-  }, [loadedImages])
 
-  return { loadedImages, preloadImages }
+      if (loadingImages.has(url)) {
+        // Si ya se está cargando, esperar a que termine
+        const checkLoaded = () => {
+          if (loadedImages.has(url)) {
+            resolve()
+          } else {
+            setTimeout(checkLoaded, 100)
+          }
+        }
+        checkLoaded()
+        return
+      }
+
+      setLoadingImages(prev => new Set([...prev, url]))
+
+      const img = new window.Image()
+      
+      img.onload = () => {
+        setLoadedImages(prev => new Set([...prev, url]))
+        setLoadingImages(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(url)
+          return newSet
+        })
+        resolve()
+      }
+      
+      img.onerror = () => {
+        setLoadingImages(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(url)
+          return newSet
+        })
+        console.warn(`Failed to preload image: ${url}`)
+        reject(new Error(`Failed to load ${url}`))
+      }
+
+      // ✅ NUEVO: Configuración optimizada para móviles
+      img.loading = 'eager'
+      img.decoding = 'async'
+      img.src = url
+    })
+  }, [loadedImages, loadingImages])
+
+  const preloadImages = useCallback(async (urls: string[], priority: 'high' | 'normal' | 'low' = 'normal') => {
+    const validUrls = urls.filter(url => url.startsWith('/') && !loadedImages.has(url))
+    
+    if (validUrls.length === 0) return
+
+    try {
+      if (priority === 'high') {
+        // Cargar imágenes críticas en paralelo pero con límite
+        const chunks = []
+        for (let i = 0; i < validUrls.length; i += 2) {
+          chunks.push(validUrls.slice(i, i + 2))
+        }
+        
+        for (const chunk of chunks) {
+          await Promise.allSettled(chunk.map(url => preloadImage(url)))
+          // Pequeño delay entre chunks para no saturar
+          await new Promise(resolve => setTimeout(resolve, 50))
+        }
+      } else if (priority === 'normal') {
+        // Cargar de forma secuencial con delays
+        for (const url of validUrls) {
+          try {
+            await preloadImage(url)
+            await new Promise(resolve => setTimeout(resolve, 100))
+          } catch (error) {
+            // Continúa con la siguiente imagen si una falla
+            continue
+          }
+        }
+      } else {
+        // Cargar en background sin prisa
+        validUrls.forEach(url => {
+          setTimeout(() => preloadImage(url).catch(() => {}), Math.random() * 2000)
+        })
+      }
+    } catch (error) {
+      console.warn('Error in batch preload:', error)
+    }
+  }, [loadedImages, preloadImage])
+
+  return { 
+    loadedImages, 
+    loadingImages, 
+    preloadImages,
+    isImageLoaded: (url: string) => loadedImages.has(url),
+    isImageLoading: (url: string) => loadingImages.has(url)
+  }
 }
 
-// ✅ OPTIMIZACIÓN: Convierte MenuPage en memoizado y optimiza las funciones
+// ✅ OPTIMIZADO: Componente principal con mejor estrategia de precarga
 export default function MenuPage() {
   const searchParams = useSearchParams()
   const [openSections, setOpenSections] = useState<string[]>(["shots-ruso"])
   
-  // ✅ NUEVO: Sistema de precarga de imágenes
+  // ✅ NUEVO: Sistema optimizado de precarga
   const allImageUrls = useMemo(() => 
     menuSections
       .filter(section => section.image.startsWith('/'))
@@ -373,52 +455,77 @@ export default function MenuPage() {
     []
   )
   
-  const { loadedImages, preloadImages } = useImagePreloader(allImageUrls)
+  const { loadedImages, loadingImages, preloadImages, isImageLoaded, isImageLoading } = useImagePreloader()
 
-  // ✅ NUEVO: Precargar imágenes al cargar la página
+  // ✅ MEJORADO: Estrategia de precarga por prioridades
   useEffect(() => {
-    // Precargar las primeras 3 imágenes inmediatamente
-    const initialImages = allImageUrls.slice(0, 3)
-    preloadImages(initialImages)
-    
-    // Precargar el resto después de un pequeño delay
-    const timer = setTimeout(() => {
-      preloadImages(allImageUrls)
-    }, 500)
-    
-    return () => clearTimeout(timer)
-  }, [allImageUrls, preloadImages])
-
-  useEffect(() => {
-    const openParam = searchParams.get("open")
-    if (openParam) {
-      const sectionMap: { [key: string]: string } = {
-        "SHOTS DEL RUSO": "shots-ruso",
-        "CÓCTELES FLAMEADOS": "cocteles-flameados",
-        ESPECIALES: "especiales",
-        "CERVEZAS ARTESANALES": "cervezas-artesanales",
-        "CÓCTELES SIN ALCOHOL": "sin-alcohol",
+    const preloadStrategy = async () => {
+      // 1. Cargar imágenes críticas primero (secciones abiertas por defecto)
+      const criticalImages = menuSections
+        .filter(section => openSections.includes(section.id) && section.image.startsWith('/'))
+        .map(section => section.image)
+      
+      if (criticalImages.length > 0) {
+        await preloadImages(criticalImages, 'high')
       }
 
-      const sectionId = sectionMap[openParam]
-      if (sectionId) {
-        setOpenSections([sectionId])
+      // 2. Cargar las siguientes 3-4 imágenes más probables
+      const nextImages = allImageUrls
+        .filter(url => !criticalImages.includes(url))
+        .slice(0, 4)
+      
+      if (nextImages.length > 0) {
+        await preloadImages(nextImages, 'normal')
+      }
+
+      // 3. Cargar el resto en background
+      const remainingImages = allImageUrls
+        .filter(url => !criticalImages.includes(url) && !nextImages.includes(url))
+      
+      if (remainingImages.length > 0) {
+        preloadImages(remainingImages, 'low')
       }
     }
-  }, [searchParams])
 
-  // ✅ OPTIMIZACIÓN: Memoiza la función toggleSection
+    // ✅ NUEVO: Delay inicial más inteligente basado en la conexión
+    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection
+    const isSlowConnection = connection && (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g')
+    
+    const initialDelay = isSlowConnection ? 1000 : 200
+    
+    const timer = setTimeout(preloadStrategy, initialDelay)
+    return () => clearTimeout(timer)
+  }, [allImageUrls, openSections, preloadImages])
+
+  // ✅ MEJORADO: Precarga inmediata al abrir secciones
   const toggleSection = useCallback((sectionId: string) => {
     setOpenSections((prev) => {
-      const newOpenSections = prev.includes(sectionId) 
-        ? prev.filter((id) => id !== sectionId) 
-        : [...prev, sectionId]
+      const isOpening = !prev.includes(sectionId)
+      const newOpenSections = isOpening 
+        ? [...prev, sectionId] 
+        : prev.filter((id) => id !== sectionId)
       
-      // ✅ NUEVO: Precargar imagen cuando se abre una sección
-      if (!prev.includes(sectionId)) {
+      // ✅ NUEVO: Precarga inmediata y anticipada
+      if (isOpening) {
         const section = menuSections.find(s => s.id === sectionId)
         if (section && section.image.startsWith('/')) {
-          preloadImages([section.image])
+          // Cargar la imagen de esta sección inmediatamente
+          preloadImages([section.image], 'high')
+          
+          // También precargar las secciones adyacentes
+          const currentIndex = menuSections.findIndex(s => s.id === sectionId)
+          const adjacentSections = [
+            menuSections[currentIndex + 1],
+            menuSections[currentIndex - 1]
+          ].filter(Boolean)
+          
+          const adjacentImages = adjacentSections
+            .map(s => s.image)
+            .filter(img => img.startsWith('/'))
+          
+          if (adjacentImages.length > 0) {
+            setTimeout(() => preloadImages(adjacentImages, 'normal'), 300)
+          }
         }
       }
       
@@ -426,7 +533,6 @@ export default function MenuPage() {
     })
   }, [preloadImages])
 
-  // ✅ OPTIMIZACIÓN: Memoiza la función handleDownloadMenu
   const handleDownloadMenu = useCallback(() => {
     const link = document.createElement("a");
     link.href = "/Pdf/MENU_COCTELES_KALASHNIKOV.pdf";
@@ -449,7 +555,8 @@ export default function MenuPage() {
         sections={menuSections} 
         openSections={openSections} 
         onToggle={toggleSection}
-        loadedImages={loadedImages}
+        isImageLoaded={isImageLoaded}
+        isImageLoading={isImageLoading}
       />
       <Footer />
       <WhatsAppButton />
@@ -457,7 +564,270 @@ export default function MenuPage() {
   )
 }
 
-// ✅ OPTIMIZACIÓN: Convierte HeroSection en memoizado y optimiza la imagen
+// ✅ OPTIMIZADO: MenuSections con mejor manejo de estados
+const MenuSections = memo(({
+  sections,
+  openSections,
+  onToggle,
+  isImageLoaded,
+  isImageLoading,
+}: {
+  sections: MenuSection[]
+  openSections: string[]
+  onToggle: (id: string) => void
+  isImageLoaded: (url: string) => boolean
+  isImageLoading: (url: string) => boolean
+}) => {
+  return (
+    <section className="py-5 bg-black">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {sections.map((section, index) => (
+          <MenuSectionItem
+            key={section.id}
+            section={section}
+            isOpen={openSections.includes(section.id)}
+            onToggle={() => onToggle(section.id)}
+            index={index}
+            isImageLoaded={isImageLoaded(section.image)}
+            isImageLoading={isImageLoading(section.image)}
+          />
+        ))}
+      </div>
+    </section>
+  )
+})
+
+MenuSections.displayName = 'MenuSections'
+
+// ✅ MEJORADO: MenuSectionItem con mejores placeholders y optimizaciones Next.js
+const MenuSectionItem = memo(({
+  section,
+  isOpen,
+  onToggle,
+  index,
+  isImageLoaded,
+  isImageLoading,
+}: {
+  section: MenuSection
+  isOpen: boolean
+  onToggle: () => void
+  index: number
+  isImageLoaded: boolean
+  isImageLoading: boolean
+}) => {
+  const defaultSize = { width: 256, height: 256 }
+  const imageSize = section.imageSize || defaultSize
+
+  // ✅ NUEVO: Placeholder mejorado con skeleton
+  const ImagePlaceholder = ({ width, height, isMobile = false }: { width: number, height: number, isMobile?: boolean }) => (
+    <div
+      className="bg-gray-800 rounded-lg flex flex-col items-center justify-center relative overflow-hidden"
+      style={{ width: `${width}px`, height: `${height}px` }}
+    >
+      {/* Skeleton loader animado */}
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 animate-pulse"></div>
+      <div className="relative z-10 text-center">
+        <div className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} bg-gray-600 rounded-full mb-2 mx-auto animate-pulse`}></div>
+        <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-400`}>
+          {isImageLoading ? 'Cargando...' : 'Imagen no disponible'}
+        </div>
+        {isImageLoading && (
+          <div className="mt-2">
+            <div className={`${isMobile ? 'w-16 h-1' : 'w-20 h-1'} bg-gray-600 rounded-full overflow-hidden`}>
+              <div className="h-full bg-orange-500 animate-pulse"></div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <motion.div
+      initial={{ y: 30, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true, margin: "50px" }}
+      transition={{ delay: index * 0.02, duration: 0.3 }}
+      className="mb-4"
+    >
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between py-4 px-4 md:px-6 bg-gray-900/50 hover:bg-gray-800/50 transition-colors border-b border-gray-800"
+      >
+        <div className="flex items-center space-x-4">
+          <motion.div 
+            animate={{ rotate: isOpen ? 45 : 0 }} 
+            transition={{ duration: 0.15 }}
+          >
+            <Plus className="w-6 h-6 text-orange-500" />
+          </motion.div>
+          <span className="text-lg md:text-xl font-semibold text-orange-500">{section.title}</span>
+        </div>
+      </button>
+
+      <AnimatePresence mode="wait">
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden bg-gray-900/30"
+          >
+            <div className="p-4 md:p-6">
+              {section.items.length > 0 ? (
+                <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
+                    className={`flex justify-center w-full order-1 ${section.animationDirection === "left" ? "lg:order-1" : "lg:order-2"}`}
+                  >
+                    <div className="relative flex justify-center">
+                      {section.image.startsWith('/') ? (
+                        <div className="relative flex justify-center w-full">
+                          {/* Desktop */}
+                          <div className="hidden lg:block relative">
+                            {(!isImageLoaded || isImageLoading) && (
+                              <ImagePlaceholder width={imageSize.width} height={imageSize.height} />
+                            )}
+                            {(isImageLoaded || isImageLoading) && (
+                              <Image
+                                src={section.image}
+                                alt={section.title}
+                                width={imageSize.width}
+                                height={imageSize.height}
+                                className={`object-contain max-w-full h-auto transition-all duration-500 ${
+                                  isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                                }`}
+                                style={{
+                                  maxWidth: `${imageSize.width}px`,
+                                  maxHeight: '70vh'
+                                }}
+                                sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
+                                priority={isOpen && index < 3} // ✅ Priority inteligente
+                                quality={90} // ✅ Mayor calidad
+                                placeholder="blur" // ✅ Blur placeholder
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                              />
+                            )}
+                          </div>
+
+                          {/* Mobile */}
+                          <div className="block lg:hidden relative mx-auto">
+                            {(!isImageLoaded || isImageLoading) && (
+                              <ImagePlaceholder width={280} height={300} isMobile />
+                            )}
+                            {(isImageLoaded || isImageLoading) && (
+                              <Image
+                                src={section.image}
+                                alt={section.title}
+                                width={280}
+                                height={300}
+                                className={`object-contain w-full h-auto transition-all duration-500 ${
+                                  isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                                }`}
+                                style={{
+                                  maxWidth: '280px',
+                                  maxHeight: '300px'
+                                }}
+                                sizes="280px"
+                                priority={isOpen && index < 3}
+                                quality={85} // ✅ Calidad optimizada para móvil
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                              />
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <ImagePlaceholder 
+                          width={imageSize.width} 
+                          height={imageSize.height} 
+                        />
+                      )}
+                    </div>
+                  </motion.div>
+
+                  {/* Contenedor del menú */}
+                  <div className={`space-y-3 md:space-y-4 w-full order-2 ${section.animationDirection === "left" ? "lg:order-2" : "lg:order-1"}`}>
+                    {section.items.map((item, itemIndex) => (
+                      <motion.div
+                        key={`${item.name}-${itemIndex}`}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: itemIndex * 0.02, duration: 0.2 }}
+                        className="border-b border-gray-700 pb-3 md:pb-4"
+                      >
+                        <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
+                          <h3 className="font-semibold text-white text-sm md:text-base leading-tight flex-1">
+                            {item.name}
+                          </h3>
+                          <span className="text-orange-500 font-bold text-sm md:text-base whitespace-nowrap ml-2">
+                            {item.price}
+                          </span>
+                        </div>
+                        {item.description && (
+                          <p className="text-gray-400 text-xs md:text-sm leading-relaxed pr-2">
+                            {item.description}
+                          </p>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-6 md:py-8">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
+                    className="flex justify-center"
+                  >
+                    {section.image.startsWith('/') ? (
+                      <div className="relative">
+                        {(!isImageLoaded || isImageLoading) && (
+                          <ImagePlaceholder 
+                            width={imageSize.width} 
+                            height={imageSize.height} 
+                          />
+                        )}
+                        {(isImageLoaded || isImageLoading) && (
+                          <Image
+                            src={section.image}
+                            alt={section.title}
+                            width={imageSize.width}
+                            height={imageSize.height}
+                            className={`object-contain max-w-full h-auto transition-all duration-500 ${
+                              isImageLoaded ? 'opacity-100' : 'opacity-0'
+                            }`}
+                            priority={isOpen && index < 3}
+                            quality={90}
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <ImagePlaceholder 
+                        width={imageSize.width} 
+                        height={imageSize.height} 
+                      />
+                    )}
+                  </motion.div>
+                  <p className="text-gray-400 mt-4 text-sm md:text-base">Próximamente disponible</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+})
+
+MenuSectionItem.displayName = 'MenuSectionItem'
+
 const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
   return (
     <section className="relative h-[600px] flex items-center">
@@ -508,364 +878,6 @@ const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
 })
 
 HeroSection.displayName = 'HeroSection'
-
-// ✅ OPTIMIZACIÓN: Convierte MenuSections en memoizado y agrega loadedImages
-const MenuSections = memo(({
-  sections,
-  openSections,
-  onToggle,
-  loadedImages,
-}: {
-  sections: MenuSection[]
-  openSections: string[]
-  onToggle: (id: string) => void
-  loadedImages: Set<string>
-}) => {
-  return (
-    <section className="py-5 bg-black">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {sections.map((section, index) => (
-          <MenuSectionItem
-            key={section.id}
-            section={section}
-            isOpen={openSections.includes(section.id)}
-            onToggle={() => onToggle(section.id)}
-            index={index}
-            isImageLoaded={loadedImages.has(section.image)}
-          />
-        ))}
-      </div>
-    </section>
-  )
-})
-
-MenuSections.displayName = 'MenuSections'
-
-// ✅ OPTIMIZACIÓN: MenuSectionItem con control de carga de imágenes
-const MenuSectionItem = memo(({
-  section,
-  isOpen,
-  onToggle,
-  index,
-  isImageLoaded,
-}: {
-  section: MenuSection
-  isOpen: boolean
-  onToggle: () => void
-  index: number
-  isImageLoaded: boolean
-}) => {
-  const defaultSize = { width: 256, height: 256 }
-  const imageSize = section.imageSize || defaultSize
-
-  return (
-    <motion.div
-      initial={{ y: 30, opacity: 0 }}
-      whileInView={{ y: 0, opacity: 1 }}
-      viewport={{ once: true, margin: "50px" }}
-      transition={{ delay: index * 0.02, duration: 0.3 }}
-      className="mb-4"
-    >
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between py-4 px-4 md:px-6 bg-gray-900/50 hover:bg-gray-800/50 transition-colors border-b border-gray-800"
-      >
-        <div className="flex items-center space-x-4">
-          <motion.div 
-            animate={{ rotate: isOpen ? 45 : 0 }} 
-            transition={{ duration: 0.15 }}
-          >
-            <Plus className="w-6 h-6 text-orange-500" />
-          </motion.div>
-          <span className="text-lg md:text-xl font-semibold text-orange-500">{section.title}</span>
-        </div>
-      </button>
-
-      <AnimatePresence mode="wait">
-        {isOpen && (
-          <motion.div
-            initial={{
-              height: 0,
-              opacity: 0,
-            }}
-            animate={{
-              height: "auto",
-              opacity: 1,
-            }}
-            exit={{
-              height: 0,
-              opacity: 0,
-            }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="overflow-hidden bg-gray-900/30"
-          >
-            <div className="p-4 md:p-6">
-              {section.items.length > 0 ? (
-                <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
-                    className={`flex justify-center w-full order-1 ${section.animationDirection === "left"
-                      ? "lg:order-1"
-                      : "lg:order-2"
-                      }`}
-                  >
-                    <div className="relative flex justify-center">
-                      {section.image.startsWith('/') ? (
-                        <div className="relative flex justify-center w-full">
-                          {/* Imagen para Desktop */}
-                          <div className="hidden lg:block relative">
-                            {/* ✅ NUEVO: Placeholder mientras carga */}
-                            {!isImageLoaded && (
-                              <div
-                                className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center z-10"
-                                style={{
-                                  width: `${imageSize.width}px`,
-                                  height: `${imageSize.height}px`,
-                                  maxWidth: '100%',
-                                  maxHeight: '70vh'
-                                }}
-                              >
-                                <div className="animate-pulse">
-                                  <div className="w-16 h-16 bg-gray-700 rounded-full mb-4"></div>
-                                  <div className="text-gray-500 text-sm text-center">Cargando...</div>
-                                </div>
-                              </div>
-                            )}
-                            <Image
-                              src={section.image}
-                              alt={section.title}
-                              width={imageSize.width}
-                              height={imageSize.height}
-                              className={`object-contain max-w-full h-auto transition-opacity duration-300 ${
-                                isImageLoaded ? 'opacity-100' : 'opacity-0'
-                              }`}
-                              style={{
-                                maxWidth: `${imageSize.width}px`,
-                                maxHeight: '70vh'
-                              }}
-                              sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
-                              priority={isOpen} // ✅ Priority si está abierto
-                              quality={85}
-                            />
-                          </div>
-
-                          {/* Imagen para Mobile */}
-                          <div className="block lg:hidden relative mx-auto">
-                            {/* ✅ NUEVO: Placeholder móvil */}
-                            {!isImageLoaded && (
-                              <div
-                                className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center z-10"
-                                style={{
-                                  width: '280px',
-                                  height: '300px'
-                                }}
-                              >
-                                <div className="animate-pulse text-center">
-                                  <div className="w-12 h-12 bg-gray-700 rounded-full mb-3 mx-auto"></div>
-                                  <div className="text-gray-500 text-xs">Cargando...</div>
-                                </div>
-                              </div>
-                            )}
-                            <Image
-                              src={section.image}
-                              alt={section.title}
-                              width={280}
-                              height={300}
-                              className={`object-contain w-full h-auto transition-opacity duration-300 ${
-                                isImageLoaded ? 'opacity-100' : 'opacity-0'
-                              }`}
-                              style={{
-                                maxWidth: '280px',
-                                maxHeight: '300px'
-                              }}
-                              sizes="280px"
-                              priority={isOpen}
-                              quality={85}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex justify-center w-full">
-                          <div
-                            className="hidden lg:block bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden"
-                            style={{
-                              width: `${imageSize.width}px`,
-                              height: `${imageSize.height}px`,
-                              maxWidth: '100%',
-                              maxHeight: '70vh'
-                            }}
-                          >
-                            <div className="text-gray-400 text-center z-10">
-                              <span className="text-sm">{section.image}</span>
-                            </div>
-                          </div>
-
-                          <div
-                            className="block lg:hidden bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden mx-auto"
-                            style={{
-                              width: '280px',
-                              height: '300px'
-                            }}
-                          >
-                            <div className="text-gray-400 text-center z-10">
-                              <span className="text-xs">{section.image}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-
-                  {/* Contenedor del menú */}
-                  <div className={`space-y-3 md:space-y-4 w-full order-2 ${section.animationDirection === "left"
-                    ? "lg:order-2"
-                    : "lg:order-1"
-                    }`}>
-                    {section.items.map((item, itemIndex) => (
-                      <motion.div
-                        key={`${item.name}-${itemIndex}`}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: itemIndex * 0.02, duration: 0.2 }}
-                        className="border-b border-gray-700 pb-3 md:pb-4"
-                      >
-                        <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
-                          <h3 className="font-semibold text-white text-sm md:text-base leading-tight flex-1">
-                            {item.name}
-                          </h3>
-                          <span className="text-orange-500 font-bold text-sm md:text-base whitespace-nowrap ml-2">
-                            {item.price}
-                          </span>
-                        </div>
-                        {item.description && (
-                          <p className="text-gray-400 text-xs md:text-sm leading-relaxed pr-2">
-                            {item.description}
-                          </p>
-                        )}
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-6 md:py-8">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
-                    className="flex justify-center"
-                  >
-                    <div className="flex items-center justify-center relative">
-                      {section.image.startsWith('/') ? (
-                        <>
-                          <div className="hidden lg:block relative">
-                            {!isImageLoaded && (
-                              <div
-                                className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center z-10"
-                                style={{
-                                  width: `${imageSize.width}px`,
-                                  height: `${imageSize.height}px`,
-                                  maxWidth: '100%',
-                                  maxHeight: '70vh'
-                                }}
-                              >
-                                <div className="animate-pulse">
-                                  <div className="w-16 h-16 bg-gray-700 rounded-full mb-4"></div>
-                                  <div className="text-gray-500 text-sm text-center">Cargando...</div>
-                                </div>
-                              </div>
-                            )}
-                            <Image
-                              src={section.image}
-                              alt={section.title}
-                              width={imageSize.width}
-                              height={imageSize.height}
-                              className={`object-contain max-w-full h-auto transition-opacity duration-300 ${
-                                isImageLoaded ? 'opacity-100' : 'opacity-0'
-                              }`}
-                              style={{
-                                maxWidth: `${imageSize.width}px`,
-                                maxHeight: '70vh'
-                              }}
-                              sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
-                              priority={isOpen}
-                              quality={85}
-                            />
-                          </div>
-
-                          <div className="block lg:hidden relative">
-                            {!isImageLoaded && (
-                              <div
-                                className="absolute inset-0 bg-gray-800 rounded-lg flex items-center justify-center z-10"
-                                style={{
-                                  width: '280px',
-                                  height: '300px'
-                                }}
-                              >
-                                <div className="animate-pulse text-center">
-                                  <div className="w-12 h-12 bg-gray-700 rounded-full mb-3 mx-auto"></div>
-                                  <div className="text-gray-500 text-xs">Cargando...</div>
-                                </div>
-                              </div>
-                            )}
-                            <Image
-                              src={section.image}
-                              alt={section.title}
-                              width={280}
-                              height={300}
-                              className={`object-contain w-full h-auto transition-opacity duration-300 ${
-                                isImageLoaded ? 'opacity-100' : 'opacity-0'
-                              }`}
-                              style={{
-                                maxWidth: '280px',
-                                maxHeight: '300px'
-                              }}
-                              sizes="280px"
-                              priority={isOpen}
-                              quality={85}
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div
-                            className="hidden lg:block bg-gray-800 rounded-lg flex items-center justify-center"
-                            style={{
-                              width: `${imageSize.width}px`,
-                              height: `${imageSize.height}px`,
-                              maxWidth: '100%',
-                              maxHeight: '70vh'
-                            }}
-                          >
-                            <span className="text-gray-400 text-sm text-center">{section.image}</span>
-                          </div>
-
-                          <div
-                            className="block lg:hidden bg-gray-800 rounded-lg flex items-center justify-center"
-                            style={{
-                              width: '280px',
-                              height: '300px'
-                            }}
-                          >
-                            <span className="text-gray-400 text-xs text-center">{section.image}</span>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </motion.div>
-                  <p className="text-gray-400 mt-4 text-sm md:text-base">Próximamente disponible</p>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  )
-})
-
-MenuSectionItem.displayName = 'MenuSectionItem'
 
 function Footer() {
   const [currentTime, setCurrentTime] = useState(new Date());

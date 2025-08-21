@@ -11,7 +11,7 @@ import Image from 'next/image'
 
 
 // Optimización: Mover datos fuera del componente para evitar recreación
-// Usando imágenes existentes como thumbnails temporales hasta crear los reales
+// Precargar todas las imágenes para máxima fluidez
 const galleryItems = [
   { type: "video", title: "Preparación de Cócteles", videoSrc: "/videos/Video-1.mp4", thumbnail: "/Imagenes/imagen_1_video1.png" },
   { type: "photo", title: "Ambiente Nocturno", imageSrc: "/Imagenes/galeria_foto_1.jpg" },
@@ -49,7 +49,7 @@ export default function GaleriaPage() {
 
 function HeroSection() {
   return (
-    <section className="relative h-[700px] flex items-center">
+    <section className="relative h-[700px] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <Image
           src="/Imagenes/galeria logo.jpeg"
@@ -66,62 +66,106 @@ function HeroSection() {
 
       <div className="container mx-auto px-4 relative z-20 pt-24">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ 
-            duration: 0.6, 
+            duration: 0.4, 
             ease: [0.25, 0.46, 0.45, 0.94],
-            delay: 0.2
+            delay: 0.1
           }}
           className="max-w-2xl"
         >
-          <h1 className="text-5xl md:text-4xl font-bold mb-6 text-[#FF9D00]">
+          <motion.h1 
+            initial={{ opacity: 0, x: -120 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ 
+              duration: 0.5, 
+              ease: [0.25, 0.46, 0.45, 0.94],
+              delay: 0.2
+            }}
+            className="text-5xl md:text-4xl font-bold mb-6 text-[#FF9D00]"
+          >
             Momentos que inspiran
-          </h1>
+          </motion.h1>
 
-          <p className="text-gray-300 text-lg mb-8 max-w-md">
+          <motion.p 
+            initial={{ opacity: 0, x: -80 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ 
+              duration: 0.4, 
+              ease: [0.25, 0.46, 0.45, 0.94],
+              delay: 0.35
+            }}
+            className="text-gray-300 text-lg mb-8 max-w-md"
+          >
             Descubre la magia de nuestras noches a través de videos y fotografías
             que capturan la esencia única de Bar Ruso Kalashnikov.
-          </p>
+          </motion.p>
         </motion.div>
       </div>
     </section>
   );
 }
 
-// Componente ultra-optimizado con virtualization para evitar trabas
+// Hook para precargar imágenes
+function useImagePreloader() {
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    // Precargar todas las imágenes inmediatamente
+    const imagesToPreload = galleryItems.map(item => 
+      item.type === "video" ? item.thumbnail : item.imageSrc
+    )
+
+    const preloadPromises = imagesToPreload.map(src => {
+      return new Promise<string>((resolve, reject) => {
+        const img = new window.Image()
+        img.onload = () => {
+          setLoadedImages(prev => new Set(prev).add(src))
+          resolve(src)
+        }
+        img.onerror = () => {
+          // Si falla, usar imagen por defecto
+          setLoadedImages(prev => new Set(prev).add(src))
+          resolve(src)
+        }
+        img.src = src
+      })
+    })
+
+    // Precargar todas las imágenes sin esperar
+    Promise.allSettled(preloadPromises)
+  }, [])
+
+  return loadedImages
+}
+
+// Componente ultra-optimizado sin lazy loading para máxima fluidez
 interface GalleryItemProps {
   item: typeof galleryItems[number];
   index: number;
   onClick: (videoSrc: string) => void;
+  isImageLoaded: boolean;
 }
 
-const GalleryItem = React.memo(function GalleryItem({ item, index, onClick }: GalleryItemProps) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [imageError, setImageError] = useState(false)
-
+const GalleryItem = React.memo(function GalleryItem({ item, index, onClick, isImageLoaded }: GalleryItemProps) {
   const handleClick = useCallback(() => {
     if (item.type === "video" && item.videoSrc) {
       onClick(item.videoSrc)
     }
   }, [item, onClick])
 
-  const handleImageLoad = useCallback(() => {
-    setImageLoaded(true)
-  }, [])
-
-  const handleImageError = useCallback(() => {
-    setImageError(true)
-    setImageLoaded(true) // Para mostrar el placeholder
-  }, [])
-
-  // Determinar la imagen a mostrar
-  const imageSrc = item.type === "video" 
-    ? (imageError ? "/Imagenes/galeria_foto_1.jpg" : item.thumbnail)
-    : item.imageSrc
+  const imageSrc = item.type === "video" ? item.thumbnail : item.imageSrc
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        duration: 0.3,
+        delay: index * 0.05,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      }}
       className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 cursor-pointer transition-[border-color] duration-200"
       onClick={handleClick}
       style={{ 
@@ -131,32 +175,23 @@ const GalleryItem = React.memo(function GalleryItem({ item, index, onClick }: Ga
     >
       <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
 
-        {/* Skeleton loader mientras carga */}
-        {!imageLoaded && (
-          <div className="absolute inset-0 bg-gray-800 animate-pulse">
-            <div className="w-full h-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800"></div>
-          </div>
-        )}
-
-        {/* Imagen principal */}
+        {/* Imagen principal - sin lazy loading para máxima fluidez */}
         <Image
           src={imageSrc}
           alt={item.title}
           fill
-          className={`object-cover transition-opacity duration-300 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0'
+          className={`object-cover transition-all duration-300 ${
+            isImageLoaded ? 'opacity-100' : 'opacity-0'
           } ${item.type === "photo" ? 'group-hover:scale-105 transition-transform duration-500' : ''}`}
-          loading="lazy"
-          quality={75}
+          priority={index < 9} // Priorizar las primeras 9 imágenes
+          quality={85}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          onLoad={handleImageLoad}
-          onError={handleImageError}
           placeholder="blur"
           blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
         />
 
-        {/* Overlay para videos */}
-        {item.type === "video" && imageLoaded && (
+        {/* Overlay para videos - solo si la imagen está cargada */}
+        {item.type === "video" && isImageLoaded && (
           <>
             <div className="absolute inset-0 bg-black/20"></div>
             {/* Botón de play optimizado */}
@@ -168,8 +203,8 @@ const GalleryItem = React.memo(function GalleryItem({ item, index, onClick }: Ga
           </>
         )}
 
-        {/* Badge optimizado */}
-        {imageLoaded && (
+        {/* Badge optimizado - solo si la imagen está cargada */}
+        {isImageLoaded && (
           <div className="absolute top-4 right-4 z-20">
             <span
               className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
@@ -182,6 +217,13 @@ const GalleryItem = React.memo(function GalleryItem({ item, index, onClick }: Ga
             </span>
           </div>
         )}
+
+        {/* Indicador de carga minimalista */}
+        {!isImageLoaded && (
+          <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin"></div>
+          </div>
+        )}
       </div>
 
       <div className="p-6">
@@ -189,7 +231,7 @@ const GalleryItem = React.memo(function GalleryItem({ item, index, onClick }: Ga
           {item.title}
         </h3>
       </div>
-    </div>
+    </motion.div>
   )
 })
 
@@ -197,6 +239,7 @@ function GallerySection() {
   const [filter, setFilter] = useState<"all" | "video" | "photo">("all")
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
   const [visibleItems, setVisibleItems] = useState(INITIAL_VISIBLE_ITEMS)
+  const loadedImages = useImagePreloader()
 
   const filteredItems = useMemo(() =>
     galleryItems.filter((item) => filter === "all" || item.type === filter),
@@ -228,16 +271,26 @@ function GallerySection() {
     <>
       <section className="py-10 bg-black">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="text-center mb-12"
+          >
             <h2 className="text-2xl font-bold mb-4">Nuestra Galería</h2>
             <p className="text-gray-300 max-w-2xl mx-auto">
               Cada semana compartimos nuevos momentos de nuestras noches únicas. Videos exclusivos y fotografías que
               muestran la experiencia completa del Bar Ruso Kalashnikov.
             </p>
-          </div>
+          </motion.div>
 
           {/* Filtros */}
-          <div className="flex justify-center mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="flex justify-center mb-12"
+          >
             <div className="flex space-x-4 bg-gray-900/50 p-2 rounded-lg">
               {[
                 { key: "all", label: "Todo" },
@@ -259,33 +312,49 @@ function GallerySection() {
                 </button>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Grid de Galería */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {visibleFilteredItems.map((item, index) => (
-              <GalleryItem
-                key={`${item.type}-${item.title}-${index}`}
-                item={item}
-                index={index}
-                onClick={handleVideoClick}
-              />
-            ))}
+            {visibleFilteredItems.map((item, index) => {
+              const imageSrc = item.type === "video" ? item.thumbnail : item.imageSrc
+              const isImageLoaded = loadedImages.has(imageSrc)
+              
+              return (
+                <GalleryItem
+                  key={`${item.type}-${item.title}-${index}`}
+                  item={item}
+                  index={index}
+                  onClick={handleVideoClick}
+                  isImageLoaded={isImageLoaded}
+                />
+              )
+            })}
           </div>
 
           {/* Botón cargar más */}
           {visibleItems < filteredItems.length && (
-            <div className="text-center mt-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-center mt-8"
+            >
               <button
                 onClick={loadMoreItems}
                 className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md"
               >
                 Cargar más ({filteredItems.length - visibleItems} restantes)
               </button>
-            </div>
+            </motion.div>
           )}
 
-          <div className="text-center mt-16">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="text-center mt-16"
+          >
             <h3 className="text-2xl font-bold mb-4">¿Quieres ser parte de nuestra galería?</h3>
             <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
               Visítanos y vive momentos únicos que podrían aparecer en nuestra próxima actualización semanal. ¡Cada noche
@@ -307,7 +376,7 @@ function GallerySection() {
                 <span>Síguenos en Instagram</span>
               </a>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -460,7 +529,6 @@ function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Páginas</h4>
             <ul className="space-y-2 text-gray-400">
-              {/* CAMBIO: Usar Link en lugar de <a> */}
               <li><Link href="/" className="hover:text-white">Inicio</Link></li>
               <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
               <li><Link href="/menu" className="hover:text-white">Menú</Link></li>

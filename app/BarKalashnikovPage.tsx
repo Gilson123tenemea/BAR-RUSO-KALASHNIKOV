@@ -1,19 +1,25 @@
 "use client"
 
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Facebook, Instagram, Phone } from "lucide-react"
 import SharedHeader from "@/components/shared-header"
 import Link from "next/link"
 import Image from 'next/image'
 
-// Hook optimizado para precargar imágenes
+// Hook optimizado SIN BUGS
 function useImagePreloader(imageUrls: string[]) {
   const [loadedImages, setLoadedImages] = useState(new Set<string>())
   const [isLoading, setIsLoading] = useState(true)
   const [errors, setErrors] = useState(new Set<string>())
+  const urlsRef = useRef(imageUrls.join(','))
 
   useEffect(() => {
+    // Solo ejecutar si las URLs han cambiado realmente
+    const currentUrls = imageUrls.join(',')
+    if (urlsRef.current === currentUrls) return
+    urlsRef.current = currentUrls
+
     if (!imageUrls || imageUrls.length === 0) {
       setIsLoading(false)
       return
@@ -21,6 +27,8 @@ function useImagePreloader(imageUrls: string[]) {
 
     console.log('🚀 Iniciando precarga de', imageUrls.length, 'imágenes en paralelo')
     setIsLoading(true)
+    setLoadedImages(new Set())
+    setErrors(new Set())
     
     // CARGA PARALELA - todas las imágenes al mismo tiempo
     const imagePromises = imageUrls.map((url, index) => {
@@ -45,11 +53,11 @@ function useImagePreloader(imageUrls: string[]) {
 
     // Esperar a que todas terminen
     Promise.all(imagePromises).then(() => {
-      console.log('🎉 Precarga completada. Éxito:', loadedImages.size, 'Errores:', errors.size)
+      console.log('🎉 Precarga completada')
       setIsLoading(false)
     })
 
-  }, [imageUrls.join(',')]) // Dependencia estable
+  }, [imageUrls.length]) // Dependencia más estable
 
   return { loadedImages, isLoading, errors }
 }
@@ -92,8 +100,9 @@ export default function BarKalashnikovPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      console.log('⏰ LoadingScreen completado')
       setLoading(false)
-    }, 2000) // Reducido de 3000 a 2000
+    }, 2200) // Ligeramente más tiempo para evitar conflictos
     return () => clearTimeout(timer)
   }, [])
 
@@ -103,19 +112,22 @@ export default function BarKalashnikovPage() {
       setScrolled(isScrolled)
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true }) // passive para mejor performance
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   return (
     <>
-      <AnimatePresence>{loading && <LoadingScreen />}</AnimatePresence>
+      <AnimatePresence mode="wait">
+        {loading && <LoadingScreen key="loading" />}
+      </AnimatePresence>
 
       {!loading && (
         <motion.div
+          key="content"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="min-h-screen bg-black text-white overflow-x-hidden" 
         >
           <SharedHeader scrolled={scrolled} />
@@ -138,7 +150,7 @@ function LoadingScreen() {
     <motion.div
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className="fixed inset-0 bg-black z-50 flex items-center justify-center"
     >
       <div className="text-center">
@@ -148,8 +160,8 @@ function LoadingScreen() {
             scale: [1, 1.1, 1],
           }}
           transition={{
-            rotate: { duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
-            scale: { duration: 2, repeat: Number.POSITIVE_INFINITY },
+            rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+            scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
           }}
           className="w-32 h-32 mx-auto mb-8 relative"
         >
@@ -159,6 +171,7 @@ function LoadingScreen() {
             fill
             className="object-contain rounded-full"
             priority
+            quality={95}
           />
           <div className="absolute inset-0 w-full h-full rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
         </motion.div>
@@ -166,7 +179,7 @@ function LoadingScreen() {
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
           className="text-4xl font-bold text-orange-500 mb-4"
         >
           BAR RUSO KALASHNIKOV
@@ -175,14 +188,14 @@ function LoadingScreen() {
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: "100%" }}
-          transition={{ delay: 1, duration: 1.5 }}
+          transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
           className="h-1 bg-orange-500 mx-auto max-w-xs"
         ></motion.div>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2 }}
+          transition={{ delay: 1.8, duration: 0.4 }}
           className="text-gray-400 mt-4"
         >
           Preparando tu experiencia única...
@@ -218,7 +231,7 @@ function HeroSection() {
         <motion.div
           initial={{ x: -100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
+          transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
           className="max-w-lg"
         >
           <h1 className="text-2xl md:text-3xl font-bold mb-10">
@@ -464,7 +477,7 @@ function StatsSection() {
   )
 }
 
-// ✅ SECCIÓN COMPLETAMENTE OPTIMIZADA
+// ✅ SECCIÓN SIN BUGS - COMPLETAMENTE ARREGLADA
 function OptimizedLocalSection() {
   const images = useMemo(() => [
     '/Imagenes/Inicio_1.jpg',
@@ -474,8 +487,11 @@ function OptimizedLocalSection() {
     '/Imagenes/Inicio_5.jpg'
   ], [])
 
-  const { loadedImages, isLoading } = useImagePreloader(images)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [sectionVisible, setSectionVisible] = useState(false)
+  
+  // Solo iniciar precarga cuando la sección sea visible para evitar conflictos con LoadingScreen
+  const { loadedImages, isLoading } = useImagePreloader(sectionVisible ? images : [])
 
   // Solo cambiar imagen cuando esté cargada
   const nextImage = useCallback(() => {
@@ -483,22 +499,19 @@ function OptimizedLocalSection() {
       const next = (prev + 1) % images.length
       // Solo avanzar si la siguiente imagen ya está cargada
       if (loadedImages.has(images[next])) {
-        console.log('📱 Cambiando a imagen:', images[next])
         return next
       }
-      console.log('⏳ Esperando carga de:', images[next])
       return prev
     })
   }, [images, loadedImages])
 
   // Auto-avance solo cuando las imágenes estén listas
   useEffect(() => {
-    if (isLoading || images.length <= 1) return
+    if (!sectionVisible || isLoading || images.length <= 1) return
 
-    console.log('🔄 Iniciando auto-avance del carrusel')
-    const interval = setInterval(nextImage, 4000) // Aumentado a 4 segundos
+    const interval = setInterval(nextImage, 4000)
     return () => clearInterval(interval)
-  }, [isLoading, nextImage, images.length])
+  }, [isLoading, nextImage, images.length, sectionVisible])
 
   return (
     <section id="sobre-nosotros" className="py-10 bg-black">
@@ -506,48 +519,54 @@ function OptimizedLocalSection() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            whileInView={{ 
+              x: 0, 
+              opacity: 1,
+              transition: {
+                duration: 0.8,
+                onComplete: () => setSectionVisible(true) // Activar precarga DESPUÉS de la animación
+              }
+            }}
             className="rounded-3xl p-8 flex items-center justify-center h-[400px]"
           >
             <div className="w-full h-80 rounded-lg relative overflow-hidden">
-              {isLoading ? (
-                // Estado de carga
+              {!sectionVisible || isLoading ? (
+                // Estado de carga mejorado
                 <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mb-4"></div>
                     <p className="text-gray-400 text-sm">
-                      Cargando imágenes... ({loadedImages.size}/{images.length})
+                      {!sectionVisible ? 'Preparando...' : `Cargando imágenes... (${loadedImages.size}/${images.length})`}
                     </p>
                   </div>
                 </div>
               ) : (
                 // Carrusel optimizado
-                <Image
-                  src={images[currentIndex]}
-                  alt={`Vista del local ${currentIndex + 1}`}
-                  fill
-                  className="object-cover rounded-lg transition-opacity duration-500"
-                  quality={85} // Reducido de 100 a 85
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  style={{
-                    opacity: loadedImages.has(images[currentIndex]) ? 1 : 0.5
-                  }}
-                />
-              )}
-              
-              {/* Indicadores de progreso */}
-              {!isLoading && (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                  {images.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === currentIndex ? 'bg-orange-500' : 'bg-white/30'
-                      }`}
-                    />
-                  ))}
-                </div>
+                <>
+                  <Image
+                    src={images[currentIndex]}
+                    alt={`Vista del local ${currentIndex + 1}`}
+                    fill
+                    className="object-cover rounded-lg transition-opacity duration-500"
+                    quality={85}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{
+                      opacity: loadedImages.has(images[currentIndex]) ? 1 : 0.5
+                    }}
+                  />
+                  
+                  {/* Indicadores de progreso */}
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {images.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === currentIndex ? 'bg-orange-500' : 'bg-white/30'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </motion.div>

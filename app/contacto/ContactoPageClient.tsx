@@ -8,7 +8,8 @@ import Link from "next/link"
 import emailjs from "@emailjs/browser"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
-
+import { useLanguage } from "@/components/LanguageContext" // ← Importar para el header/navegación
+import { useContactoLanguage } from "./ContactoLanguage" // ← Importar traducciones específicas
 
 export default function ContactoPage() {
   return (
@@ -29,6 +30,8 @@ export default function ContactoPage() {
 }
 
 function HeroSection() {
+  const { tc } = useContactoLanguage() // ← Usar traducciones específicas de contacto
+
   const handleUbicacionClick = () => {
     window.open(
       "https://www.google.com/maps/place/Bar+Ruso+Kalashnikov/@-2.9053604,-79.0121328,225m/data=!3m1!1e3!4m10!1m2!2m1!1scocteles!3m6!1s0x91cd194baa33c27f:0x1bd14ff355480aa5!8m2!3d-2.9053604!4d-79.0112284!15sCghjb2N0ZWxlc1oKIghjb2N0ZWxlc5IBA2JhcpoBI0NoWkRTVWhOTUc5blMwVkpRMEZuU1VNMmIxbHhlRkZuRUFFqgFICggvbS8wMjRnNhABKgwiCGNvY3RlbGVzKA4yHhABIhpKWkOv7yyP5zgKC63_-P0b64-6vWa_9As5rDIMEAIiCGNvY3RlbGVz4AEA-gEECAAQQA!16s%2Fg%2F11gjj1nnvp?entry=ttu&g_ep=EgoyMDI1MDgxMS4wIKXMDSoASAFQAw%3D%3D",
@@ -63,12 +66,11 @@ function HeroSection() {
           className="max-w-2xl"
         >
           <h1 className="text-5xl md:text-2xl font-bold mb-6">
-            Hablemos de tu próxima visita
+            {tc('heroTitle')}
           </h1>
 
           <p className="text-gray-300 text-sm mb-10 max-w-xs">
-            Estamos aquí para responder tus preguntas y brindarte la información que necesitas.
-            Ven a disfrutar de una velada perfecta desde esta noche.
+            {tc('heroSubtitle')}
           </p>
 
           <motion.button
@@ -78,7 +80,7 @@ function HeroSection() {
             className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors flex items-center space-x-2 rounded-md"
           >
             <MapPin className="w-5 h-5" />
-            <span>Ubicación</span>
+            <span>{tc('locationButton')}</span>
           </motion.button>
         </motion.div>
       </div>
@@ -87,6 +89,7 @@ function HeroSection() {
 }
 
 function ContactSection() {
+  const { tc } = useContactoLanguage()
   const form = useRef<HTMLFormElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
@@ -98,12 +101,11 @@ function ContactSection() {
     setIsSubmitting(true)
 
     try {
-      // Configuración de EmailJS - Reemplaza con tus credenciales
       await emailjs.sendForm(
-        "service_1yyh7l9", // Reemplaza con tu Service ID
-        "template_gts5nsm", // Reemplaza con tu Template ID
+        "service_1yyh7l9",
+        "template_gts5nsm",
         form.current,
-        "zC1c36MzmjOsPQM4Q", // Reemplaza con tu Public Key
+        "zC1c36MzmjOsPQM4Q",
       )
 
       setSubmitStatus("success")
@@ -129,7 +131,7 @@ function ContactSection() {
       <div className="container mx-auto px-4">
         <div className="text mb-8">
           <motion.div initial={{ y: 50, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
-            <p className="text-black-500 text-sm font-semibold mb-2">--- Estamos para atenderte ---</p>
+            <p className="text-black-500 text-sm font-semibold mb-2">{tc('sectionSubtitle')}</p>
           </motion.div>
         </div>
 
@@ -141,56 +143,55 @@ function ContactSection() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-2xl font-bold mb-6 text-[#FF9D00]">
-              Ponte en contacto con nosotros
+              {tc('formTitle')}
             </h2>
             <p className="text-gray-300 mb-8">
-              ¿Tienes alguna duda o quieres más información? Nuestro equipo está listo para atenderte y ayudarte a vivir
-              la mejor experiencia en nuestro bar.
+              {tc('formDescription')}
             </p>
 
             <form ref={form} onSubmit={sendEmail} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold mb-2">NOMBRE</label>
+                  <label className="block text-sm font-semibold mb-2">{tc('nameLabel')}</label>
                   <input
                     type="text"
                     name="user_name"
                     required
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-md focus:border-orange-500 focus:outline-none transition-colors"
-                    placeholder="Tu nombre completo"
+                    placeholder={tc('namePlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-2">CORREO ELECTRÓNICO</label>
+                  <label className="block text-sm font-semibold mb-2">{tc('emailLabel')}</label>
                   <input
                     type="email"
                     name="user_email"
                     required
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-md focus:border-orange-500 focus:outline-none transition-colors"
-                    placeholder="tu@email.com"
+                    placeholder={tc('emailPlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-2">ASUNTO</label>
+                <label className="block text-sm font-semibold mb-2">{tc('subjectLabel')}</label>
                 <input
                   type="text"
                   name="subject"
                   required
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-md focus:border-orange-500 focus:outline-none transition-colors"
-                  placeholder="¿En qué podemos ayudarte?"
+                  placeholder={tc('subjectPlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-2">COMENTARIO</label>
+                <label className="block text-sm font-semibold mb-2">{tc('messageLabel')}</label>
                 <textarea
                   name="message"
                   required
                   rows={6}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-md focus:border-orange-500 focus:outline-none transition-colors resize-none"
-                  placeholder="Cuéntanos más detalles..."
+                  placeholder={tc('messagePlaceholder')}
                 />
               </div>
 
@@ -202,14 +203,14 @@ function ContactSection() {
                 className="w-full bg-orange-500 text-black py-3 px-6 font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 rounded-md"
               >
                 <Send className="w-5 h-5" />
-                <span>{isSubmitting ? "Enviando..." : "ENVIAR"}</span>
+                <span>{isSubmitting ? tc('sending') : tc('sendButton')}</span>
               </motion.button>
 
               {submitStatus === "success" && (
-                <p className="text-green-500 text-center">¡Mensaje enviado exitosamente!</p>
+                <p className="text-green-500 text-center">{tc('successMessage')}</p>
               )}
               {submitStatus === "error" && (
-                <p className="text-red-500 text-center">Error al enviar el mensaje. Inténtalo de nuevo.</p>
+                <p className="text-red-500 text-center">{tc('errorMessage')}</p>
               )}
             </form>
           </motion.div>
@@ -223,10 +224,10 @@ function ContactSection() {
           >
             <div>
               <h3 className="text-2xl font-bold mb-6 text-[#FF9D00]">
-                Tus Detalles
+                {tc('infoTitle')}
               </h3>
               <p className="text-gray-300 mb-8">
-                Completa tus datos y escríbenos tu mensaje. Te responderemos lo antes posible.
+                {tc('infoDescription')}
               </p>
             </div>
 
@@ -237,7 +238,7 @@ function ContactSection() {
               >
                 <MapPin className="w-6 h-6 text-orange-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold mb-1">Dirección</h4>
+                  <h4 className="font-semibold mb-1">{tc('addressLabel')}</h4>
                   <p className="text-gray-300 text-sm">
                     Remigio Crespo 1-87 y Agustín Cueva
                     <br />
@@ -252,7 +253,7 @@ function ContactSection() {
               >
                 <Phone className="w-6 h-6 text-orange-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold mb-1">Teléfono</h4>
+                  <h4 className="font-semibold mb-1">{tc('phoneLabel')}</h4>
                   <p className="text-gray-300 text-sm">+593 99 557 5335</p>
                 </div>
               </motion.div>
@@ -263,7 +264,7 @@ function ContactSection() {
               >
                 <Mail className="w-6 h-6 text-orange-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold mb-1">Email</h4>
+                  <h4 className="font-semibold mb-1">{tc('emailInfoLabel')}</h4>
                   <p className="text-gray-300 text-sm">rusobarkalashnikov@gmail.com</p>
                 </div>
               </motion.div>
@@ -274,17 +275,17 @@ function ContactSection() {
               >
                 <Clock className="w-6 h-6 text-orange-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold mb-1">Horarios</h4>
+                  <h4 className="font-semibold mb-1">{tc('scheduleLabel')}</h4>
                   <div className="text-gray-300 text-sm space-y-1">
                     <div className="flex justify-between">
-                      <span>Lun - Jue: 15:00 - 00:00</span>
+                      <span>{tc('scheduleMonThu')}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Vie: 15:00 - 02:00 | Sáb: 15:00 - 00:00</span>
+                      <span>{tc('scheduleFri')}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Domingo:</span>
-                      <span className="text-red-500">CERRADO</span>
+                      <span>{tc('scheduleSun')}</span>
+                      <span className="text-red-500">{tc('scheduleClosed')}</span>
                     </div>
                   </div>
                 </div>
@@ -297,11 +298,11 @@ function ContactSection() {
               whileTap={{ scale: 0.98 }}
               className="w-full bg-gray-800 text-white py-3 px-6 font-semibold hover:bg-gray-700 transition-colors border border-gray-700 hover:border-orange-500 rounded-md"
             >
-              Ver en Google Maps
+              {tc('googleMapsButton')}
             </motion.button>
 
             <div>
-              <h4 className="font-semibold mb-4">SÍGUENOS</h4>
+              <h4 className="font-semibold mb-4">{tc('followUs')}</h4>
               <div className="flex space-x-4">
                 <motion.a
                   href="https://facebook.com/barrusokalashnikov"
@@ -356,9 +357,9 @@ function BarInteriorSection() {
   )
 }
 
-
-
 function Footer() {
+  const { t } = useLanguage() // ← Para navegación del footer (reutiliza las del header)
+  const { tc } = useContactoLanguage() // ← Para contenido específico del footer de contacto
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -453,9 +454,9 @@ function Footer() {
                 />
               </div>
             </div>
-            <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
+            <h3 className="text-xl font-bold mb-4">{tc('footerTitle')}</h3>
             <p className="text-gray-400 text-sm mb-6">
-              La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.
+              {tc('footerDescription')}
             </p>
             <div className="flex space-x-4">
               <a
@@ -478,35 +479,28 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Páginas</h4>
-             <ul className="space-y-2 text-gray-400">
-              {/* CAMBIO: Usar Link en lugar de <a> */}
-              <li><Link href="/" className="hover:text-white">Inicio</Link></li>
-              <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
-              <li><Link href="/menu" className="hover:text-white">Menú</Link></li>
-              <li><Link href="/contacto" className="hover:text-white">Contacto</Link></li>
-              <li><Link href="/galeria" className="hover:text-white">Galería</Link></li>
+            <h4 className="font-semibold mb-4">{tc('pagesTitle')}</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li><Link href="/" className="hover:text-white">{t('nav.home')}</Link></li>
+              <li><Link href="/sobre-nosotros" className="hover:text-white">{t('nav.about')}</Link></li>
+              <li><Link href="/menu" className="hover:text-white">{t('nav.menu')}</Link></li>
+              <li><Link href="/contacto" className="hover:text-white">{t('nav.contact')}</Link></li>
+              <li><Link href="/galeria" className="hover:text-white">{t('nav.gallery')}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Horarios de Apertura</h4>
+            <h4 className="font-semibold mb-4">{tc('openingHours')}</h4>
             <div className="space-y-2 text-gray-400 text-sm">
               <div className="flex justify-between">
-                <span>Lunes - Jueves:</span>
-                <span>15:00 - 00:00</span>
+                <span>{tc('scheduleMonThu')}</span>
               </div>
               <div className="flex justify-between">
-                <span>Viernes:</span>
-                <span>15:00 - 02:00</span>
+                <span>{tc('scheduleFri')}</span>
               </div>
               <div className="flex justify-between">
-                <span>Sábado:</span>
-                <span>15:00 - 00:00</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Domingo:</span>
-                <span className="text-red-500">CERRADO</span>
+                <span>{tc('scheduleSun')}</span>
+                <span className="text-red-500">{tc('scheduleClosed')}</span>
               </div>
             </div>
             
@@ -515,10 +509,10 @@ function Footer() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
-                    {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
+                    {isOpen ? tc('openNow') : tc('closedNow')}
                   </p>
                   <p className="text-xs text-gray-400">
-                    Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                    {tc('currentTime')} {currentTime.toLocaleTimeString('es-EC', { 
                       timeZone: 'America/Guayaquil',
                       hour: '2-digit', 
                       minute: '2-digit'
@@ -531,7 +525,7 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Instagram</h4>
+            <h4 className="font-semibold mb-4">{tc('instagramTitle')}</h4>
             <div className="grid grid-cols-2 gap-2">
               {[
                 "/Imagenes/Instagram_1.png",
@@ -556,7 +550,7 @@ function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          © 2025 Bar Ruso Kalashnikov. Todos los derechos reservados.
+          {tc('copyright')}
         </div>
       </div>
     </footer>
@@ -564,10 +558,11 @@ function Footer() {
 }
 
 function WhatsAppButton() {
+  const { tc } = useContactoLanguage() // ← Agregar traducciones para WhatsApp
   const phoneNumber = "593995575335"
-  const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
-
+  
   const handleWhatsAppClick = () => {
+    const message = tc('whatsappMessage') // ← Usar mensaje traducido
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, "_blank")
   }

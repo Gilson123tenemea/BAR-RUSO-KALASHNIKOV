@@ -1,6 +1,5 @@
-
 "use client"
-
+//menu/MenuPageClient.tsx
 import { useState, useEffect, useMemo, useCallback, memo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Download, Facebook, Instagram, Phone } from "lucide-react"
@@ -8,6 +7,7 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
+import { useMenuLanguage, getTranslatedMenuSections, getTranslatedMenuData } from './MenuLanguage'
 
 interface MenuItem {
   name: string
@@ -400,12 +400,22 @@ const useImagePreloader = () => {
 // ✅ OPTIMIZADO: Componente principal sin bloqueos
 export default function MenuPage() {
   const [openSections, setOpenSections] = useState<string[]>(["shots-ruso"])
+  const { currentLanguage } = useMenuLanguage()
+
+  // Obtener títulos traducidos
+
+  // Crear secciones con títulos traducidos
+ // ✅ CÓDIGO NUEVO
+const translatedMenuSections = useMemo(() => 
+  getTranslatedMenuData(currentLanguage, menuSections as any), 
+  [currentLanguage]
+)
 
   const allImageUrls = useMemo(() =>
-    menuSections
+    translatedMenuSections
       .filter(section => section.image.startsWith('/'))
       .map(section => section.image),
-    []
+    [translatedMenuSections]
   )
 
   const { preloadImages, isImageLoaded, isMobile } = useImagePreloader()
@@ -439,15 +449,15 @@ export default function MenuPage() {
 
       // ✅ NUEVO: Solo precargar, no bloquear
       if (isOpening) {
-        const section = menuSections.find(s => s.id === sectionId)
+        const section = translatedMenuSections.find(s => s.id === sectionId)
         if (section && section.image.startsWith('/')) {
           preloadImages([section.image]) // Precarga sin bloquear
 
           // Precargar secciones adyacentes
-          const currentIndex = menuSections.findIndex(s => s.id === sectionId)
+          const currentIndex = translatedMenuSections.findIndex(s => s.id === sectionId)
           const adjacentSections = [
-            menuSections[currentIndex + 1],
-            menuSections[currentIndex - 1]
+            translatedMenuSections[currentIndex + 1],
+            translatedMenuSections[currentIndex - 1]
           ].filter(Boolean)
 
           const adjacentImages = adjacentSections
@@ -462,7 +472,7 @@ export default function MenuPage() {
 
       return newOpenSections
     })
-  }, [preloadImages])
+  }, [preloadImages, translatedMenuSections])
 
   const handleDownloadMenu = useCallback(() => {
     const link = document.createElement("a");
@@ -483,7 +493,7 @@ export default function MenuPage() {
       <SharedHeader />
       <HeroSection onDownload={handleDownloadMenu} />
       <MenuSections
-        sections={menuSections}
+        sections={translatedMenuSections}
         openSections={openSections}
         onToggle={toggleSection}
         isImageLoaded={isImageLoaded}
@@ -759,8 +769,10 @@ const MenuSectionItem = memo(({
 
 MenuSectionItem.displayName = 'MenuSectionItem'
 
-// ✅ Los demás componentes permanecen igual...
+// ✅ Componente HeroSection con traducciones
 const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
+  const { tMenu } = useMenuLanguage()
+
   return (
     <section className="relative h-[600px] flex items-center">
       <div className="absolute inset-0">
@@ -786,12 +798,11 @@ const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
           className="max-w-2xl"
         >
           <h1 className="text-2xl md:text-2xl font-bold mb-6 text-white drop-shadow-2xl">
-            Explora nuestra carta
+            {tMenu('hero.title')}
           </h1>
 
           <p className="text-gray-300 text-sm mb-10 max-w-xs">
-            Desde cócteles clásicos hasta nuestras creaciones más audaces, cada opción está pensada para sorprender y
-            deleitar tu paladar.
+            {tMenu('hero.subtitle')}
           </p>
 
           <motion.button
@@ -801,7 +812,7 @@ const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
             className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors flex items-center space-x-2 rounded-md shadow-2xl"
           >
             <Download className="w-5 h-5" />
-            <span>Descargar Menú</span>
+            <span>{tMenu('hero.downloadButton')}</span>
           </motion.button>
         </motion.div>
       </div>
@@ -809,10 +820,10 @@ const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
   )
 })
 
-
 HeroSection.displayName = 'HeroSection'
 
 function Footer() {
+  const { tMenu } = useMenuLanguage()
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
 
@@ -898,7 +909,7 @@ function Footer() {
             </div>
             <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
             <p className="text-gray-400 text-sm mb-6">
-              La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.
+              {tMenu('footer.description')}
             </p>
             <div className="flex space-x-4">
               <a
@@ -921,34 +932,54 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Páginas</h4>
+            <h4 className="font-semibold mb-4">{tMenu('footer.pages')}</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><Link href="/" className="hover:text-white">Inicio</Link></li>
-              <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
-              <li><Link href="/menu" className="hover:text-white">Menú</Link></li>
-              <li><Link href="/contacto" className="hover:text-white">Contacto</Link></li>
-              <li><Link href="/galeria" className="hover:text-white">Galería</Link></li>
+              <li>
+                <Link href="/" className="hover:text-white">
+                  {tMenu('footer.navigation.home' as any)}
+                </Link>
+              </li>
+              <li>
+                <Link href="/sobre-nosotros" className="hover:text-white">
+                  {tMenu('footer.navigation.about' as any)}
+                </Link>
+              </li>
+              <li>
+                <Link href="/menu" className="hover:text-white">
+                  {tMenu('footer.navigation.menu' as any)}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contacto" className="hover:text-white">
+                  {tMenu('footer.navigation.contact' as any)}
+                </Link>
+              </li>
+              <li>
+                <Link href="/galeria" className="hover:text-white">
+                  {tMenu('footer.navigation.gallery' as any)}
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Horarios de Apertura</h4>
+            <h4 className="font-semibold mb-4">{tMenu('footer.hours')}</h4>
             <div className="space-y-2 text-gray-400 text-sm">
               <div className="flex justify-between">
-                <span>Lunes - Jueves:</span>
+                <span>{tMenu('footer.monday')} - {tMenu('footer.thursday')}:</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Viernes:</span>
+                <span>{tMenu('footer.friday')}:</span>
                 <span>15:00 - 02:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Sábado:</span>
+                <span>{tMenu('footer.saturday')}:</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Domingo:</span>
-                <span className="text-red-500">CERRADO</span>
+                <span>{tMenu('footer.sunday')}:</span>
+                <span className="text-red-500">{tMenu('footer.closed')}</span>
               </div>
             </div>
 
@@ -956,10 +987,10 @@ function Footer() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
-                    {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
+                    {isOpen ? tMenu('footer.openNow') : tMenu('footer.closedNow')}
                   </p>
                   <p className="text-xs text-gray-400">
-                    Hora actual: {currentTime.toLocaleTimeString('es-EC', {
+                    {tMenu('footer.currentTime')} {currentTime.toLocaleTimeString('es-EC', {
                       timeZone: 'America/Guayaquil',
                       hour: '2-digit',
                       minute: '2-digit'
@@ -994,7 +1025,7 @@ function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          © 2025 Bar Ruso Kalashnikov. Todos los derechos reservados.
+          © 2025 Bar Ruso Kalashnikov. {tMenu('footer.rights')}
         </div>
       </div>
     </footer>
@@ -1003,11 +1034,13 @@ function Footer() {
 
 Footer.displayName = 'Footer'
 
+// ✅ Componente WhatsAppButton con traducciones
 function WhatsAppButton() {
+  const { tMenu } = useMenuLanguage()
   const phoneNumber = "593995575335"
-  const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
 
   const handleWhatsAppClick = () => {
+    const message = tMenu('whatsapp.reservationMessage')
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, "_blank")
   }

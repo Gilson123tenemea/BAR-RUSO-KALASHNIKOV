@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Facebook, Instagram, Phone } from "lucide-react"
 import SharedHeader from "@/components/shared-header"
+import { InicioLanguageProvider, useInicioLanguage } from "./translations/InicioLanguageContext"
+import { useLanguage } from "@/components/LanguageContext" // Para el WhatsApp y navegación
 import Link from "next/link"
 import Image from 'next/image'
 
@@ -110,7 +112,16 @@ function useCountAnimation(end: number, duration = 2000) {
   return { count, startAnimation }
 }
 
+// 🚀 COMPONENTE PRINCIPAL ENVUELTO EN PROVIDER
 export default function BarKalashnikovPage() {
+  return (
+    <InicioLanguageProvider>
+      <BarKalashnikovContent />
+    </InicioLanguageProvider>
+  )
+}
+
+function BarKalashnikovContent() {
   const [loading, setLoading] = useState(true)
   const [scrolled, setScrolled] = useState(false)
   
@@ -188,8 +199,10 @@ export default function BarKalashnikovPage() {
   )
 }
 
-// ✅ LOADING SCREEN MEJORADO CON PROGRESO DEL CARRUSEL
+// ✅ LOADING SCREEN CON TRADUCCIONES DE INICIO
 function LoadingScreen({ carouselProgress, carouselLoading }: { carouselProgress: number, carouselLoading: boolean }) {
+  const { tInicio } = useInicioLanguage()
+
   return (
     <motion.div
       initial={{ opacity: 1 }}
@@ -226,10 +239,9 @@ function LoadingScreen({ carouselProgress, carouselLoading }: { carouselProgress
           transition={{ delay: 0.5, duration: 0.6 }}
           className="text-4xl font-bold text-orange-500 mb-4"
         >
-          BAR RUSO KALASHNIKOV
+          {tInicio('loading.title')}
         </motion.h1>
 
-        {/* ✅ BARRA DE PROGRESO MEJORADA */}
         <div className="max-w-xs mx-auto mb-4">
           <motion.div
             initial={{ width: 0 }}
@@ -253,8 +265,8 @@ function LoadingScreen({ carouselProgress, carouselLoading }: { carouselProgress
           className="text-gray-400 mt-4"
         >
           {carouselLoading 
-            ? `Cargando experiencia... ${Math.round(carouselProgress)}%`
-            : 'Preparando tu experiencia única...'
+            ? `${tInicio('loading.loading')} ${Math.round(carouselProgress)}%`
+            : tInicio('loading.preparing')
           }
         </motion.p>
       </div>
@@ -262,7 +274,10 @@ function LoadingScreen({ carouselProgress, carouselLoading }: { carouselProgress
   )
 }
 
+// ✅ HERO SECTION - TRADUCIDA
 function HeroSection() {
+  const { tInicio } = useInicioLanguage()
+
   return (
     <section id="inicio" className="relative h-[600px] flex items-center">
       <div className="absolute inset-0">
@@ -292,14 +307,13 @@ function HeroSection() {
           className="max-w-lg"
         >
           <h1 className="text-2xl md:text-3xl font-bold mb-10">
-            Cócteles con carácter.
+            {tInicio('hero.title')}
             <br />
-            <span className="text_blank-500">Veladas con sabor.</span>
+            <span className="text_blank-500">{tInicio('hero.subtitle')}</span>
           </h1>
 
           <p className="text-gray-300 text-sm mb-10 max-w-xs">
-            Un bar íntimo en el centro de la ciudad: más de 250 cócteles, catas y musica.
-            Ven a disfrutar de una velada perfecta.
+            {tInicio('hero.description')}
           </p>
 
           <Link href="/sobre-nosotros">
@@ -308,7 +322,7 @@ function HeroSection() {
               whileTap={{ scale: 0.95 }}
               className="bg-orange-500 text-black px-6 py-2 text-sm font-semibold hover:bg-orange-600 transition-colors rounded-md"
             >
-              Más Información
+              {tInicio('hero.moreInfo')}
             </motion.button>
           </Link>
         </motion.div>
@@ -336,7 +350,10 @@ function HeroSection() {
   )
 }
 
+// ✅ WELCOME SECTION - TRADUCIDA
 function WelcomeSection() {
+  const { tInicio } = useInicioLanguage()
+
   return (
     <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
@@ -360,13 +377,10 @@ function WelcomeSection() {
           </motion.div>
 
           <motion.div initial={{ x: 50, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }}>
-            <p className="text-orange-500 text-sm font-semibold mb-4">BIENVENIDOS</p>
-            <h2 className="text-2xl font-bold mb-0">Una experiencia</h2>
-            <h2 className="text-2xl font-bold mb-6">única</h2>
+            <p className="text-orange-500 text-sm font-semibold mb-4">{tInicio('welcome.badge')}</p>
+            <h2 className="text-2xl font-bold mb-6">{tInicio('welcome.title')}</h2>
             <p className="text-gray-300 leading-relaxed mb-8">
-              En el corazón de Cuenca, Bar Ruso Kalashnikov combina la tradición rusa con la creatividad en la coctelería moderna. 
-              Nuestros mixólogos expertos elaboran bebidas únicas que fusionan técnicas clásicas y vanguardistas.
-              Cada visita es una experiencia sensorial que invita a disfrutar de momentos inolvidables en un ambiente vibrante, acogedor y lleno de energía.
+              {tInicio('welcome.description')}
             </p>
             <Link href="/galeria">
               <motion.button
@@ -374,7 +388,7 @@ function WelcomeSection() {
                 whileTap={{ scale: 0.95 }}
                 className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md"
               >
-                Conocer Más
+                {tInicio('welcome.button')}
               </motion.button>
             </Link>
           </motion.div>
@@ -384,14 +398,17 @@ function WelcomeSection() {
   )
 }
 
+// ✅ MENU SECTION - TRADUCIDA
 function MenuSection() {
+  const { tInicio } = useInicioLanguage()
+
   const menuItems = useMemo(() => [
-    { name: "Shots del Ruso", image: "/Imagenes/Shots del Ruso.png" },
-    { name: "Cócteles Flameados", image: "/Imagenes/Cocteles_Flameados.png" },
-    { name: "Especiales", image: "/Imagenes/Especiales.png" },
-    { name: "Cervezas Artesanales", image: "/Imagenes/Cervezas_Artesanales.png" },
-    { name: "Cócteles Sin Alcohol", image: "/Imagenes/Cocteles_sin_alcohol.png" },
-  ], [])
+    { name: tInicio('menu.shots'), image: "/Imagenes/Shots del Ruso.png" },
+    { name: tInicio('menu.flamed'), image: "/Imagenes/Cocteles_Flameados.png" },
+    { name: tInicio('menu.specials'), image: "/Imagenes/Especiales.png" },
+    { name: tInicio('menu.beers'), image: "/Imagenes/Cervezas_Artesanales.png" },
+    { name: tInicio('menu.nonAlcoholic'), image: "/Imagenes/Cocteles_sin_alcohol.png" },
+  ], [tInicio])
 
   return (
     <section id="menu" className="py-8 bg-black">
@@ -402,10 +419,9 @@ function MenuSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-10"
         >
-          <h2 className="text-2xl font-bold mb-8">NUESTRO MENÚ</h2>
+          <h2 className="text-2xl font-bold mb-8">{tInicio('menu.title')}</h2>
           <p className="text-gray-300 max-w-4xl mx-auto">
-            Hemos creado una carta de cócteles pensada para cautivar todos tus sentidos, combinando recetas clásicas y
-            creaciones exclusivas que te transportarán a un universo de aromas, colores y sensaciones únicas.
+            {tInicio('menu.description')}
           </p>
         </motion.div>
 
@@ -443,7 +459,10 @@ function MenuSection() {
   )
 }
 
+// ✅ BAR INTERIOR SECTION - TRADUCIDA
 function BarInteriorSection() {
+  const { tInicio } = useInicioLanguage()
+
   return (
     <section className="py-10 bg-black relative">
       <div className="container mx-auto px-4 relative z-10">
@@ -471,11 +490,9 @@ function BarInteriorSection() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-center max-w-4xl mx-auto"
         >
-          <h2 className="text-2xl font-bold mb-8">TU DESEO, SERVIDO EN UNA COPA</h2>
+          <h2 className="text-2xl font-bold mb-8">{tInicio('barInterior.title')}</h2>
           <p className="text-gray-300 text-lg leading-relaxed">
-            En Kalashnikov, tú pides y recibes: la bebida perfecta que imaginas, creada a la medida de tus deseos por
-            manos expertas. Aquí, cada cóctel es una promesa cumplida, un instante pensado solo para ti, donde el sabor,
-            la pasión y la tradición se unen para ofrecerte una experiencia única e inolvidable.
+            {tInicio('barInterior.description')}
           </p>
         </motion.div>
       </div>
@@ -483,18 +500,21 @@ function BarInteriorSection() {
   )
 }
 
+// ✅ STATS SECTION - TRADUCIDA
 function StatsSection() {
+  const { tInicio } = useInicioLanguage()
+  
   const rating = useCountAnimation(44, 2000)
   const reviews = useCountAnimation(127, 2500)
   const cocktails = useCountAnimation(50, 2200)
   const followers = useCountAnimation(3909, 3000)
 
   const stats = useMemo(() => [
-    { hook: rating, display: "4.4", label: "Calificación de Google" },
-    { hook: reviews, display: "127+", label: "Reseñas" },
-    { hook: cocktails, display: "50+", label: "Cócteles Únicos" },
-    { hook: followers, display: "3909", label: "Seguidores" },
-  ], [rating, reviews, cocktails, followers])
+    { hook: rating, display: "4.4", label: tInicio('stats.rating') },
+    { hook: reviews, display: "127+", label: tInicio('stats.reviews') },
+    { hook: cocktails, display: "50+", label: tInicio('stats.cocktails') },
+    { hook: followers, display: "3909", label: tInicio('stats.followers') },
+  ], [rating, reviews, cocktails, followers, tInicio])
 
   return (
     <section className="py-10 bg-black">
@@ -534,15 +554,14 @@ function StatsSection() {
   )
 }
 
-// ✅ CARRUSEL OPTIMIZADO - RECIBE IMÁGENES PRECARGADAS
+// ✅ LOCAL SECTION - TRADUCIDA
 function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<string> }) {
+  const { tInicio } = useInicioLanguage()
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  // Solo cambiar imagen si está precargada
   const nextImage = useCallback(() => {
     setCurrentIndex(prev => {
       const next = (prev + 1) % CAROUSEL_IMAGES.length
-      // Solo avanzar si la imagen está precargada
       if (preloadedImages.has(CAROUSEL_IMAGES[next])) {
         return next
       }
@@ -550,7 +569,6 @@ function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<strin
     })
   }, [preloadedImages])
 
-  // Auto-avance solo cuando las imágenes estén precargadas
   useEffect(() => {
     if (preloadedImages.size < CAROUSEL_IMAGES.length) return
 
@@ -570,7 +588,6 @@ function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<strin
           >
             <div className="w-full h-80 rounded-lg relative overflow-hidden">
               {preloadedImages.size < CAROUSEL_IMAGES.length ? (
-                // Estado de carga - Debería ser mínimo ya que se precargan
                 <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mb-4"></div>
@@ -580,7 +597,6 @@ function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<strin
                   </div>
                 </div>
               ) : (
-                // ✅ CARRUSEL INSTANTÁNEO - IMÁGENES PRECARGADAS
                 <>
                   <Image
                     src={CAROUSEL_IMAGES[currentIndex]}
@@ -589,10 +605,9 @@ function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<strin
                     className="object-cover rounded-lg transition-opacity duration-500"
                     quality={85}
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    priority={currentIndex === 0} // Primera imagen con prioridad
+                    priority={currentIndex === 0}
                   />
                   
-                  {/* Indicadores de progreso */}
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
                     {CAROUSEL_IMAGES.map((_, index) => (
                       <div
@@ -605,7 +620,6 @@ function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<strin
                     ))}
                   </div>
 
-                  {/* Controles de navegación */}
                   <button
                     onClick={() => setCurrentIndex(prev => 
                       prev === 0 ? CAROUSEL_IMAGES.length - 1 : prev - 1
@@ -634,16 +648,12 @@ function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<strin
             whileInView={{ x: 0, opacity: 1 }} 
             transition={{ duration: 0.8 }}
           >
-            <p className="text-orange-500 text-sm font-semibold mb-4">NUESTRO LOCAL</p>
+            <p className="text-orange-500 text-sm font-semibold mb-4">{tInicio('local.badge')}</p>
             <p className="text-gray-300 leading-relaxed mb-6">
-              Nuestra coctelería une la elegancia de la tradición rusa con la innovación contemporánea, creando bebidas que combinan destilados selectos, 
-              técnicas de mixología de alto nivel y presentaciones que cautivan a la vista y al paladar, 
-              al nivel de los mejores bares del mundo.
+              {tInicio('local.description1')}
             </p>
             <p className="text-gray-300 leading-relaxed">
-              Ubicado en un espacio de diseño sofisticado y atmósfera envolvente, nuestro bar transporta a cada
-              visitante a un viaje sensorial donde el lujo, la cultura y el arte de la coctelería se encuentran para
-              crear experiencias inolvidables.
+              {tInicio('local.description2')}
             </p>
           </motion.div>
         </div>
@@ -652,7 +662,10 @@ function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<strin
   )
 }
 
+// ✅ FOOTER - TRADUCIDO
 function Footer() {
+  const { tInicio } = useInicioLanguage()
+  const { t } = useLanguage() // Para navegación del header
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -746,7 +759,7 @@ function Footer() {
             </div>
             <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
             <p className="text-gray-400 text-sm mb-6">
-              La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.
+              {tInicio('footer.description')}
             </p>
             <div className="flex space-x-4">
               <a
@@ -769,34 +782,34 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Páginas</h4>
+            <h4 className="font-semibold mb-4">{tInicio('footer.pages')}</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#inicio" className="hover:text-white">Inicio</a></li>
-              <li><a href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</a></li>
-              <li><a href="/menu" className="hover:text-white">Menú</a></li>
-              <li><a href="/contacto" className="hover:text-white">Contacto</a></li>
-              <li><a href="/galeria" className="hover:text-white">Galería</a></li>
+              <li><a href="#inicio" className="hover:text-white">{t('nav.home')}</a></li>
+              <li><a href="/sobre-nosotros" className="hover:text-white">{t('nav.about')}</a></li>
+              <li><a href="/menu" className="hover:text-white">{t('nav.menu')}</a></li>
+              <li><a href="/contacto" className="hover:text-white">{t('nav.contact')}</a></li>
+              <li><a href="/galeria" className="hover:text-white">{t('nav.gallery')}</a></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Horarios de Apertura</h4>
+            <h4 className="font-semibold mb-4">{tInicio('footer.schedule')}</h4>
             <div className="space-y-2 text-gray-400 text-sm">
               <div className="flex justify-between">
-                <span>Lunes - Jueves:</span>
+                <span>{tInicio('footer.monday')}</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Viernes:</span>
+                <span>{tInicio('footer.friday')}</span>
                 <span>15:00 - 02:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Sábado:</span>
+                <span>{tInicio('footer.saturday')}</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Domingo:</span>
-                <span className="text-red-500">CERRADO</span>
+                <span>{tInicio('footer.sunday')}</span>
+                <span className="text-red-500">{tInicio('footer.closed')}</span>
               </div>
             </div>
             
@@ -804,10 +817,10 @@ function Footer() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
-                    {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
+                    {isOpen ? tInicio('footer.openNow') : tInicio('footer.closedNow')}
                   </p>
                   <p className="text-xs text-gray-400">
-                    Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                    {tInicio('footer.currentTime')}: {currentTime.toLocaleTimeString('es-EC', { 
                       timeZone: 'America/Guayaquil',
                       hour: '2-digit', 
                       minute: '2-digit'
@@ -820,7 +833,7 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Instagram</h4>
+            <h4 className="font-semibold mb-4">{tInicio('footer.instagram')}</h4>
             <div className="grid grid-cols-2 gap-2">
               {instagramImages.map((src, index) => (
                 <div
@@ -842,21 +855,23 @@ function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          © 2025 Bar Ruso Kalashnikov. Todos los derechos reservados.
+          {tInicio('footer.copyright')}
         </div>
       </div>
     </footer>
   );
 }
 
+// ✅ WHATSAPP BUTTON - USA TRADUCCIONES DEL HEADER
 function WhatsAppButton() {
+  const { t } = useLanguage() // Usa la traducción del header para consistencia
   const phoneNumber = "593995575335"
-  const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
 
   const handleWhatsAppClick = useCallback(() => {
+    const message = t('whatsapp.message')
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, "_blank")
-  }, [phoneNumber, message])
+  }, [phoneNumber, t])
 
   return (
     <motion.div

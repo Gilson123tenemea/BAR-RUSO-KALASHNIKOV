@@ -8,7 +8,7 @@ import { Play, Calendar, Instagram, Facebook, Phone, X } from "lucide-react"
 import Link from "next/link"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
-
+import { useGaleriaLanguage, getTranslatedGalleryItemTitle } from './GaleriaLanguage'
 
 // Optimización: Mover datos fuera del componente para evitar recreación
 // Precargar todas las imágenes para máxima fluidez
@@ -31,6 +31,8 @@ const INITIAL_VISIBLE_ITEMS = 9
 const LOAD_MORE_INCREMENT = 6
 
 export default function GaleriaPage() {
+  const { tGaleria, currentLanguage } = useGaleriaLanguage()
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -39,15 +41,15 @@ export default function GaleriaPage() {
       className="min-h-screen bg-black text-white"
     >
       <SharedHeader />
-      <HeroSection />
-      <GallerySection />
-      <Footer />
-      <WhatsAppButton />
+      <HeroSection tGaleria={tGaleria} />
+      <GallerySection tGaleria={tGaleria} currentLanguage={currentLanguage} />
+      <Footer tGaleria={tGaleria} />
+      <WhatsAppButton tGaleria={tGaleria} />
     </motion.div>
   )
 }
 
-function HeroSection() {
+function HeroSection({ tGaleria }: { tGaleria: (key: any) => string }) {
   return (
     <section className="relative h-[700px] flex items-center overflow-hidden">
       <div className="absolute inset-0">
@@ -85,7 +87,7 @@ function HeroSection() {
             }}
             className="text-5xl md:text-4xl font-bold mb-6 text-[#FF9D00]"
           >
-            Momentos que inspiran
+            {tGaleria('hero.title')}
           </motion.h1>
 
           <motion.p 
@@ -98,8 +100,7 @@ function HeroSection() {
             }}
             className="text-gray-300 text-lg mb-8 max-w-md"
           >
-            Descubre la magia de nuestras noches a través de videos y fotografías
-            que capturan la esencia única de Bar Ruso Kalashnikov.
+            {tGaleria('hero.subtitle')}
           </motion.p>
         </motion.div>
       </div>
@@ -146,9 +147,18 @@ interface GalleryItemProps {
   index: number;
   onClick: (videoSrc: string) => void;
   isImageLoaded: boolean;
+  tGaleria: (key: any) => string;
+  currentLanguage: any;
 }
 
-const GalleryItem = React.memo(function GalleryItem({ item, index, onClick, isImageLoaded }: GalleryItemProps) {
+const GalleryItem = React.memo(function GalleryItem({ 
+  item, 
+  index, 
+  onClick, 
+  isImageLoaded,
+  tGaleria,
+  currentLanguage 
+}: GalleryItemProps) {
   const handleClick = useCallback(() => {
     if (item.type === "video" && item.videoSrc) {
       onClick(item.videoSrc)
@@ -178,7 +188,7 @@ const GalleryItem = React.memo(function GalleryItem({ item, index, onClick, isIm
         {/* Imagen principal - sin lazy loading para máxima fluidez */}
         <Image
           src={imageSrc}
-          alt={item.title}
+          alt={getTranslatedGalleryItemTitle(item.title, currentLanguage)}
           fill
           className={`object-cover transition-all duration-300 ${
             isImageLoaded ? 'opacity-100' : 'opacity-0'
@@ -213,7 +223,10 @@ const GalleryItem = React.memo(function GalleryItem({ item, index, onClick, isIm
                   : "bg-blue-500/90 text-white"
               }`}
             >
-              {item.type === "video" ? "VIDEO" : "FOTO"}
+              {item.type === "video" 
+                ? tGaleria('gallery.videoBadge')
+                : tGaleria('gallery.photoBadge')
+              }
             </span>
           </div>
         )}
@@ -228,14 +241,17 @@ const GalleryItem = React.memo(function GalleryItem({ item, index, onClick, isIm
 
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition-colors duration-200">
-          {item.title}
+          {getTranslatedGalleryItemTitle(item.title, currentLanguage)}
         </h3>
       </div>
     </motion.div>
   )
 })
 
-function GallerySection() {
+function GallerySection({ tGaleria, currentLanguage }: { 
+  tGaleria: (key: any) => string; 
+  currentLanguage: any; 
+}) {
   const [filter, setFilter] = useState<"all" | "video" | "photo">("all")
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
   const [visibleItems, setVisibleItems] = useState(INITIAL_VISIBLE_ITEMS)
@@ -277,10 +293,9 @@ function GallerySection() {
             transition={{ duration: 0.4, delay: 0.2 }}
             className="text-center mb-12"
           >
-            <h2 className="text-2xl font-bold mb-4">Nuestra Galería</h2>
+            <h2 className="text-2xl font-bold mb-4">{tGaleria('gallery.title')}</h2>
             <p className="text-gray-300 max-w-2xl mx-auto">
-              Cada semana compartimos nuevos momentos de nuestras noches únicas. Videos exclusivos y fotografías que
-              muestran la experiencia completa del Bar Ruso Kalashnikov.
+              {tGaleria('gallery.subtitle')}
             </p>
           </motion.div>
 
@@ -293,9 +308,9 @@ function GallerySection() {
           >
             <div className="flex space-x-4 bg-gray-900/50 p-2 rounded-lg">
               {[
-                { key: "all", label: "Todo" },
-                { key: "video", label: "Videos" },
-                { key: "photo", label: "Fotos" },
+                { key: "all", label: tGaleria('gallery.filter.all') },
+                { key: "video", label: tGaleria('gallery.filter.videos') },
+                { key: "photo", label: tGaleria('gallery.filter.photos') },
               ].map((filterOption) => (
                 <button
                   key={filterOption.key}
@@ -327,6 +342,8 @@ function GallerySection() {
                   index={index}
                   onClick={handleVideoClick}
                   isImageLoaded={isImageLoaded}
+                  tGaleria={tGaleria}
+                  currentLanguage={currentLanguage}
                 />
               )
             })}
@@ -344,7 +361,7 @@ function GallerySection() {
                 onClick={loadMoreItems}
                 className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md"
               >
-                Cargar más ({filteredItems.length - visibleItems} restantes)
+                {tGaleria('gallery.loadMore')} ({filteredItems.length - visibleItems} {tGaleria('gallery.remaining')})
               </button>
             </motion.div>
           )}
@@ -355,15 +372,14 @@ function GallerySection() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-center mt-16"
           >
-            <h3 className="text-2xl font-bold mb-4">¿Quieres ser parte de nuestra galería?</h3>
+            <h3 className="text-2xl font-bold mb-4">{tGaleria('gallery.bePartTitle')}</h3>
             <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-              Visítanos y vive momentos únicos que podrían aparecer en nuestra próxima actualización semanal. ¡Cada noche
-              es una nueva historia!
+              {tGaleria('gallery.bePartSubtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/menu">
                 <button className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md">
-                  Menús
+                  {tGaleria('gallery.menuButton')}
                 </button>
               </Link>
               <a
@@ -373,7 +389,7 @@ function GallerySection() {
                 className="border border-orange-500 text-orange-500 px-8 py-3 font-semibold hover:bg-orange-500 hover:text-black transition-colors inline-flex items-center justify-center space-x-2 rounded-md"
               >
                 <Instagram className="w-5 h-5" />
-                <span>Síguenos en Instagram</span>
+                <span>{tGaleria('gallery.instagramButton')}</span>
               </a>
             </div>
           </motion.div>
@@ -417,8 +433,9 @@ function GallerySection() {
   )
 }
 
-// Footer y WhatsAppButton mantienen la misma optimización anterior...
-function Footer() {
+// Reemplaza el componente Footer en GaleriaPageClient.tsx con esta versión actualizada
+
+function Footer({ tGaleria }: { tGaleria: (key: any) => string }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
 
@@ -504,7 +521,7 @@ function Footer() {
             </div>
             <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
             <p className="text-gray-400 text-sm mb-6">
-              La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.
+              {tGaleria('footer.description')}
             </p>
             <div className="flex space-x-4">
               <a
@@ -526,35 +543,56 @@ function Footer() {
             </div>
           </div>
 
+          {/* Sección de páginas actualizada con traducciones */}
           <div>
-            <h4 className="font-semibold mb-4">Páginas</h4>
+            <h4 className="font-semibold mb-4">{tGaleria('footer.pages')}</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><Link href="/" className="hover:text-white">Inicio</Link></li>
-              <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
-              <li><Link href="/menu" className="hover:text-white">Menú</Link></li>
-              <li><Link href="/contacto" className="hover:text-white">Contacto</Link></li>
-              <li><Link href="/galeria" className="hover:text-white">Galería</Link></li>
+              <li>
+                <Link href="/" className="hover:text-white">
+                  {tGaleria('footer.nav.home')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/sobre-nosotros" className="hover:text-white">
+                  {tGaleria('footer.nav.about')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/menu" className="hover:text-white">
+                  {tGaleria('footer.nav.menu')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contacto" className="hover:text-white">
+                  {tGaleria('footer.nav.contact')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/galeria" className="hover:text-white">
+                  {tGaleria('footer.nav.gallery')}
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Horarios de Apertura</h4>
+            <h4 className="font-semibold mb-4">{tGaleria('footer.hours')}</h4>
             <div className="space-y-2 text-gray-400 text-sm">
               <div className="flex justify-between">
-                <span>Lunes - Jueves:</span>
+                <span>{tGaleria('footer.monday')}:</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Viernes:</span>
+                <span>{tGaleria('footer.friday')}:</span>
                 <span>15:00 - 02:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Sábado:</span>
+                <span>{tGaleria('footer.saturday')}:</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Domingo:</span>
-                <span className="text-red-500">CERRADO</span>
+                <span>{tGaleria('footer.sunday')}:</span>
+                <span className="text-red-500">{tGaleria('footer.closed')}</span>
               </div>
             </div>
 
@@ -562,10 +600,10 @@ function Footer() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
-                    {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
+                    {isOpen ? tGaleria('footer.openNow') : tGaleria('footer.closedNow')}
                   </p>
                   <p className="text-xs text-gray-400">
-                    Hora actual: {currentTime.toLocaleTimeString('es-EC', {
+                    {tGaleria('footer.currentTime')}: {currentTime.toLocaleTimeString('es-EC', {
                       timeZone: 'America/Guayaquil',
                       hour: '2-digit',
                       minute: '2-digit'
@@ -600,21 +638,21 @@ function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          © 2025 Bar Ruso Kalashnikov. Todos los derechos reservados.
+          {tGaleria('footer.copyright')}
         </div>
       </div>
     </footer>
   );
 }
 
-function WhatsAppButton() {
+function WhatsAppButton({ tGaleria }: { tGaleria: (key: any) => string }) {
   const phoneNumber = "593995575335"
-  const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
+  const message = tGaleria('whatsapp.message')
 
   const handleWhatsAppClick = useCallback(() => {
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(url, "_blank")
-  }, [])
+  }, [message])
 
   return (
     <div className="fixed bottom-8 right-8 z-30">

@@ -1,32 +1,12 @@
 "use client"
-
+//sobre nosotros/SobreNosotrosPageClient.tsx
 import { motion } from "framer-motion"
 import { MapPin, Star, Facebook, Instagram, Phone, Wine, Users, Sparkles } from "lucide-react"
 import Link from "next/link"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
 import { useState, useEffect, useCallback, useRef, memo } from "react"
-
-const testimonials = [
-  {
-    name: "María González",
-    time: "Hace 1 semana",
-    rating: 5,
-    comment: "Ambiente increíble, cócteles únicos y música perfecta. ¡El mejor bar de Cuenca!",
-  },
-  {
-    name: "Carlos Mendoza",
-    time: "Hace 2 semanas",
-    rating: 5,
-    comment: "La decoración rusa es espectacular y los tragos están buenísimos. Muy recomendado.",
-  },
-  {
-    name: "Ana Rodríguez",
-    time: "Hace 3 semanas",
-    rating: 5,
-    comment: "Excelente atención y ambiente nocturno. Perfecto para salir con amigos.",
-  },
-]
+import { SobreNosotrosLanguageProvider, useSobreNosotrosLanguage } from './SobreNosotrosLanguageContext'
 
 // Animaciones optimizadas con menos propiedades
 const fadeInVariants = {
@@ -46,25 +26,26 @@ const staggerContainer = {
 
 export default function SobreNosotrosPage() {
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      <SharedHeader />
-      <HeroSection />
-      <ExperienceSection />
-      <HistorySection />
-      <FeaturesSection />
-      <TeamSection />
-      <TestimonialsSection />
-      <Footer />
-      <WhatsAppButton />
-    </div>
+    <SobreNosotrosLanguageProvider>
+      <div className="min-h-screen bg-black text-white overflow-x-hidden">
+        <SharedHeader />
+        <HeroSection />
+        <ExperienceSection />
+        <HistorySection />
+        <FeaturesSection />
+        <TeamSection />
+        <TestimonialsSection />
+        <Footer />
+        <WhatsAppButton />
+      </div>
+    </SobreNosotrosLanguageProvider>
   )
 }
-
-// Reemplaza la función HeroSection() completa con esta versión corregida:
 
 function HeroSection() {
   const [windowDimensions, setWindowDimensions] = useState({ width: 0, height: 0 })
   const isClient = useIsClient()
+  const { t } = useSobreNosotrosLanguage()
 
   // Obtener dimensiones de ventana solo en el cliente
   useEffect(() => {
@@ -169,7 +150,7 @@ function HeroSection() {
               }
             }}
           >
-            Más que un bar, una{" "}
+            {t('hero.title.part1')}{" "}
           </motion.h1>
           
           <motion.h1 
@@ -185,7 +166,7 @@ function HeroSection() {
               }
             }}
           >
-            experiencia
+            {t('hero.title.part2')}
           </motion.h1>
 
           {/* Descripción con animación desde la izquierda */}
@@ -202,8 +183,7 @@ function HeroSection() {
               }
             }}
           >
-            Un espacio donde la creatividad, el ambiente y la coctelería de autor se unen para ofrecerte momentos
-            inolvidables.
+            {t('hero.description')}
           </motion.p>
 
           {/* Botón con animación desde la izquierda */}
@@ -250,7 +230,7 @@ function HeroSection() {
             >
               <MapPin className="w-5 h-5" />
             </motion.div>
-            <span>Ubicación</span>
+            <span>{t('hero.button.ubicacion')}</span>
           </motion.button>
         </motion.div>
       </div>
@@ -430,6 +410,7 @@ OptimizedVideo.displayName = 'OptimizedVideo'
 
 function ExperienceSection() {
   const [setRef, isIntersecting, isClient] = useIntersectionObserver()
+  const { t } = useSobreNosotrosLanguage()
 
   return (
     <section className="py-10 bg-black">
@@ -438,7 +419,6 @@ function ExperienceSection() {
           <div className="relative" ref={setRef}>
             <div className="relative overflow-hidden rounded-lg">
               <div className="w-full max-w-sm mx-auto h-150 relative rounded-lg overflow-hidden">
-                {/* Renderizar siempre, pero con estado de carga inicial */}
                 <OptimizedVideo 
                   src="/videos/e.mp4" 
                   className="w-full h-full"
@@ -450,19 +430,19 @@ function ExperienceSection() {
           <div className="space-y-8">
             <div className="bg-[#010510] rounded-2xl p-6">
               <h3 className="text-2xl font-bold text-orange-500 mb-4">
-                Experiencia que inspira
+                {t('experience.title1')}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                Cada detalle de nuestro bar está pensado para cautivar tus sentidos: luces suaves, música perfecta y un equipo que convierte cada visita en un momento único.
+                {t('experience.description1')}
               </p>
             </div>
 
             <div className="bg-[#010510] rounded-2xl p-6">
               <h3 className="text-2xl font-bold text-orange-500 mb-4">
-                Arte en cada copa
+                {t('experience.title2')}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                Más que bebidas, creamos piezas de arte líquido. Ingredientes frescos, técnicas de autor y pasión en cada preparación.
+                {t('experience.description2')}
               </p>
             </div>
           </div>
@@ -473,20 +453,20 @@ function ExperienceSection() {
 }
 
 function HistorySection() {
+  const { t } = useSobreNosotrosLanguage()
+
   return (
     <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-orange-500">Nuestra historia</h2>
+            <h2 className="text-3xl font-bold text-orange-500">{t('history.title')}</h2>
             <div className="space-y-4 text-gray-300">
               <p>
-                Desde 2014, creamos un ambiente al que siempre querrás volver. Nuestras infusiones propias, el uso de
-                productos locales y un equipo apasionado han hecho de este lugar un referente en la ciudad.
+                {t('history.paragraph1')}
               </p>
               <p>
-                Contamos con más de 250 cócteles en carta, 90 asientos disponibles y 3 salas únicas para que cada
-                cliente viva su propia experiencia.
+                {t('history.paragraph2')}
               </p>
             </div>
           </div>
@@ -514,24 +494,23 @@ function HistorySection() {
 }
 
 function FeaturesSection() {
+  const { t } = useSobreNosotrosLanguage()
+
   const features = [
     {
       icon: Wine,
-      title: "Coctelería Artesanal",
-      description:
-        "Cócteles únicos creados por nuestros mixólogos expertos con ingredientes premium importados directamente de Rusia.",
+      title: t('features.cocktail.title'),
+      description: t('features.cocktail.description'),
     },
     {
       icon: Sparkles,
-      title: "Bebidas Rusa",
-      description:
-        "Cócteles y tragos tradicionales rusos reinventados con técnicas modernas y presentación contemporánea, ofreciendo una experiencia única en cada sorbo.",
+      title: t('features.drinks.title'),
+      description: t('features.drinks.description'),
     },
     {
       icon: Users,
-      title: "Ambiente Exclusivo",
-      description:
-        "Vive una atmósfera elegante e inspiradora, perfecta para compartir momentos únicos, rodeado de buena música y hospitalidad rusa.",
+      title: t('features.atmosphere.title'),
+      description: t('features.atmosphere.description'),
     },
   ]
 
@@ -559,6 +538,7 @@ function FeaturesSection() {
 
 function TeamSection() {
   const [setRef, isIntersecting, isClient] = useIntersectionObserver()
+  const { t } = useSobreNosotrosLanguage()
 
   return (
     <section className="py-10 bg-gray-900/30">
@@ -573,7 +553,6 @@ function TeamSection() {
           <motion.div variants={fadeInVariants} className="relative" ref={setRef}>
             <div className="relative overflow-hidden rounded-lg">
               <div className="w-full max-w-sm mx-auto h-150 relative rounded-lg overflow-hidden">
-                {/* Renderizar siempre, pero con estado de carga inicial */}
                 <OptimizedVideo 
                   src="/videos/d.mp4" 
                   className="w-full h-full"
@@ -585,19 +564,19 @@ function TeamSection() {
           <motion.div variants={fadeInVariants} className="space-y-8">
             <div className="bg-[#010510] rounded-2xl p-6">
               <h3 className="text-2xl font-bold text-orange-500 mb-4">
-                Equipo experto en coctelería
+                {t('team.title1')}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                Con años de experiencia y un dominio impecable de las técnicas más sofisticadas, nuestro equipo crea bebidas que combinan precisión, sabor y presentación de alto nivel.
+                {t('team.description1')}
               </p>
             </div>
 
             <div className="bg-[#010510] rounded-2xl p-6">
               <h3 className="text-2xl font-bold text-orange-500 mb-4">
-                Bebidas que cuentan historias
+                {t('team.title2')}
               </h3>
               <p className="text-gray-300 leading-relaxed">
-                Desde clásicos rusos hasta creaciones de autor, cada trago refleja dedicación, tradición y un toque contemporáneo que te invita a volver.
+                {t('team.description2')}
               </p>
             </div>
           </motion.div>
@@ -608,12 +587,35 @@ function TeamSection() {
 }
 
 const TestimonialsSection = memo(function TestimonialsSection() {
+  const { t } = useSobreNosotrosLanguage()
+
+  const testimonials = [
+    {
+      name: "María González",
+      time: t('testimonials.maria.time'),
+      rating: 5,
+      comment: t('testimonials.maria.comment'),
+    },
+    {
+      name: "Carlos Mendoza",
+      time: t('testimonials.carlos.time'),
+      rating: 5,
+      comment: t('testimonials.carlos.comment'),
+    },
+    {
+      name: "Ana Rodríguez",
+      time: t('testimonials.ana.time'),
+      rating: 5,
+      comment: t('testimonials.ana.comment'),
+    },
+  ]
+
   return (
     <section className="py-10 bg-black">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <p className="text-orange-500 text-sm font-semibold mb-2">TESTIMONIOS</p>
-          <h2 className="text-2xl font-bold">Lo que dicen nuestros clientes</h2>
+          <p className="text-orange-500 text-sm font-semibold mb-2">{t('testimonials.subtitle')}</p>
+          <h2 className="text-2xl font-bold">{t('testimonials.title')}</h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -709,6 +711,7 @@ const useEcuadorTime = () => {
 
 function Footer() {
   const { currentTime, isOpen, isClient } = useEcuadorTime();
+  const { t } = useSobreNosotrosLanguage()
 
   return (
     <footer id="contacto" className="bg-black py-16 border-t border-gray-800">
@@ -729,7 +732,7 @@ function Footer() {
             </div>
             <h3 className="text-xl font-bold mb-4">Bar Ruso Kalashnikov</h3>
             <p className="text-gray-400 text-sm mb-6">
-              La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.
+              {t('footer.description')}
             </p>
             <div className="flex space-x-4">
               <a
@@ -752,35 +755,34 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Páginas</h4>
+            <h4 className="font-semibold mb-4">{t('footer.pages.title')}</h4>
              <ul className="space-y-2 text-gray-400">
-              {/* CAMBIO: Usar Link en lugar de <a> */}
-              <li><Link href="/" className="hover:text-white">Inicio</Link></li>
-              <li><Link href="/sobre-nosotros" className="hover:text-white">Sobre Nosotros</Link></li>
-              <li><Link href="/menu" className="hover:text-white">Menú</Link></li>
-              <li><Link href="/contacto" className="hover:text-white">Contacto</Link></li>
-              <li><Link href="/galeria" className="hover:text-white">Galería</Link></li>
+              <li><Link href="/" className="hover:text-white">{t('footer.pages.home')}</Link></li>
+              <li><Link href="/sobre-nosotros" className="hover:text-white">{t('footer.pages.about')}</Link></li>
+              <li><Link href="/menu" className="hover:text-white">{t('footer.pages.menu')}</Link></li>
+              <li><Link href="/contacto" className="hover:text-white">{t('footer.pages.contact')}</Link></li>
+              <li><Link href="/galeria" className="hover:text-white">{t('footer.pages.gallery')}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Horarios de Apertura</h4>
+            <h4 className="font-semibold mb-4">{t('footer.schedule.title')}</h4>
             <div className="space-y-2 text-gray-400 text-sm">
               <div className="flex justify-between">
-                <span>Lunes - Jueves:</span>
+                <span>{t('footer.schedule.monday_thursday')}</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Viernes:</span>
+                <span>{t('footer.schedule.friday')}</span>
                 <span>15:00 - 02:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Sábado:</span>
+                <span>{t('footer.schedule.saturday')}</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>Domingo:</span>
-                <span className="text-red-500">CERRADO</span>
+                <span>{t('footer.schedule.sunday')}</span>
+                <span className="text-red-500">{t('footer.schedule.closed')}</span>
               </div>
             </div>
             
@@ -788,11 +790,11 @@ function Footer() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-semibold ${isOpen ? 'text-green-500' : 'text-red-500'}`}>
-                    {isOpen ? 'ABIERTO AHORA' : 'CERRADO AHORA'}
+                    {isOpen ? t('footer.status.open') : t('footer.status.closed')}
                   </p>
                   {isClient && currentTime && (
                     <p className="text-xs text-gray-400">
-                      Hora actual: {currentTime.toLocaleTimeString('es-EC', { 
+                      {t('footer.status.current_time')}: {currentTime.toLocaleTimeString('es-EC', { 
                         timeZone: 'America/Guayaquil',
                         hour: '2-digit', 
                         minute: '2-digit'
@@ -806,7 +808,7 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Instagram</h4>
+            <h4 className="font-semibold mb-4">{t('footer.instagram.title')}</h4>
             <div className="grid grid-cols-2 gap-2">
               {[
                 "/Imagenes/Instagram_1.png",
@@ -833,7 +835,7 @@ function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          © 2025 Bar Ruso Kalashnikov. Todos los derechos reservados.
+          {t('footer.copyright')}
         </div>
       </div>
     </footer>
@@ -842,7 +844,8 @@ function Footer() {
 
 const WhatsAppButton = memo(function WhatsAppButton() {
   const phoneNumber = "593995575335"
-  const message = "Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov"
+  const { t } = useSobreNosotrosLanguage()
+  const message = t('whatsapp.message')
 
   const handleWhatsAppClick = useCallback(() => {
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`

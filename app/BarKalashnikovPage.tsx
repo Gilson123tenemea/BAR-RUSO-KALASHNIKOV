@@ -7,59 +7,75 @@ import SharedHeader from "@/components/shared-header"
 import Link from "next/link"
 import Image from 'next/image'
 
-// Hook optimizado SIN BUGS
-function useImagePreloader(imageUrls: string[]) {
+// ✅ IMÁGENES DEL CARRUSEL DEFINIDAS GLOBALMENTE PARA PRECARGA TEMPRANA
+const CAROUSEL_IMAGES = [
+  '/Imagenes/Inicio_1.jpg',
+  '/Imagenes/Inicio_2.jpg',
+  '/Imagenes/Inicio_3.jpg',
+  '/Imagenes/Inicio_4.jpg',
+  '/Imagenes/Inicio_5.jpg'
+]
+
+// Hook optimizado SIN BUGS - Ahora con precarga inmediata
+function useImagePreloader(imageUrls: string[], immediate = false) {
   const [loadedImages, setLoadedImages] = useState(new Set<string>())
   const [isLoading, setIsLoading] = useState(true)
   const [errors, setErrors] = useState(new Set<string>())
+  const [loadingProgress, setLoadingProgress] = useState(0)
   const urlsRef = useRef(imageUrls.join(','))
 
   useEffect(() => {
-    // Solo ejecutar si las URLs han cambiado realmente
-    const currentUrls = imageUrls.join(',')
-    if (urlsRef.current === currentUrls) return
-    urlsRef.current = currentUrls
+    // Para precarga inmediata, no verificar cambios de URL
+    if (!immediate) {
+      const currentUrls = imageUrls.join(',')
+      if (urlsRef.current === currentUrls) return
+      urlsRef.current = currentUrls
+    }
 
     if (!imageUrls || imageUrls.length === 0) {
       setIsLoading(false)
       return
     }
 
-    console.log('🚀 Iniciando precarga de', imageUrls.length, 'imágenes en paralelo')
+    console.log(`🚀 ${immediate ? 'PRECARGA INMEDIATA' : 'Precarga'} de ${imageUrls.length} imágenes`)
     setIsLoading(true)
     setLoadedImages(new Set())
     setErrors(new Set())
+    setLoadingProgress(0)
     
-    // CARGA PARALELA - todas las imágenes al mismo tiempo
+    // CARGA PARALELA con seguimiento de progreso
     const imagePromises = imageUrls.map((url, index) => {
       return new Promise<void>((resolve) => {
         const img = new window.Image()
         
         img.onload = () => {
-          console.log(`✅ Imagen ${index + 1}/${imageUrls.length} cargada:`, url)
+          console.log(`✅ Imagen ${index + 1}/${imageUrls.length} cargada:`, url.split('/').pop())
           setLoadedImages(prev => new Set([...prev, url]))
+          setLoadingProgress(prev => Math.min(prev + (100 / imageUrls.length), 100))
           resolve()
         }
         
         img.onerror = () => {
-          console.error(`❌ Error cargando imagen ${index + 1}:`, url)
+          console.error(`❌ Error cargando imagen ${index + 1}:`, url.split('/').pop())
           setErrors(prev => new Set([...prev, url]))
-          resolve() // Continúa aunque falle
+          setLoadingProgress(prev => Math.min(prev + (100 / imageUrls.length), 100))
+          resolve()
         }
         
+        // Para precarga inmediata, usar mayor prioridad
+        img.loading = immediate ? 'eager' : 'lazy'
         img.src = url
       })
     })
 
-    // Esperar a que todas terminen
     Promise.all(imagePromises).then(() => {
-      console.log('🎉 Precarga completada')
+      console.log(`🎉 ${immediate ? 'PRECARGA INMEDIATA' : 'Precarga'} completada`)
       setIsLoading(false)
     })
 
-  }, [imageUrls.length]) // Dependencia más estable
+  }, immediate ? [] : [imageUrls.length]) // Sin dependencias para precarga inmediata
 
-  return { loadedImages, isLoading, errors }
+  return { loadedImages, isLoading, errors, loadingProgress }
 }
 
 function useCountAnimation(end: number, duration = 2000) {
@@ -97,14 +113,35 @@ function useCountAnimation(end: number, duration = 2000) {
 export default function BarKalashnikovPage() {
   const [loading, setLoading] = useState(true)
   const [scrolled, setScrolled] = useState(false)
+  
+  // ✅ PRECARGA INMEDIATA DEL CARRUSEL AL MONTAR EL COMPONENTE
+  const { loadedImages: carouselImages, isLoading: carouselLoading, loadingProgress } = useImagePreloader(CAROUSEL_IMAGES, true)
 
   useEffect(() => {
+    // Esperar tanto al timer como a que se carguen las imágenes del carrusel
     const timer = setTimeout(() => {
-      console.log('⏰ LoadingScreen completado')
-      setLoading(false)
-    }, 2200) // Ligeramente más tiempo para evitar conflictos
+      console.log('⏰ Timer completado')
+      // Solo ocultar loading si las imágenes críticas están listas
+      if (!carouselLoading) {
+        console.log('🎯 Todas las condiciones listas - Mostrando página')
+        setLoading(false)
+      }
+    }, 2200)
+
+    // Si las imágenes terminan de cargar antes del timer, esperar al timer
+    if (!carouselLoading && loading) {
+      console.log('🖼️ Imágenes del carrusel listas, esperando timer...')
+    }
+
     return () => clearTimeout(timer)
-  }, [])
+  }, [carouselLoading, loading])
+
+  // Efecto separado para manejar cuando las imágenes terminan después del timer
+  useEffect(() => {
+    if (!carouselLoading && !loading) {
+      console.log('✨ Página completamente lista')
+    }
+  }, [carouselLoading, loading])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,7 +156,13 @@ export default function BarKalashnikovPage() {
   return (
     <>
       <AnimatePresence mode="wait">
-        {loading && <LoadingScreen key="loading" />}
+        {loading && (
+          <LoadingScreen 
+            key="loading" 
+            carouselProgress={loadingProgress}
+            carouselLoading={carouselLoading}
+          />
+        )}
       </AnimatePresence>
 
       {!loading && (
@@ -136,7 +179,7 @@ export default function BarKalashnikovPage() {
           <MenuSection />
           <BarInteriorSection />
           <StatsSection />
-          <OptimizedLocalSection />
+          <OptimizedLocalSection preloadedImages={carouselImages} />
           <Footer />
           <WhatsAppButton />
         </motion.div>
@@ -145,7 +188,8 @@ export default function BarKalashnikovPage() {
   )
 }
 
-function LoadingScreen() {
+// ✅ LOADING SCREEN MEJORADO CON PROGRESO DEL CARRUSEL
+function LoadingScreen({ carouselProgress, carouselLoading }: { carouselProgress: number, carouselLoading: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 1 }}
@@ -185,12 +229,22 @@ function LoadingScreen() {
           BAR RUSO KALASHNIKOV
         </motion.h1>
 
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: "100%" }}
-          transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
-          className="h-1 bg-orange-500 mx-auto max-w-xs"
-        ></motion.div>
+        {/* ✅ BARRA DE PROGRESO MEJORADA */}
+        <div className="max-w-xs mx-auto mb-4">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: "100%" }}
+            transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
+            className="h-1 bg-gray-800 rounded-full overflow-hidden"
+          >
+            <motion.div
+              className="h-full bg-orange-500 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${carouselProgress}%` }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            />
+          </motion.div>
+        </div>
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -198,7 +252,10 @@ function LoadingScreen() {
           transition={{ delay: 1.8, duration: 0.4 }}
           className="text-gray-400 mt-4"
         >
-          Preparando tu experiencia única...
+          {carouselLoading 
+            ? `Cargando experiencia... ${Math.round(carouselProgress)}%`
+            : 'Preparando tu experiencia única...'
+          }
         </motion.p>
       </div>
     </motion.div>
@@ -477,41 +534,29 @@ function StatsSection() {
   )
 }
 
-// ✅ SECCIÓN SIN BUGS - COMPLETAMENTE ARREGLADA
-function OptimizedLocalSection() {
-  const images = useMemo(() => [
-    '/Imagenes/Inicio_1.jpg',
-    '/Imagenes/Inicio_2.jpg',
-    '/Imagenes/Inicio_3.jpg',
-    '/Imagenes/Inicio_4.jpg',
-    '/Imagenes/Inicio_5.jpg'
-  ], [])
-
+// ✅ CARRUSEL OPTIMIZADO - RECIBE IMÁGENES PRECARGADAS
+function OptimizedLocalSection({ preloadedImages }: { preloadedImages: Set<string> }) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [sectionVisible, setSectionVisible] = useState(false)
-  
-  // Solo iniciar precarga cuando la sección sea visible para evitar conflictos con LoadingScreen
-  const { loadedImages, isLoading } = useImagePreloader(sectionVisible ? images : [])
 
-  // Solo cambiar imagen cuando esté cargada
+  // Solo cambiar imagen si está precargada
   const nextImage = useCallback(() => {
     setCurrentIndex(prev => {
-      const next = (prev + 1) % images.length
-      // Solo avanzar si la siguiente imagen ya está cargada
-      if (loadedImages.has(images[next])) {
+      const next = (prev + 1) % CAROUSEL_IMAGES.length
+      // Solo avanzar si la imagen está precargada
+      if (preloadedImages.has(CAROUSEL_IMAGES[next])) {
         return next
       }
       return prev
     })
-  }, [images, loadedImages])
+  }, [preloadedImages])
 
-  // Auto-avance solo cuando las imágenes estén listas
+  // Auto-avance solo cuando las imágenes estén precargadas
   useEffect(() => {
-    if (!sectionVisible || isLoading || images.length <= 1) return
+    if (preloadedImages.size < CAROUSEL_IMAGES.length) return
 
     const interval = setInterval(nextImage, 4000)
     return () => clearInterval(interval)
-  }, [isLoading, nextImage, images.length, sectionVisible])
+  }, [nextImage, preloadedImages.size])
 
   return (
     <section id="sobre-nosotros" className="py-10 bg-black">
@@ -519,53 +564,66 @@ function OptimizedLocalSection() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
-            whileInView={{ 
-              x: 0, 
-              opacity: 1,
-              transition: {
-                duration: 0.8,
-                onComplete: () => setSectionVisible(true) // Activar precarga DESPUÉS de la animación
-              }
-            }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
             className="rounded-3xl p-8 flex items-center justify-center h-[400px]"
           >
             <div className="w-full h-80 rounded-lg relative overflow-hidden">
-              {!sectionVisible || isLoading ? (
-                // Estado de carga mejorado
+              {preloadedImages.size < CAROUSEL_IMAGES.length ? (
+                // Estado de carga - Debería ser mínimo ya que se precargan
                 <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mb-4"></div>
                     <p className="text-gray-400 text-sm">
-                      {!sectionVisible ? 'Preparando...' : `Cargando imágenes... (${loadedImages.size}/${images.length})`}
+                      Galería lista: {preloadedImages.size}/{CAROUSEL_IMAGES.length}
                     </p>
                   </div>
                 </div>
               ) : (
-                // Carrusel optimizado
+                // ✅ CARRUSEL INSTANTÁNEO - IMÁGENES PRECARGADAS
                 <>
                   <Image
-                    src={images[currentIndex]}
+                    src={CAROUSEL_IMAGES[currentIndex]}
                     alt={`Vista del local ${currentIndex + 1}`}
                     fill
                     className="object-cover rounded-lg transition-opacity duration-500"
                     quality={85}
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    style={{
-                      opacity: loadedImages.has(images[currentIndex]) ? 1 : 0.5
-                    }}
+                    priority={currentIndex === 0} // Primera imagen con prioridad
                   />
                   
                   {/* Indicadores de progreso */}
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                    {images.map((_, index) => (
+                    {CAROUSEL_IMAGES.map((_, index) => (
                       <div
                         key={index}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                          index === currentIndex ? 'bg-orange-500' : 'bg-white/30'
+                        className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                          index === currentIndex ? 'bg-orange-500' : 'bg-white/30 hover:bg-white/50'
                         }`}
+                        onClick={() => setCurrentIndex(index)}
                       />
                     ))}
                   </div>
+
+                  {/* Controles de navegación */}
+                  <button
+                    onClick={() => setCurrentIndex(prev => 
+                      prev === 0 ? CAROUSEL_IMAGES.length - 1 : prev - 1
+                    )}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                    aria-label="Imagen anterior"
+                  >
+                    ←
+                  </button>
+                  <button
+                    onClick={() => setCurrentIndex(prev => 
+                      (prev + 1) % CAROUSEL_IMAGES.length
+                    )}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                    aria-label="Imagen siguiente"
+                  >
+                    →
+                  </button>
                 </>
               )}
             </div>

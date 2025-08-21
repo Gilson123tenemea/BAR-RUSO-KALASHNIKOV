@@ -28,51 +28,9 @@ interface MenuSection {
 }
 
 const menuSections: MenuSection[] = [
+
   {
     id: "shots-ruso",
-    title: "SHOTS DEL RUSO",
-    animationDirection: "right",
-    image: "/Imagenes/shots del ruso_menu.png",
-    imageSize: { width: 550, height: 700 },
-    items: [
-      { name: "SIBERIANO", description: "VODKA Y LICOR DE MENTA", price: "$3.00" },
-      { name: "GATO VASILIY", description: "GIN, LIMÓN FRESCO Y GRANADINA", price: "$3.00" },
-      { name: "LÍNEA DE BIKINI", description: "VODKA, LICOR DE CAFÉ Y FRUTILLA", price: "$3.00" },
-      { name: "VIENTO DE MENTA", description: "TEQUILA, LICOR DE MENTA Y BLUE CURACAO", price: "$3.75" },
-      { name: "BOLLARSKIY", description: "VODKA, TABASCO Y GRANADINA", price: "$3.75" },
-      { name: "TEQUILA AZUL", description: "TEQUILA Y BLUE CURACAO", price: "$4.50" },
-      { name: "MEDUSA", description: "RON, TRIPLE SEC, IRISH CREAM Y BLUE CURACAO", price: "$3.75" },
-      {
-        name: "BANDERA ECUATORIANA",
-        description: "VODKA, BLUE CURACAO, LICOR DE MARACUYÁ Y GRANADINA",
-        price: "$4.00",
-      },
-      { name: "BANDERA RUSA", description: "VODKA, BLUE CURACAO Y GRANADINA", price: "$4.00" },
-      {
-        name: "SEMÁFORO (3 SHOTS)",
-        description: "VODKA, LICOR DE MENTA, LICOR DE MARACUYÁ Y GRANADINA",
-        price: "$6.00",
-      },
-      { name: "QUÍMICO", description: "10 TUBOS DE ENSAYO, RECETA DE LA CASA", price: "$9.00" },
-    ],
-  },
-  {
-    id: "shots-flameados",
-    title: "SHOTS FLAMEADOS",
-    animationDirection: "left",
-    image: "/Imagenes/shot flameado_menu.png",
-    imageSize: { width: 450, height: 500 },
-    items: [
-      { name: "TNT", description: "GIN, TEQUILA, VODKA, RON", price: "$6.00" },
-      { name: "BUDA", description: "VODKA, TEQUILA, RON, GIN, TRIPLE SEC Y GRANADINA", price: "$5.00" },
-      { name: "B-52", description: "VODKA, LICOR DE CAFÉ, IRISH CREAM", price: "$4.00" },
-      { name: "MEXICAN FLAG SHOT", description: "TEQUILA, LICOR DE MENTA Y GRANADINA", price: "$4.00" },
-      { name: "SIN NOMBRE", description: "VODKA, BLUE CURACAO, IRISH CREAM Y GRANADINA", price: "$3.50" },
-      { name: "BESO NEGRO", description: "RON, IRISH CREAM Y GRANADINA", price: "$3.50" },
-    ],
-  },
-  {
-    id: "cocteles-flameados",
     title: "CÓCTELES FLAMEADOS",
     animationDirection: "right",
     image: "/Imagenes/cocteles_flameados_menu.png",
@@ -104,7 +62,49 @@ const menuSections: MenuSection[] = [
       { name: "LAMBORGINI KALINA", description: "RON, BLUE CURACAO, TEQUILA, GIN Y GRANADINA, METODO: TORRES DE COPAS FLAMEADAS", price: "$15.00" },
     ],
   },
-
+  {
+    id: "shots-flameados",
+    title: "SHOTS FLAMEADOS",
+    animationDirection: "left",
+    image: "/Imagenes/shot flameado_menu.png",
+    imageSize: { width: 450, height: 500 },
+    items: [
+      { name: "TNT", description: "GIN, TEQUILA, VODKA, RON", price: "$6.00" },
+      { name: "BUDA", description: "VODKA, TEQUILA, RON, GIN, TRIPLE SEC Y GRANADINA", price: "$5.00" },
+      { name: "B-52", description: "VODKA, LICOR DE CAFÉ, IRISH CREAM", price: "$4.00" },
+      { name: "MEXICAN FLAG SHOT", description: "TEQUILA, LICOR DE MENTA Y GRANADINA", price: "$4.00" },
+      { name: "SIN NOMBRE", description: "VODKA, BLUE CURACAO, IRISH CREAM Y GRANADINA", price: "$3.50" },
+      { name: "BESO NEGRO", description: "RON, IRISH CREAM Y GRANADINA", price: "$3.50" },
+    ],
+  },
+  {
+    id: "cocteles-flameados",
+    title: "SHOTS DEL RUSO",
+    animationDirection: "right",
+    image: "/Imagenes/shots del ruso_menu.png",
+    imageSize: { width: 550, height: 700 },
+    items: [
+      { name: "SIBERIANO", description: "VODKA Y LICOR DE MENTA", price: "$3.00" },
+      { name: "GATO VASILIY", description: "GIN, LIMÓN FRESCO Y GRANADINA", price: "$3.00" },
+      { name: "LÍNEA DE BIKINI", description: "VODKA, LICOR DE CAFÉ Y FRUTILLA", price: "$3.00" },
+      { name: "VIENTO DE MENTA", description: "TEQUILA, LICOR DE MENTA Y BLUE CURACAO", price: "$3.75" },
+      { name: "BOLLARSKIY", description: "VODKA, TABASCO Y GRANADINA", price: "$3.75" },
+      { name: "TEQUILA AZUL", description: "TEQUILA Y BLUE CURACAO", price: "$4.50" },
+      { name: "MEDUSA", description: "RON, TRIPLE SEC, IRISH CREAM Y BLUE CURACAO", price: "$3.75" },
+      {
+        name: "BANDERA ECUATORIANA",
+        description: "VODKA, BLUE CURACAO, LICOR DE MARACUYÁ Y GRANADINA",
+        price: "$4.00",
+      },
+      { name: "BANDERA RUSA", description: "VODKA, BLUE CURACAO Y GRANADINA", price: "$4.00" },
+      {
+        name: "SEMÁFORO (3 SHOTS)",
+        description: "VODKA, LICOR DE MENTA, LICOR DE MARACUYÁ Y GRANADINA",
+        price: "$6.00",
+      },
+      { name: "QUÍMICO", description: "10 TUBOS DE ENSAYO, RECETA DE LA CASA", price: "$9.00" },
+    ],
+  },
   {
     id: "cocteles-cerveza",
     title: "CÓCTELES CON CERVEZA",
@@ -210,7 +210,8 @@ const menuSections: MenuSection[] = [
       { name: "TURBO BIELA RUSA", description: "", price: "$42.00" },
       { name: "LONG ISLAND ICE TEA", description: "", price: "$42.00" },
       { name: "CERVEZA AZUL", description: "", price: "$42.00" },
-      { name: "PADRINO", description: "", price: "$55.00" }
+      { name: "PADRINO", description: "", price: "$55.00" },
+      { name: "HADA VERDE", description: "", price: "$65.00" }
     ],
   },
   {
@@ -259,6 +260,7 @@ const menuSections: MenuSection[] = [
       { name: "MARGARITA MIX", description: "(TEQUILA, LIMÓN FRESCO, TRIPLE SEC, FRUTAS: FRESA, MORA, NARANJA, MARACUYÁ)", price: "$7.50" },
       { name: "WHITE RUSSIAN", description: "(VODKA, LICOR DE CAFÉ, IRISH CREAM)", price: "$6.00" },
       { name: "BLACK RUSSIAN", description: "(VODKA, LICOR DE CAFÉ)", price: "$6.00" },
+      { name: "CAIPIROSHKA", description: "(VODKA, LIMÓN)", price: "$6.00" },
       { name: "CAIPIROSHKA MIX", description: "(VODKA, LIMÓN FRESCO, FRUTAS: FRESA, MORA, NARANJA, MARACUYÁ)", price: "$6.00" },
       { name: "GINA", description: "(VODKA, MARACUYÁ, LIMÓN FRESCO, VINO TINTO)", price: "$6.00" },
       { name: "MOSCU MULE", description: "(VODKA, LICOR DE FRESCO, GINGER ALE SIROPE JENGIBRE)", price: "$7.00" },
@@ -321,15 +323,13 @@ const menuSections: MenuSection[] = [
       { name: "BOMBAY", description: "", price: "$9.00" },
       { name: "JOHNNY WALKER RED LABEL", description: "", price: "$5.00" },
       { name: "JOHNNY WALKER DOUBLE BLACK", description: "", price: "$10.00" },
-      { name: "JACK DANIEL'S", description: "(TENNESSEE-HONEY-FIRE)", price: "$12.00" },
+      { name: "JACK DANIELS", description: "(TENNESSEE-HONEY-FIRE)", price: "$12.00" },
       { name: "BUCHANANS", description: "", price: "$12.00" },
-      { name: "DIPLOMÁTICO MANTUANO", description: "", price: "$10.00" },
+      { name: "CARÚPANO 18 AÑOS", description: "", price: "$18.00" },
       { name: "DIPLOMÁTICO RESERVA EXCLUSIVA", description: "", price: "$12.00" },
       { name: "ABUELO 7 AÑOS", description: "", price: "$8.00" },
-      { name: "ABUELO ANEJO", description: "", price: "$5.00" },
-      { name: "JOSE CUERVO (PLATA)", description: "", price: "$8.00" },
-      { name: "JOSE CUERVO (ORO)", description: "", price: "$8.00" },
-      { name: "DE LA CASA", description: "", price: "$4.00" },
+      { name: "ZACAPA 12 AÑOS", description: "", price: "$15.00" },
+      { name: "RON DE LA CASA", description: "", price: "$5.00" },
       { name: "ANTIOQUEÑO", description: "", price: "$5.00" },
       { name: "CACHACA", description: "", price: "$10.00" },
       { name: "PISCO  ", description: "", price: "$10.00" }
@@ -363,12 +363,12 @@ const useImagePreloader = () => {
       img.loading = 'eager'
       img.decoding = 'async'
       img.fetchPriority = 'high'
-      
+
       img.onload = () => {
         setLoadedImages(prev => new Set([...prev, url]))
         resolve()
       }
-      
+
       img.onerror = () => {
         // ✅ CRÍTICO: Marcar como cargada incluso si falla para evitar bloqueos
         setLoadedImages(prev => new Set([...prev, url]))
@@ -381,7 +381,7 @@ const useImagePreloader = () => {
 
   const preloadImages = useCallback(async (urls: string[]) => {
     const validUrls = urls.filter(url => url.startsWith('/') && !loadedImages.has(url))
-    
+
     if (validUrls.length === 0) return
 
     // ✅ NUEVO: Precarga en paralelo sin esperas
@@ -389,8 +389,8 @@ const useImagePreloader = () => {
     await Promise.allSettled(promises) // No falla si una imagen no carga
   }, [loadedImages, preloadImage])
 
-  return { 
-    loadedImages, 
+  return {
+    loadedImages,
     preloadImages,
     isImageLoaded: (url: string) => loadedImages.has(url),
     isMobile
@@ -400,14 +400,14 @@ const useImagePreloader = () => {
 // ✅ OPTIMIZADO: Componente principal sin bloqueos
 export default function MenuPage() {
   const [openSections, setOpenSections] = useState<string[]>(["shots-ruso"])
-  
-  const allImageUrls = useMemo(() => 
+
+  const allImageUrls = useMemo(() =>
     menuSections
       .filter(section => section.image.startsWith('/'))
-      .map(section => section.image), 
+      .map(section => section.image),
     []
   )
-  
+
   const { preloadImages, isImageLoaded, isMobile } = useImagePreloader()
 
   // ✅ MEJORADO: Precarga inteligente sin bloqueos
@@ -433,33 +433,33 @@ export default function MenuPage() {
   const toggleSection = useCallback((sectionId: string) => {
     setOpenSections((prev) => {
       const isOpening = !prev.includes(sectionId)
-      const newOpenSections = isOpening 
-        ? [...prev, sectionId] 
+      const newOpenSections = isOpening
+        ? [...prev, sectionId]
         : prev.filter((id) => id !== sectionId)
-      
+
       // ✅ NUEVO: Solo precargar, no bloquear
       if (isOpening) {
         const section = menuSections.find(s => s.id === sectionId)
         if (section && section.image.startsWith('/')) {
           preloadImages([section.image]) // Precarga sin bloquear
-          
+
           // Precargar secciones adyacentes
           const currentIndex = menuSections.findIndex(s => s.id === sectionId)
           const adjacentSections = [
             menuSections[currentIndex + 1],
             menuSections[currentIndex - 1]
           ].filter(Boolean)
-          
+
           const adjacentImages = adjacentSections
             .map(s => s.image)
             .filter(img => img.startsWith('/'))
-          
+
           if (adjacentImages.length > 0) {
             setTimeout(() => preloadImages(adjacentImages), 200)
           }
         }
       }
-      
+
       return newOpenSections
     })
   }, [preloadImages])
@@ -482,9 +482,9 @@ export default function MenuPage() {
     >
       <SharedHeader />
       <HeroSection onDownload={handleDownloadMenu} />
-      <MenuSections 
-        sections={menuSections} 
-        openSections={openSections} 
+      <MenuSections
+        sections={menuSections}
+        openSections={openSections}
         onToggle={toggleSection}
         isImageLoaded={isImageLoaded}
         isMobile={isMobile}
@@ -550,12 +550,12 @@ const MenuSectionItem = memo(({
   const imageSize = section.imageSize || defaultSize
 
   // ✅ NUEVO: Componente de imagen optimizado con tipos correctos
-  const OptimizedImage = ({ 
-    className = "", 
+  const OptimizedImage = ({
+    className = "",
     style,
     width,
     height,
-    ...imageProps 
+    ...imageProps
   }: {
     className?: string
     style?: React.CSSProperties
@@ -564,10 +564,9 @@ const MenuSectionItem = memo(({
   } & React.ComponentProps<typeof Image>) => (
     <div className="relative">
       {/* ✅ Skeleton loader que aparece instantáneamente */}
-      <div 
-        className={`absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-lg transition-opacity duration-300 ${
-          isImageLoaded ? 'opacity-0' : 'opacity-100'
-        }`}
+      <div
+        className={`absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-lg transition-opacity duration-300 ${isImageLoaded ? 'opacity-0' : 'opacity-100'
+          }`}
         style={{ width: `${width}px`, height: `${height}px` }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-600/20 to-transparent animate-pulse" />
@@ -578,15 +577,14 @@ const MenuSectionItem = memo(({
           </div>
         </div>
       </div>
-      
+
       {/* ✅ Imagen real */}
       <Image
         {...imageProps}
         width={width}
         height={height}
-        className={`${className} transition-opacity duration-300 ${
-          isImageLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`${className} transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         style={style}
         onLoad={() => {
           // La imagen ya está marcada como cargada por el hook
@@ -608,8 +606,8 @@ const MenuSectionItem = memo(({
         className="w-full flex items-center justify-between py-4 px-4 md:px-6 bg-gray-900/50 hover:bg-gray-800/50 transition-colors border-b border-gray-800"
       >
         <div className="flex items-center space-x-4">
-          <motion.div 
-            animate={{ rotate: isOpen ? 45 : 0 }} 
+          <motion.div
+            animate={{ rotate: isOpen ? 45 : 0 }}
             transition={{ duration: 0.15 }}
           >
             <Plus className="w-6 h-6 text-orange-500" />
@@ -622,11 +620,11 @@ const MenuSectionItem = memo(({
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ 
-              height: "auto", 
+            animate={{
+              height: "auto",
               opacity: 1,
-              transition: { 
-                duration: 0.3, 
+              transition: {
+                duration: 0.3,
                 ease: "easeOut",
                 // ✅ CRÍTICO: Animaciones simultáneas
                 height: { duration: 0.3 },
@@ -648,14 +646,13 @@ const MenuSectionItem = memo(({
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  transition={{ 
-                    duration: 0.5, 
+                  transition={{
+                    duration: 0.5,
                     ease: "easeOut",
-                    delay: 0.1 
+                    delay: 0.1
                   }}
-                  className={`flex justify-center w-full order-1 ${
-                    section.animationDirection === "left" ? "lg:order-1" : "lg:order-2"
-                  }`}
+                  className={`flex justify-center w-full order-1 ${section.animationDirection === "left" ? "lg:order-1" : "lg:order-2"
+                    }`}
                 >
                   <div className="relative flex justify-center">
                     {section.image.startsWith('/') ? (
@@ -701,7 +698,7 @@ const MenuSectionItem = memo(({
                         </div>
                       </div>
                     ) : (
-                      <div 
+                      <div
                         className="bg-gray-800 rounded-lg flex items-center justify-center"
                         style={{ width: `${imageSize.width}px`, height: `${imageSize.height}px` }}
                       >
@@ -712,24 +709,23 @@ const MenuSectionItem = memo(({
                 </motion.div>
 
                 {/* ✅ OPTIMIZADO: Contenido del menú con animación independiente */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, x: section.animationDirection === "left" ? -30 : 30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ 
-                    duration: 0.4, 
+                  transition={{
+                    duration: 0.4,
                     ease: "easeOut",
                     delay: 0.2 // Pequeño delay para efecto escalonado
                   }}
-                  className={`space-y-3 md:space-y-4 w-full order-2 ${
-                    section.animationDirection === "left" ? "lg:order-2" : "lg:order-1"
-                  }`}
+                  className={`space-y-3 md:space-y-4 w-full order-2 ${section.animationDirection === "left" ? "lg:order-2" : "lg:order-1"
+                    }`}
                 >
                   {section.items.map((item, itemIndex) => (
                     <motion.div
                       key={`${item.name}-${itemIndex}`}
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
-                      transition={{ 
+                      transition={{
                         delay: 0.3 + (itemIndex * 0.03), // Animación escalonada más rápida
                         duration: 0.3,
                         ease: "easeOut"

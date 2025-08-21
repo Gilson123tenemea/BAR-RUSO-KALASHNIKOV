@@ -337,10 +337,20 @@ const menuSections: MenuSection[] = [
     ],
   },
 ]
-
 const useImagePreloader = () => {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
   const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set())
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detectar móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const preloadImage = useCallback((url: string): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -350,12 +360,11 @@ const useImagePreloader = () => {
       }
 
       if (loadingImages.has(url)) {
-        // Si ya se está cargando, esperar a que termine
         const checkLoaded = () => {
           if (loadedImages.has(url)) {
             resolve()
           } else {
-            setTimeout(checkLoaded, 100)
+            setTimeout(checkLoaded, 50) // ✅ Reducido para móviles
           }
         }
         checkLoaded()
@@ -365,6 +374,11 @@ const useImagePreloader = () => {
       setLoadingImages(prev => new Set([...prev, url]))
 
       const img = new window.Image()
+      
+      // ✅ NUEVO: Configuración optimizada para móviles
+      img.loading = 'eager'
+      img.decoding = 'async'
+      img.fetchPriority = 'high'
       
       img.onload = () => {
         setLoadedImages(prev => new Set([...prev, url]))
@@ -382,72 +396,69 @@ const useImagePreloader = () => {
           newSet.delete(url)
           return newSet
         })
-        console.warn(`Failed to preload image: ${url}`)
         reject(new Error(`Failed to load ${url}`))
       }
 
-      // ✅ NUEVO: Configuración optimizada para móviles
-      img.loading = 'eager'
-      img.decoding = 'async'
       img.src = url
     })
   }, [loadedImages, loadingImages])
 
-  const preloadImages = useCallback(async (urls: string[], priority: 'high' | 'normal' | 'low' = 'normal') => {
+  // ✅ MEJORADO: Precarga con prioridades específicas para móvil
+  const preloadImages = useCallback(async (urls: string[], priority: 'immediate' | 'high' | 'normal' | 'low' = 'normal') => {
     const validUrls = urls.filter(url => url.startsWith('/') && !loadedImages.has(url))
     
     if (validUrls.length === 0) return
 
     try {
-      if (priority === 'high') {
-        // Cargar imágenes críticas en paralelo pero con límite
-        const chunks = []
-        for (let i = 0; i < validUrls.length; i += 2) {
-          chunks.push(validUrls.slice(i, i + 2))
-        }
+      if (priority === 'immediate') {
+        // ✅ NUEVO: Para móviles, carga inmediata sin delays
+        await Promise.all(validUrls.map(url => preloadImage(url)))
+      } else if (priority === 'high') {
+        // Cargar en chunks pequeños con delays mínimos
+        const chunks = isMobile ? validUrls.map(url => [url]) : // 1 por chunk en móvil
+          validUrls.reduce((acc, url, i) => {
+            const chunkIndex = Math.floor(i / 2)
+            if (!acc[chunkIndex]) acc[chunkIndex] = []
+            acc[chunkIndex].push(url)
+            return acc
+          }, [] as string[][])
         
         for (const chunk of chunks) {
           await Promise.allSettled(chunk.map(url => preloadImage(url)))
-          // Pequeño delay entre chunks para no saturar
-          await new Promise(resolve => setTimeout(resolve, 50))
+          if (!isMobile) await new Promise(resolve => setTimeout(resolve, 30))
         }
-      } else if (priority === 'normal') {
-        // Cargar de forma secuencial con delays
+      } else {
+        // Para prioridades normales y bajas, mantener el comportamiento actual
+        const delay = priority === 'normal' ? (isMobile ? 50 : 100) : (isMobile ? 200 : 500)
         for (const url of validUrls) {
           try {
             await preloadImage(url)
-            await new Promise(resolve => setTimeout(resolve, 100))
+            await new Promise(resolve => setTimeout(resolve, delay))
           } catch (error) {
-            // Continúa con la siguiente imagen si una falla
             continue
           }
         }
-      } else {
-        // Cargar en background sin prisa
-        validUrls.forEach(url => {
-          setTimeout(() => preloadImage(url).catch(() => {}), Math.random() * 2000)
-        })
       }
     } catch (error) {
       console.warn('Error in batch preload:', error)
     }
-  }, [loadedImages, preloadImage])
+  }, [loadedImages, preloadImage, isMobile])
 
   return { 
     loadedImages, 
     loadingImages, 
     preloadImages,
     isImageLoaded: (url: string) => loadedImages.has(url),
-    isImageLoading: (url: string) => loadingImages.has(url)
+    isImageLoading: (url: string) => loadingImages.has(url),
+    isMobile
   }
 }
 
-// ✅ OPTIMIZADO: Componente principal con mejor estrategia de precarga
+// ✅ OPTIMIZADO: Componente principal con precarga anticipada
 export default function MenuPage() {
   const searchParams = useSearchParams()
   const [openSections, setOpenSections] = useState<string[]>(["shots-ruso"])
   
-  // ✅ NUEVO: Sistema optimizado de precarga
   const allImageUrls = useMemo(() => 
     menuSections
       .filter(section => section.image.startsWith('/'))
@@ -455,49 +466,36 @@ export default function MenuPage() {
     []
   )
   
-  const { loadedImages, loadingImages, preloadImages, isImageLoaded, isImageLoading } = useImagePreloader()
+  const { loadedImages, loadingImages, preloadImages, isImageLoaded, isImageLoading, isMobile } = useImagePreloader()
 
-  // ✅ MEJORADO: Estrategia de precarga por prioridades
+  // ✅ MEJORADO: Estrategia de precarga más agresiva para móviles
   useEffect(() => {
     const preloadStrategy = async () => {
-      // 1. Cargar imágenes críticas primero (secciones abiertas por defecto)
+      // 1. En móvil, cargar TODAS las imágenes críticas inmediatamente
       const criticalImages = menuSections
-        .filter(section => openSections.includes(section.id) && section.image.startsWith('/'))
+        .filter(section => section.image.startsWith('/'))
         .map(section => section.image)
-      
+        .slice(0, isMobile ? 6 : 3) // Más imágenes críticas en móvil
+
       if (criticalImages.length > 0) {
-        await preloadImages(criticalImages, 'high')
+        await preloadImages(criticalImages, 'immediate')
       }
 
-      // 2. Cargar las siguientes 3-4 imágenes más probables
-      const nextImages = allImageUrls
-        .filter(url => !criticalImages.includes(url))
-        .slice(0, 4)
-      
-      if (nextImages.length > 0) {
-        await preloadImages(nextImages, 'normal')
-      }
-
-      // 3. Cargar el resto en background
-      const remainingImages = allImageUrls
-        .filter(url => !criticalImages.includes(url) && !nextImages.includes(url))
-      
+      // 2. Cargar el resto con prioridad alta en móvil
+      const remainingImages = allImageUrls.filter(url => !criticalImages.includes(url))
       if (remainingImages.length > 0) {
-        preloadImages(remainingImages, 'low')
+        await preloadImages(remainingImages, isMobile ? 'high' : 'normal')
       }
     }
 
-    // ✅ NUEVO: Delay inicial más inteligente basado en la conexión
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection
-    const isSlowConnection = connection && (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g')
-    
-    const initialDelay = isSlowConnection ? 1000 : 200
+    // ✅ NUEVO: Sin delay inicial en móviles para mejor UX
+    const initialDelay = isMobile ? 0 : 200
     
     const timer = setTimeout(preloadStrategy, initialDelay)
     return () => clearTimeout(timer)
-  }, [allImageUrls, openSections, preloadImages])
+  }, [allImageUrls, preloadImages, isMobile])
 
-  // ✅ MEJORADO: Precarga inmediata al abrir secciones
+  // ✅ MEJORADO: Precarga inmediata y anticipada al abrir secciones
   const toggleSection = useCallback((sectionId: string) => {
     setOpenSections((prev) => {
       const isOpening = !prev.includes(sectionId)
@@ -505,18 +503,21 @@ export default function MenuPage() {
         ? [...prev, sectionId] 
         : prev.filter((id) => id !== sectionId)
       
-      // ✅ NUEVO: Precarga inmediata y anticipada
       if (isOpening) {
         const section = menuSections.find(s => s.id === sectionId)
         if (section && section.image.startsWith('/')) {
-          // Cargar la imagen de esta sección inmediatamente
-          preloadImages([section.image], 'high')
+          // ✅ CRÍTICO: Precarga inmediata de la imagen antes de mostrar el contenido
+          if (!isImageLoaded(section.image)) {
+            preloadImages([section.image], 'immediate')
+          }
           
-          // También precargar las secciones adyacentes
+          // Precargar secciones adyacentes con mayor prioridad en móvil
           const currentIndex = menuSections.findIndex(s => s.id === sectionId)
           const adjacentSections = [
             menuSections[currentIndex + 1],
-            menuSections[currentIndex - 1]
+            menuSections[currentIndex - 1],
+            menuSections[currentIndex + 2], // ✅ NUEVO: Precargar más secciones en móvil
+            menuSections[currentIndex - 2]
           ].filter(Boolean)
           
           const adjacentImages = adjacentSections
@@ -524,14 +525,14 @@ export default function MenuPage() {
             .filter(img => img.startsWith('/'))
           
           if (adjacentImages.length > 0) {
-            setTimeout(() => preloadImages(adjacentImages, 'normal'), 300)
+            setTimeout(() => preloadImages(adjacentImages, isMobile ? 'high' : 'normal'), isMobile ? 100 : 300)
           }
         }
       }
       
       return newOpenSections
     })
-  }, [preloadImages])
+  }, [preloadImages, isImageLoaded, isMobile])
 
   const handleDownloadMenu = useCallback(() => {
     const link = document.createElement("a");
@@ -557,6 +558,7 @@ export default function MenuPage() {
         onToggle={toggleSection}
         isImageLoaded={isImageLoaded}
         isImageLoading={isImageLoading}
+        isMobile={isMobile}
       />
       <Footer />
       <WhatsAppButton />
@@ -564,19 +566,21 @@ export default function MenuPage() {
   )
 }
 
-// ✅ OPTIMIZADO: MenuSections con mejor manejo de estados
+// ✅ OPTIMIZADO: MenuSections con wait para imágenes en móvil
 const MenuSections = memo(({
   sections,
   openSections,
   onToggle,
   isImageLoaded,
   isImageLoading,
+  isMobile,
 }: {
   sections: MenuSection[]
   openSections: string[]
   onToggle: (id: string) => void
   isImageLoaded: (url: string) => boolean
   isImageLoading: (url: string) => boolean
+  isMobile: boolean
 }) => {
   return (
     <section className="py-5 bg-black">
@@ -590,6 +594,7 @@ const MenuSections = memo(({
             index={index}
             isImageLoaded={isImageLoaded(section.image)}
             isImageLoading={isImageLoading(section.image)}
+            isMobile={isMobile}
           />
         ))}
       </div>
@@ -599,7 +604,7 @@ const MenuSections = memo(({
 
 MenuSections.displayName = 'MenuSections'
 
-// ✅ MEJORADO: MenuSectionItem con mejores placeholders y optimizaciones Next.js
+// ✅ CRÍTICO: MenuSectionItem con sincronización imagen-contenido
 const MenuSectionItem = memo(({
   section,
   isOpen,
@@ -607,6 +612,7 @@ const MenuSectionItem = memo(({
   index,
   isImageLoaded,
   isImageLoading,
+  isMobile,
 }: {
   section: MenuSection
   isOpen: boolean
@@ -614,27 +620,61 @@ const MenuSectionItem = memo(({
   index: number
   isImageLoaded: boolean
   isImageLoading: boolean
+  isMobile: boolean
 }) => {
   const defaultSize = { width: 256, height: 256 }
   const imageSize = section.imageSize || defaultSize
+  
+  // ✅ CRÍTICO: Estado para controlar cuándo mostrar el contenido
+  const [showContent, setShowContent] = useState(false)
 
-  // ✅ NUEVO: Placeholder mejorado con skeleton
+  // ✅ NUEVO: Lógica para sincronizar imagen y contenido
+  useEffect(() => {
+    if (isOpen) {
+      if (isMobile && section.image.startsWith('/')) {
+        // En móvil, esperar a que la imagen esté cargada o dar timeout
+        if (isImageLoaded) {
+          setShowContent(true)
+        } else {
+          // ✅ NUEVO: Timeout de seguridad para evitar esperas infinitas
+          const timeout = setTimeout(() => {
+            setShowContent(true)
+          }, 800) // Máximo 800ms de espera
+          
+          return () => clearTimeout(timeout)
+        }
+      } else {
+        // En desktop o secciones sin imagen, mostrar inmediatamente
+        setShowContent(true)
+      }
+    } else {
+      setShowContent(false)
+    }
+  }, [isOpen, isImageLoaded, isMobile, section.image])
+
+  // ✅ MEJORADO: Placeholder con mejor feedback visual
   const ImagePlaceholder = ({ width, height, isMobile = false }: { width: number, height: number, isMobile?: boolean }) => (
     <div
       className="bg-gray-800 rounded-lg flex flex-col items-center justify-center relative overflow-hidden"
       style={{ width: `${width}px`, height: `${height}px` }}
     >
-      {/* Skeleton loader animado */}
-      <div className="absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 animate-pulse"></div>
+      {/* Skeleton loader más elaborado */}
+      <div className="absolute inset-0">
+        <div className="h-full w-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 animate-pulse"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-600/20 to-transparent animate-pulse" 
+             style={{ animationDuration: '1.5s' }}></div>
+      </div>
       <div className="relative z-10 text-center">
-        <div className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} bg-gray-600 rounded-full mb-2 mx-auto animate-pulse`}></div>
-        <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-400`}>
-          {isImageLoading ? 'Cargando...' : 'Imagen no disponible'}
+        <div className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} bg-gray-600 rounded-full mb-3 mx-auto`}>
+          <div className="w-full h-full bg-orange-500/30 rounded-full animate-ping"></div>
+        </div>
+        <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-400 font-medium`}>
+          {isImageLoading ? 'Preparando...' : 'Imagen no disponible'}
         </div>
         {isImageLoading && (
-          <div className="mt-2">
-            <div className={`${isMobile ? 'w-16 h-1' : 'w-20 h-1'} bg-gray-600 rounded-full overflow-hidden`}>
-              <div className="h-full bg-orange-500 animate-pulse"></div>
+          <div className="mt-3">
+            <div className={`${isMobile ? 'w-16 h-1.5' : 'w-20 h-2'} bg-gray-700 rounded-full overflow-hidden mx-auto`}>
+              <div className="h-full bg-gradient-to-r from-orange-500 to-orange-600 animate-pulse rounded-full"></div>
             </div>
           </div>
         )}
@@ -669,155 +709,193 @@ const MenuSectionItem = memo(({
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
+            animate={{ 
+              height: "auto", 
+              opacity: 1,
+              // ✅ NUEVO: Animación más suave en móvil
+              transition: { 
+                duration: isMobile ? 0.25 : 0.2, 
+                ease: "easeOut",
+                opacity: { delay: isMobile ? 0.1 : 0 }
+              }
+            }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="overflow-hidden bg-gray-900/30"
           >
             <div className="p-4 md:p-6">
-              {section.items.length > 0 ? (
-                <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
-                    className={`flex justify-center w-full order-1 ${section.animationDirection === "left" ? "lg:order-1" : "lg:order-2"}`}
-                  >
-                    <div className="relative flex justify-center">
-                      {section.image.startsWith('/') ? (
-                        <div className="relative flex justify-center w-full">
-                          {/* Desktop */}
-                          <div className="hidden lg:block relative">
-                            {(!isImageLoaded || isImageLoading) && (
-                              <ImagePlaceholder width={imageSize.width} height={imageSize.height} />
-                            )}
-                            {(isImageLoaded || isImageLoading) && (
-                              <Image
-                                src={section.image}
-                                alt={section.title}
-                                width={imageSize.width}
-                                height={imageSize.height}
-                                className={`object-contain max-w-full h-auto transition-all duration-500 ${
-                                  isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-                                }`}
-                                style={{
-                                  maxWidth: `${imageSize.width}px`,
-                                  maxHeight: '70vh'
-                                }}
-                                sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
-                                priority={isOpen && index < 3} // ✅ Priority inteligente
-                                quality={90} // ✅ Mayor calidad
-                                placeholder="blur" // ✅ Blur placeholder
-                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                              />
-                            )}
-                          </div>
-
-                          {/* Mobile */}
-                          <div className="block lg:hidden relative mx-auto">
-                            {(!isImageLoaded || isImageLoading) && (
-                              <ImagePlaceholder width={280} height={300} isMobile />
-                            )}
-                            {(isImageLoaded || isImageLoading) && (
-                              <Image
-                                src={section.image}
-                                alt={section.title}
-                                width={280}
-                                height={300}
-                                className={`object-contain w-full h-auto transition-all duration-500 ${
-                                  isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-                                }`}
-                                style={{
-                                  maxWidth: '280px',
-                                  maxHeight: '300px'
-                                }}
-                                sizes="280px"
-                                priority={isOpen && index < 3}
-                                quality={85} // ✅ Calidad optimizada para móvil
-                                placeholder="blur"
-                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                              />
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <ImagePlaceholder 
-                          width={imageSize.width} 
-                          height={imageSize.height} 
-                        />
-                      )}
-                    </div>
-                  </motion.div>
-
-                  {/* Contenedor del menú */}
-                  <div className={`space-y-3 md:space-y-4 w-full order-2 ${section.animationDirection === "left" ? "lg:order-2" : "lg:order-1"}`}>
-                    {section.items.map((item, itemIndex) => (
+              {/* ✅ CRÍTICO: Mostrar contenido solo cuando showContent es true */}
+              <AnimatePresence mode="wait">
+                {showContent ? (
+                  section.items.length > 0 ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 items-start"
+                    >
                       <motion.div
-                        key={`${item.name}-${itemIndex}`}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: itemIndex * 0.02, duration: 0.2 }}
-                        className="border-b border-gray-700 pb-3 md:pb-4"
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.1, duration: 0.3 }}
+                        className={`flex justify-center w-full order-1 ${section.animationDirection === "left" ? "lg:order-1" : "lg:order-2"}`}
                       >
-                        <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
-                          <h3 className="font-semibold text-white text-sm md:text-base leading-tight flex-1">
-                            {item.name}
-                          </h3>
-                          <span className="text-orange-500 font-bold text-sm md:text-base whitespace-nowrap ml-2">
-                            {item.price}
-                          </span>
+                        <div className="relative flex justify-center">
+                          {section.image.startsWith('/') ? (
+                            <div className="relative flex justify-center w-full">
+                              {/* Desktop */}
+                              <div className="hidden lg:block relative">
+                                {!isImageLoaded && (
+                                  <ImagePlaceholder width={imageSize.width} height={imageSize.height} />
+                                )}
+                                <Image
+                                  src={section.image}
+                                  alt={section.title}
+                                  width={imageSize.width}
+                                  height={imageSize.height}
+                                  className={`object-contain max-w-full h-auto transition-all duration-300 ${
+                                    isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95 absolute inset-0'
+                                  }`}
+                                  style={{
+                                    maxWidth: `${imageSize.width}px`,
+                                    maxHeight: '70vh'
+                                  }}
+                                  sizes={`(min-width: 1024px) ${imageSize.width}px, 280px`}
+                                  priority={isOpen && index < 3}
+                                  quality={90}
+                                  placeholder="blur"
+                                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                />
+                              </div>
+
+                              {/* Mobile */}
+                              <div className="block lg:hidden relative mx-auto">
+                                {!isImageLoaded && (
+                                  <ImagePlaceholder width={280} height={300} isMobile />
+                                )}
+                                <Image
+                                  src={section.image}
+                                  alt={section.title}
+                                  width={280}
+                                  height={300}
+                                  className={`object-contain w-full h-auto transition-all duration-300 ${
+                                    isImageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95 absolute inset-0'
+                                  }`}
+                                  style={{
+                                    maxWidth: '280px',
+                                    maxHeight: '300px'
+                                  }}
+                                  sizes="280px"
+                                  priority={isOpen && index < 4} // ✅ Mayor prioridad en móvil
+                                  quality={85}
+                                  placeholder="blur"
+                                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <ImagePlaceholder 
+                              width={imageSize.width} 
+                              height={imageSize.height} 
+                            />
+                          )}
                         </div>
-                        {item.description && (
-                          <p className="text-gray-400 text-xs md:text-sm leading-relaxed pr-2">
-                            {item.description}
-                          </p>
-                        )}
                       </motion.div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-6 md:py-8">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
-                    className="flex justify-center"
-                  >
-                    {section.image.startsWith('/') ? (
-                      <div className="relative">
-                        {(!isImageLoaded || isImageLoading) && (
+
+                      {/* ✅ MEJORADO: Contenedor del menú con mejor animación */}
+                      <motion.div 
+                        initial={{ opacity: 0, x: section.animationDirection === "left" ? -20 : 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.15, duration: 0.25 }}
+                        className={`space-y-3 md:space-y-4 w-full order-2 ${section.animationDirection === "left" ? "lg:order-2" : "lg:order-1"}`}
+                      >
+                        {section.items.map((item, itemIndex) => (
+                          <motion.div
+                            key={`${item.name}-${itemIndex}`}
+                            initial={{ y: 15, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ 
+                              delay: 0.2 + (itemIndex * 0.015), // ✅ Delay más rápido
+                              duration: 0.2 
+                            }}
+                            className="border-b border-gray-700 pb-3 md:pb-4"
+                          >
+                            <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
+                              <h3 className="font-semibold text-white text-sm md:text-base leading-tight flex-1">
+                                {item.name}
+                              </h3>
+                              <span className="text-orange-500 font-bold text-sm md:text-base whitespace-nowrap ml-2">
+                                {item.price}
+                              </span>
+                            </div>
+                            {item.description && (
+                              <p className="text-gray-400 text-xs md:text-sm leading-relaxed pr-2">
+                                {item.description}
+                              </p>
+                            )}
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-center py-6 md:py-8"
+                    >
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.1, duration: 0.3 }}
+                        className="flex justify-center"
+                      >
+                        {section.image.startsWith('/') ? (
+                          <div className="relative">
+                            {!isImageLoaded && (
+                              <ImagePlaceholder 
+                                width={imageSize.width} 
+                                height={imageSize.height} 
+                              />
+                            )}
+                            <Image
+                              src={section.image}
+                              alt={section.title}
+                              width={imageSize.width}
+                              height={imageSize.height}
+                              className={`object-contain max-w-full h-auto transition-all duration-300 ${
+                                isImageLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                              }`}
+                              priority={isOpen && index < 3}
+                              quality={90}
+                              placeholder="blur"
+                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                            />
+                          </div>
+                        ) : (
                           <ImagePlaceholder 
                             width={imageSize.width} 
                             height={imageSize.height} 
                           />
                         )}
-                        {(isImageLoaded || isImageLoading) && (
-                          <Image
-                            src={section.image}
-                            alt={section.title}
-                            width={imageSize.width}
-                            height={imageSize.height}
-                            className={`object-contain max-w-full h-auto transition-all duration-500 ${
-                              isImageLoaded ? 'opacity-100' : 'opacity-0'
-                            }`}
-                            priority={isOpen && index < 3}
-                            quality={90}
-                            placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                          />
-                        )}
-                      </div>
-                    ) : (
-                      <ImagePlaceholder 
-                        width={imageSize.width} 
-                        height={imageSize.height} 
-                      />
-                    )}
+                      </motion.div>
+                      <p className="text-gray-400 mt-4 text-sm md:text-base">Próximamente disponible</p>
+                    </motion.div>
+                  )
+                ) : (
+                  // ✅ NUEVO: Loading state mientras esperamos la imagen en móvil
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex justify-center items-center py-8"
+                  >
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                      <p className="text-gray-400 text-sm">Cargando contenido...</p>
+                    </div>
                   </motion.div>
-                  <p className="text-gray-400 mt-4 text-sm md:text-base">Próximamente disponible</p>
-                </div>
-              )}
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}

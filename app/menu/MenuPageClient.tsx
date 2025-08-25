@@ -33,7 +33,7 @@ const menuSections: MenuSection[] = [
     id: "shots-ruso",
     title: "CÓCTELES FLAMEADOS",
     animationDirection: "right",
-    image: "/Imagenes/cocteles_flameados_menu.png",
+    image: "/Imagenes/cocteles_flameados_menu.webp",
     imageSize: { width: 650, height: 750 },
     items: [
       { name: "FERRARI", description: "RON, TRIPLE SEC, BLUE CURACAO, GRANADINA", price: "$5.00" },
@@ -66,7 +66,7 @@ const menuSections: MenuSection[] = [
     id: "shots-flameados",
     title: "SHOTS FLAMEADOS",
     animationDirection: "left",
-    image: "/Imagenes/shot flameado_menu.png",
+    image: "/Imagenes/shot flameado_menu.webp",
     imageSize: { width: 450, height: 500 },
     items: [
       { name: "TNT", description: "GIN, TEQUILA, VODKA, RON", price: "$6.00" },
@@ -81,7 +81,7 @@ const menuSections: MenuSection[] = [
     id: "cocteles-flameados",
     title: "SHOTS DEL RUSO",
     animationDirection: "right",
-    image: "/Imagenes/shots del ruso_menu.png",
+    image: "/Imagenes/shots del ruso_menu.webp",
     imageSize: { width: 550, height: 700 },
     items: [
       { name: "SIBERIANO", description: "VODKA Y LICOR DE MENTA", price: "$3.00" },
@@ -109,7 +109,7 @@ const menuSections: MenuSection[] = [
     id: "cocteles-cerveza",
     title: "CÓCTELES CON CERVEZA",
     animationDirection: "left",
-    image: "/Imagenes/coctel_cerveza.png",
+    image: "/Imagenes/coctel_cerveza.webp",
     imageSize: { width: 550, height: 700 },
     items: [
       { name: "MICHELADA CLÁSICA", description: "CERVEZA CLUB, LIMÓN FRESCO, SAL, PIMIENTA, SALSA WORCESTERSHIPE Y TABASCO", price: "$4.00" },
@@ -129,7 +129,7 @@ const menuSections: MenuSection[] = [
     id: "cervezas",
     title: "CERVEZAS",
     animationDirection: "right",
-    image: "/Imagenes/cerveza.png",
+    image: "/Imagenes/cerveza.webp",
     imageSize: { width: 170, height: 300 },
     items: [
       { name: "HEINEKEN (330ML)", description: "", price: "$4.00" },
@@ -142,7 +142,7 @@ const menuSections: MenuSection[] = [
     id: "cervezas-artesanales",
     title: "CERVEZAS ARTESANALES",
     animationDirection: "left",
-    image: "/Imagenes/cerveza artesanal.png",
+    image: "/Imagenes/cerveza artesanal.webp",
     imageSize: { width: 250, height: 380 },
     items: [
       { name: "DRY STOUT (500 ML)", description: "", price: "$7.00" },
@@ -155,7 +155,7 @@ const menuSections: MenuSection[] = [
     id: "jarras-1l",
     title: "JARRAS 1 LITRO",
     animationDirection: "right",
-    image: "/Imagenes/jarra 1l.png",
+    image: "/Imagenes/jarra 1l.webp",
     imageSize: { width: 550, height: 680 },
     items: [
       { name: "CUBA LIBRE", description: "", price: "$20.00" },
@@ -176,7 +176,7 @@ const menuSections: MenuSection[] = [
     id: "jarras-2l",
     title: "JARRAS 2 LITROS",
     animationDirection: "left",
-    image: "/Imagenes/jarra 2l.png",
+    image: "/Imagenes/jarra 2l.webp",
     imageSize: { width: 530, height: 680 },
     items: [
       { name: "CUBA LIBRE", description: "", price: "$30.00" },
@@ -197,7 +197,7 @@ const menuSections: MenuSection[] = [
     id: "jarras-3l",
     title: "JARRAS 3 LITROS",
     animationDirection: "right",
-    image: "/Imagenes/jarra 3l.png",
+    image: "/Imagenes/jarra 3l.webp",
     imageSize: { width: 530, height: 680 },
     items: [
       { name: "CUBA LIBRE", description: "", price: "$40.00" },
@@ -218,7 +218,7 @@ const menuSections: MenuSection[] = [
     id: "sin-alcohol",
     title: "CÓCTELES SIN ALCOHOL",
     animationDirection: "left",
-    image: "/Imagenes/cocteles sin alcohol.png",
+    image: "/Imagenes/cocteles sin alcohol.webp",
     imageSize: { width: 530, height: 680 },
     items: [
       { name: "LIMONADA DE FRUTILLA", description: "", price: "$3.00" },
@@ -238,7 +238,7 @@ const menuSections: MenuSection[] = [
     id: "aguas-gaseosas",
     title: "AGUAS Y GASEOSAS",
     animationDirection: "right",
-    image: "/Imagenes/aguas y gaseosas.png",
+    image: "/Imagenes/aguas y gaseosas.webp",
     imageSize: { width: 250, height: 500 },
     items: [
       { name: "AGUA SIN GAS", description: "", price: "$1.50" },
@@ -252,7 +252,7 @@ const menuSections: MenuSection[] = [
     id: "long-drinks",
     title: "LONG DRINKS",
     animationDirection: "left",
-    image: "/Imagenes/Long drinks.png",
+    image: "/Imagenes/Long drinks.webp",
     imageSize: { width: 1000, height: 1800 },
     items: [
       { name: "TEQUILA SUNRISE", description: "(TEQUILA, JUGO DE NARANJA, GRANADINA)", price: "$6.00" },
@@ -286,7 +286,7 @@ const menuSections: MenuSection[] = [
     id: "especiales",
     title: "ESPECIALES",
     animationDirection: "right",
-    image: "/Imagenes/especialesmenu.png",
+    image: "/Imagenes/especialesmenu.webp",
     imageSize: { width: 1000, height: 480 },
     items: [
       { name: "ZHUMIRINHA", description: "(ZHUMIR, LIMÓN FRESCO, AZÚCAR)", price: "$6.00" },
@@ -301,7 +301,7 @@ const menuSections: MenuSection[] = [
     id: "bebidas-calientes",
     title: "BEBIDAS CALIENTES",
     animationDirection: "left",
-    image: "/Imagenes/bebidascalientes.png",
+    image: "/Imagenes/bebidascalientes.webp",
     imageSize: { width: 150, height: 150 },
     items: [
       { name: "VINO HERVIDO", description: "(VINO, RON, ESPECIAS PROCESADAS ARTESANALMENTE)", price: "$5.00" },
@@ -312,7 +312,7 @@ const menuSections: MenuSection[] = [
     id: "licores",
     title: "LICORES",
     animationDirection: "right",
-    image: "/Imagenes/licores.png",
+    image: "/Imagenes/licores.webp",
     imageSize: { width: 400, height: 1300 },
     items: [
       { name: "MERLOT", description: "", price: "$5.00" },
@@ -683,7 +683,7 @@ const MenuSectionItem = memo(({
                             priority={index < 3}
                             quality={90}
                             placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                            blurDataURL="data:image/webp;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                           />
                         </div>
 
@@ -703,7 +703,7 @@ const MenuSectionItem = memo(({
                             priority={index < 4}
                             quality={85}
                             placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                            blurDataURL="data:image/webp;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                           />
                         </div>
                       </div>
@@ -777,7 +777,7 @@ const HeroSection = memo(({ onDownload }: { onDownload: () => void }) => {
     <section className="relative h-[600px] flex items-center">
       <div className="absolute inset-0">
         <Image
-          src="/Imagenes/Menu_logo.jpg"
+          src="/Imagenes/Menu_logo.webp"
           alt="Menu background"
           fill
           priority={true}
@@ -885,10 +885,10 @@ function Footer() {
   }, [getEcuadorTime, checkIfOpen]);
 
   const instagramImages = useMemo(() => [
-    "/Imagenes/Instagram_1.png",
-    "/Imagenes/Instagram_2.png",
-    "/Imagenes/Instagram_3.png",
-    "/Imagenes/Instagram_4.png"
+    "/Imagenes/Instagram_1.webp",
+    "/Imagenes/Instagram_2.webp",
+    "/Imagenes/Instagram_3.webp",
+    "/Imagenes/Instagram_4.webp",
   ], []);
 
   return (
@@ -899,7 +899,7 @@ function Footer() {
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 rounded-full relative">
                 <Image
-                  src="/Imagenes/logo_bar.png"
+                  src="/Imagenes/logo_bar.webp"
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"

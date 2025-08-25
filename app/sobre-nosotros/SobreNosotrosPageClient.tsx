@@ -92,7 +92,7 @@ function HeroSection() {
       >
         <div className="w-full h-full relative">
           <Image
-            src="/Imagenes/sobre nosotros logo.jpg"
+            src="/Imagenes/sobre nosotros logo.webp"
             alt="Bar Ruso Kalashnikov"
             fill
             className="object-cover"
@@ -420,7 +420,7 @@ function ExperienceSection() {
             <div className="relative overflow-hidden rounded-lg">
               <div className="w-full max-w-sm mx-auto h-150 relative rounded-lg overflow-hidden">
                 <OptimizedVideo 
-                  src="/videos/e.mp4" 
+                  src="/videos/e.webm" 
                   className="w-full h-full"
                 />
               </div>
@@ -476,7 +476,7 @@ function HistorySection() {
               <div
                 className="w-full h-100 bg-gradient-to-br from-blue-900/60 via-cyan-800/50 to-teal-600/40 flex items-center justify-center relative"
                 style={{
-                  backgroundImage: "url('/Imagenes/frase del bar.jpeg')",
+                  backgroundImage: "url('/Imagenes/frase_del_bar.webp')",
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat'
@@ -554,7 +554,7 @@ function TeamSection() {
             <div className="relative overflow-hidden rounded-lg">
               <div className="w-full max-w-sm mx-auto h-150 relative rounded-lg overflow-hidden">
                 <OptimizedVideo 
-                  src="/videos/d.mp4" 
+                  src="/videos/d.webm" 
                   className="w-full h-full"
                 />
               </div>
@@ -721,7 +721,7 @@ function Footer() {
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
                 <Image
-                  src="/Imagenes/logo_bar.png"
+                  src="/Imagenes/logo_bar.webp"
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"
@@ -811,10 +811,10 @@ function Footer() {
             <h4 className="font-semibold mb-4">{t('footer.instagram.title')}</h4>
             <div className="grid grid-cols-2 gap-2">
               {[
-                "/Imagenes/Instagram_1.png",
-                "/Imagenes/Instagram_2.png",
-                "/Imagenes/Instagram_3.png",
-                "/Imagenes/Instagram_4.png"
+                "/Imagenes/Instagram_1.webp",
+                "/Imagenes/Instagram_2.webp",
+                "/Imagenes/Instagram_3.webp",
+                "/Imagenes/Instagram_4.webp",
               ].map((src, index) => (
                 <div
                   key={index}

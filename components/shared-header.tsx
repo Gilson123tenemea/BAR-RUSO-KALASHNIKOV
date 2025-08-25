@@ -18,7 +18,7 @@ const preloadLogo = () => {
   if (typeof window !== 'undefined') {
     const link = document.createElement('link')
     link.rel = 'preload'
-    link.href = '/Imagenes/logo_bar.png'
+    link.href = '/Imagenes/logo_bar.webp'
     link.as = 'image'
     document.head.appendChild(link)
   }
@@ -46,7 +46,7 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
     preloadLogo()
     const img = new window.Image()
     img.onload = () => setLogoLoaded(true)
-    img.src = '/Imagenes/logo_bar.png'
+    img.src = '/Imagenes/logo_bar.webp'
   }, [])
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
             )}
             
             <Image
-              src="/Imagenes/logo_bar.png"
+              src="/Imagenes/logo_bar.webp"
               alt="Bar Ruso Kalashnikov"
               fill
               className={`object-contain transition-opacity duration-300 ${
@@ -122,7 +122,7 @@ export default function SharedHeader({ scrolled: externalScrolled }: SharedHeade
               sizes="64px"
               onLoad={() => setLogoLoaded(true)}
               placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAQABADAREAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+              blurDataURL="data:image/webp;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAQABADAREAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             />
           </div>
           

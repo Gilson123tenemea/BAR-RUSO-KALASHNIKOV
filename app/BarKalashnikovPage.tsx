@@ -11,11 +11,11 @@ import Image from 'next/image'
 
 // ✅ IMÁGENES OPTIMIZADAS CON PRIORIDADES
 const CAROUSEL_IMAGES = [
-  '/Imagenes/Inicio_1.jpg',
-  '/Imagenes/Inicio_2.jpg',
-  '/Imagenes/Inicio_3.jpg',
-  '/Imagenes/Inicio_4.jpg',
-  '/Imagenes/Inicio_5.jpg'
+  '/Imagenes/Inicio_1.webp',
+  '/Imagenes/Inicio_2.webp',
+  '/Imagenes/Inicio_3.webp',
+  '/Imagenes/Inicio_4.webp',
+  '/Imagenes/Inicio_5.webp',
 ]
 
 // 🚀 HOOK DE PRECARGA SUPER OPTIMIZADO
@@ -297,7 +297,7 @@ function LoadingScreen({
           className="w-32 h-32 mx-auto mb-8 relative"
         >
           <Image
-            src="/Imagenes/logo_bar.png"
+            src="/Imagenes/logo_bar.webp"
             alt="Bar Ruso Kalashnikov"
             fill
             className="object-contain rounded-full"
@@ -379,7 +379,7 @@ const HeroSection = React.memo(function HeroSection() {
       {/* Background optimizado */}
       <div className="absolute inset-0">
         <Image
-          src="/Imagenes/Inicio_logo.jpg"
+          src="/Imagenes/Inicio_logo.webp"
           alt="Bar Ruso Kalashnikov - Ambiente"
           fill
           className="object-cover"
@@ -387,7 +387,7 @@ const HeroSection = React.memo(function HeroSection() {
           quality={85}
           sizes="100vw"
           placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyLli21llxqkRBBDMVZwGVZABgZV0AakjBUXRlZ2Xx5Fxb7LFcNGULNkUgAfLQ4qp3KdI4LS9w=="
+          blurDataURL="data:image/webp;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyLli21llxqkRBBDMVZwGVZABgZV0AakjBUXRlZ2Xx5Fxb7LFcNGULNkUgAfLQ4qp3KdI4LS9w=="
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
       </div>
@@ -464,7 +464,7 @@ const WelcomeSection = React.memo(function WelcomeSection() {
             className="relative h-96 rounded-2xl overflow-hidden group"
           >
             <Image
-              src="/Imagenes/cerveza_inicio.jpg"
+              src="/Imagenes/cerveza_inicio.webp"
               alt="Cerveza artesanal en copa helada"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -517,11 +517,11 @@ const MenuSection = React.memo(function MenuSection() {
   const { tInicio } = useInicioLanguage()
 
   const menuItems = useMemo(() => [
-    { name: tInicio('menu.shots'), src: "/Imagenes/Shots del Ruso.png" },
-    { name: tInicio('menu.flamed'), src: "/Imagenes/Cocteles_Flameados.png" },
-    { name: tInicio('menu.specials'), src: "/Imagenes/Especiales.png" },
-    { name: tInicio('menu.beers'), src: "/Imagenes/Cervezas_Artesanales.png" },
-    { name: tInicio('menu.nonAlcoholic'), src: "/Imagenes/Cocteles_sin_alcohol.png" },
+    { name: tInicio('menu.shots'), src: "/Imagenes/Shots del Ruso.webp" },
+    { name: tInicio('menu.flamed'), src: "/Imagenes/Cocteles_Flameados.webp" },
+    { name: tInicio('menu.specials'), src: "/Imagenes/Especiales.webp" },
+    { name: tInicio('menu.beers'), src: "/Imagenes/Cervezas_Artesanales.webp" },
+    { name: tInicio('menu.nonAlcoholic'), src: "/Imagenes/Cocteles_sin_alcohol.webp" },
   ], [tInicio])
 
   return (
@@ -592,7 +592,7 @@ const BarInteriorSection = React.memo(function BarInteriorSection() {
         >
           <div className="relative w-full h-96 rounded-2xl overflow-hidden group">
             <Image
-              src="/Imagenes/local.jpeg"
+              src="/Imagenes/local.webp"
               alt="Interior del Bar Ruso Kalashnikov mostrando decoración y mesas"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -863,10 +863,10 @@ const Footer = React.memo(function Footer() {
   }, [getEcuadorTime, checkIfOpen]);
 
   const instagramImages = useMemo(() => [
-    "/Imagenes/Instagram_1.png",
-    "/Imagenes/Instagram_2.png",
-    "/Imagenes/Instagram_3.png",
-    "/Imagenes/Instagram_4.png"
+    "/Imagenes/Instagram_1.webp",
+    "/Imagenes/Instagram_2.webp",
+    "/Imagenes/Instagram_3.webp",
+    "/Imagenes/Instagram_4.webp",
   ], [])
 
   return (
@@ -877,7 +877,7 @@ const Footer = React.memo(function Footer() {
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
                 <Image
-                  src="/Imagenes/logo_bar.png"
+                  src="/Imagenes/logo_bar.webp"
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"

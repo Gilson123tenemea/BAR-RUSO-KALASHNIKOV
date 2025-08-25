@@ -46,7 +46,7 @@ function HeroSection() {
         <div
           className="w-full h-full"
           style={{
-            backgroundImage: "url('/Imagenes/contacto logo.jpeg')",
+            backgroundImage: "url('/Imagenes/contacto logo.webp')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat"
@@ -345,7 +345,7 @@ function BarInteriorSection() {
           <div className="relative w-full h-80 rounded-lg overflow-hidden flex items-center justify-center">
             {/* Imagen */}
             <Image
-              src="/Imagenes/local.jpeg"
+              src="/Imagenes/local.webp"
               alt="Interior del Bar Ruso Kalashnikov"
               fill
               className="object-cover"
@@ -447,7 +447,7 @@ function Footer() {
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 rounded-full flex items-center justify-center relative">
                 <Image
-                  src="/Imagenes/logo_bar.png"
+                  src="/Imagenes/logo_bar.webp"
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"
@@ -528,10 +528,10 @@ function Footer() {
             <h4 className="font-semibold mb-4">{tc('instagramTitle')}</h4>
             <div className="grid grid-cols-2 gap-2">
               {[
-                "/Imagenes/Instagram_1.png",
-                "/Imagenes/Instagram_2.png",
-                "/Imagenes/Instagram_3.png",
-                "/Imagenes/Instagram_4.png"
+                "/Imagenes/Instagram_1.webp",
+                "/Imagenes/Instagram_2.webp",
+                "/Imagenes/Instagram_3.webp",
+                "/Imagenes/Instagram_4.webp"
               ].map((src, index) => (
                 <div
                   key={index}

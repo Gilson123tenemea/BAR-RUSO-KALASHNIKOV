@@ -13,18 +13,18 @@ import { useGaleriaLanguage, getTranslatedGalleryItemTitle } from './GaleriaLang
 // Optimización: Mover datos fuera del componente para evitar recreación
 // Precargar todas las imágenes para máxima fluidez
 const galleryItems = [
-  { type: "video", title: "Preparación de Cócteles", videoSrc: "/videos/Video-1.mp4", thumbnail: "/Imagenes/imagen_1_video1.png" },
-  { type: "photo", title: "Ambiente Nocturno", imageSrc: "/Imagenes/galeria_foto_1.jpg" },
-  { type: "video", title: "Cócteles Flameados", videoSrc: "/videos/Video-2.mp4", thumbnail: "/Imagenes/imagen_2_video2.png" },
-  { type: "photo", title: "Nuestras Visitas", imageSrc: "/Imagenes/galeria_foto_2.jpeg" },
-  { type: "video", title: "Especiales", videoSrc: "/videos/Video-3.mp4", thumbnail: "/Imagenes/imagen_3_video3.png" },
-  { type: "photo", title: "Interior Renovado", imageSrc: "/Imagenes/galeria_foto_3.jpg" },
-  { type: "video", title: "Preparación de Cócteles Especiales", videoSrc: "/videos/Video-4.mp4", thumbnail: "/Imagenes/imagen_4_video4.png" },
-  { type: "video", title: "Ambiente de Fin de Semana", videoSrc: "/videos/Video-5.mp4", thumbnail: "/Imagenes/imagen_5_video5.png" },
-  { type: "video", title: "Equipo de Trabajo", videoSrc: "/videos/Video-6.mp4", thumbnail: "/Imagenes/imagen_6_video6.png" },
-  { type: "video", title: "Momentos Especiales", videoSrc: "/videos/Video-7.mp4", thumbnail: "/Imagenes/imagen_7_video7.png" },
-  { type: "photo", title: "Decoración Especial", imageSrc: "/Imagenes/galeria_foto_4.jpg" },
-  { type: "photo", title: "Cervezas", imageSrc: "/Imagenes/galeria_foto_5.jpg" },
+  { type: "video", title: "Preparación de Cócteles", videoSrc: "/videos/Video-1.webm", thumbnail: "/Imagenes/imagen_1_video1.webp" },
+  { type: "photo", title: "Ambiente Nocturno", imageSrc: "/Imagenes/galeria_foto_1.webp" },
+  { type: "video", title: "Cócteles Flameados", videoSrc: "/videos/Video-2.webm", thumbnail: "/Imagenes/imagen_2_video2.webp" },
+  { type: "photo", title: "Nuestras Visitas", imageSrc: "/Imagenes/galeria_foto_2.webp" },
+  { type: "video", title: "Especiales", videoSrc: "/videos/Video-3.webm", thumbnail: "/Imagenes/imagen_3_video3.webp" },
+  { type: "photo", title: "Interior Renovado", imageSrc: "/Imagenes/galeria_foto_3.webp" },
+  { type: "video", title: "Preparación de Cócteles Especiales", videoSrc: "/videos/Video-4.webm", thumbnail: "/Imagenes/imagen_4_video4.webp" },
+  { type: "video", title: "Ambiente de Fin de Semana", videoSrc: "/videos/Video-5.webm", thumbnail: "/Imagenes/imagen_5_video5.webp" },
+  { type: "video", title: "Equipo de Trabajo", videoSrc: "/videos/Video-6.webm", thumbnail: "/Imagenes/imagen_6_video6.webp" },
+  { type: "video", title: "Momentos Especiales", videoSrc: "/videos/Video-7.webm", thumbnail: "/Imagenes/imagen_7_video7.webp" },
+  { type: "photo", title: "Decoración Especial", imageSrc: "/Imagenes/galeria_foto_4.webp" },
+  { type: "photo", title: "Cervezas", imageSrc: "/Imagenes/galeria_foto_5.webp" },
 ] as const
 
 const INITIAL_VISIBLE_ITEMS = 9
@@ -54,7 +54,7 @@ function HeroSection({ tGaleria }: { tGaleria: (key: any) => string }) {
     <section className="relative h-[700px] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="/Imagenes/galeria logo.jpeg"
+          src="/Imagenes/galeria logo.webp"
           alt="Galería Bar Ruso"
           fill
           className="object-cover"
@@ -197,7 +197,7 @@ const GalleryItem = React.memo(function GalleryItem({
           quality={85}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+          blurDataURL="data:image/webp;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
         />
 
         {/* Overlay para videos - solo si la imagen está cargada */}
@@ -497,10 +497,10 @@ function Footer({ tGaleria }: { tGaleria: (key: any) => string }) {
   }, [getEcuadorTime, checkIfOpen]);
 
   const instagramImages = useMemo(() => [
-    "/Imagenes/Instagram_1.png",
-    "/Imagenes/Instagram_2.png",
-    "/Imagenes/Instagram_3.png",
-    "/Imagenes/Instagram_4.png"
+    "/Imagenes/Instagram_1.webp",
+    "/Imagenes/Instagram_2.webp",
+    "/Imagenes/Instagram_3.webp",
+    "/Imagenes/Instagram_4.webp"
   ], []);
 
   return (
@@ -511,7 +511,7 @@ function Footer({ tGaleria }: { tGaleria: (key: any) => string }) {
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-16 h-16 rounded-full relative">
                 <Image
-                  src="/Imagenes/logo_bar.png"
+                  src="/Imagenes/logo_bar.webp"
                   alt="Bar Ruso Kalashnikov"
                   fill
                   className="object-contain rounded-full"

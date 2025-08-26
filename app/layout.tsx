@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     "La experiencia nocturna más exclusiva de Cuenca. Más de 250 cócteles únicos en un ambiente sofisticado.",
   generator: 'Gilson.Tenemea',
   icons: {
-    icon: '/Imagenes/logo_bar.png',
-    shortcut: '/Imagenes/logo_bar.png',
-    apple: '/Imagenes/logo_bar.png',
+    icon: '/Imagenes/logo_bar.webp',
+    shortcut: '/Imagenes/logo_bar.webp',
+    apple: '/Imagenes/logo_bar.webp',
   },
   openGraph: {
     title: 'Bar Ruso Kalashnikov',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/Imagenes/logo_bar.png',
+        url: '/Imagenes/logo_bar.webp',
         width: 1200,
         height: 630,
         alt: 'Logo del Bar Ruso Kalashnikov',
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Bar Ruso Kalashnikov",
     description: "Cócteles premium y ambiente exclusivo en Cuenca.",
-    images: ["/Imagenes/logo_bar.png"],
+    images: ["/Imagenes/logo_bar.webp"],
   },
 }
 

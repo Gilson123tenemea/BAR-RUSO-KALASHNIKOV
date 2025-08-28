@@ -50,25 +50,25 @@ export const metadata: Metadata = {
     locale: "es_EC",
     images: [
       {
-        url: "https://rusobar.com/Imagenes/logo_bar.jpeg",
+        url: "https://rusobar.com/Imagenes/logo_bar.webp",
         width: 1200,
         height: 630,
         alt: "Galería Bar Ruso Kalashnikov - Videos y fotos exclusivas"
       },
       {
-        url: "https://rusobar.com/Imagenes/galeria_foto_1.jpg",
+        url: "https://rusobar.com/Imagenes/galeria_foto_1.webp",
         width: 800,
         height: 600,
         alt: "Ambiente nocturno Bar Ruso Kalashnikov"
       },
       {
-        url: "https://rusobar.com/Imagenes/galeria_foto_2.jpeg",
+        url: "https://rusobar.com/Imagenes/galeria_foto_2.webp",
         width: 800,
         height: 600,
         alt: "Nuestras visitas Bar Kalashnikov"
       },
       {
-        url: "https://rusobar.com/Imagenes/galeria_foto_3.jpg",
+        url: "https://rusobar.com/Imagenes/galeria_foto_3.webp",
         width: 800,
         height: 600,
         alt: "Interior renovado Bar Ruso"
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
     creator: "@BarRusoKalashnikov",
     title: "📸 Galería Exclusiva | Bar Ruso Kalashnikov Cuenca",
     description: "🎥 Videos únicos 📸 Fotos exclusivas 🍹 Momentos memorables",
-    images: ["https://rusobar.com/Imagenes/logo_bar.jpeg"]
+    images: ["https://rusobar.com/Imagenes/logo_bar.webp"],
   },
   
   robots: {
@@ -132,8 +132,8 @@ export const metadata: Metadata = {
             "@type": "VideoObject",
             "name": "Preparación de Cócteles",
             "description": "Video exclusivo mostrando la preparación artesanal de cócteles en Bar Ruso Kalashnikov",
-            "contentUrl": "https://rusobar.com/videos/Video-1.mp4",
-            "thumbnailUrl": "https://rusobar.com/Imagenes/logo_bar.jpeg",
+            "contentUrl": "https://rusobar.com/videos/Video-1.webm",
+            "thumbnailUrl": "https://rusobar.com/Imagenes/logo_bar.webp",
             "uploadDate": "2025-01-01",
             "duration": "PT30S"
           },
@@ -141,8 +141,8 @@ export const metadata: Metadata = {
             "@type": "VideoObject",
             "name": "Cócteles Flameados",
             "description": "Técnicas especiales de flameado en cócteles del Bar Ruso Kalashnikov",
-            "contentUrl": "https://rusobar.com/videos/Video-2.mp4",
-            "thumbnailUrl": "https://rusobar.com/Imagenes/logo_bar.jpeg",
+            "contentUrl": "https://rusobar.com/videos/Video-2.webm",
+            "thumbnailUrl": "https://rusobar.com/Imagenes/logo_bar.webp",
             "uploadDate": "2025-01-01",
             "duration": "PT45S"
           },
@@ -150,7 +150,7 @@ export const metadata: Metadata = {
             "@type": "ImageObject",
             "name": "Ambiente Nocturno",
             "description": "Fotografía del ambiente nocturno único del Bar Ruso Kalashnikov",
-            "contentUrl": "https://rusobar.com/Imagenes/galeria_foto_1.jpg",
+            "contentUrl": "https://rusobar.com/Imagenes/galeria_foto_1.webp",
             "width": "800",
             "height": "600"
           },
@@ -158,7 +158,7 @@ export const metadata: Metadata = {
             "@type": "ImageObject",
             "name": "Nuestras Visitas",
             "description": "Clientes disfrutando la experiencia en Bar Ruso Kalashnikov",
-            "contentUrl": "https://rusobar.com/Imagenes/galeria_foto_2.jpeg",
+            "contentUrl": "https://rusobar.com/Imagenes/galeria_foto_2.webp",
             "width": "800",
             "height": "600"
           }
@@ -170,12 +170,12 @@ export const metadata: Metadata = {
         "@id": "https://rusobar.com/#bar",
         "name": "Bar Ruso Kalashnikov",
         "image": [
-          "https://rusobar.com/Imagenes/logo_bar.jpeg",
-          "https://rusobar.com/Imagenes/galeria_foto_1.jpg",
-          "https://rusobar.com/Imagenes/galeria_foto_2.jpeg",
-          "https://rusobar.com/Imagenes/galeria_foto_3.jpg",
-          "https://rusobar.com/Imagenes/galeria_foto_4.jpg",
-          "https://rusobar.com/Imagenes/galeria_foto_5.jpg"
+          "https://rusobar.com/Imagenes/logo_bar.webp",
+          "https://rusobar.com/Imagenes/galeria_foto_1.webp",
+          "https://rusobar.com/Imagenes/galeria_foto_2.webp",
+          "https://rusobar.com/Imagenes/galeria_foto_3.webp",
+          "https://rusobar.com/Imagenes/galeria_foto_4.webp",
+          "https://rusobar.com/Imagenes/galeria_foto_5.webp"
         ],
         "url": "https://rusobar.com",
         "telephone": "+593995575335",

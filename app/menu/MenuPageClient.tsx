@@ -966,16 +966,16 @@ function Footer() {
             <h4 className="font-semibold mb-4">{tMenu('footer.hours')}</h4>
             <div className="space-y-2 text-gray-400 text-sm">
               <div className="flex justify-between">
-                <span>{tMenu('footer.monday')} - {tMenu('footer.thursday')}:</span>
+                <span>{tMenu('footer.monday')} - {tMenu('footer.wednesday')}:</span>
                 <span>15:00 - 00:00</span>
               </div>
               <div className="flex justify-between">
-                <span>{tMenu('footer.friday')}:</span>
+                <span>{tMenu('footer.thursday')} - {tMenu('footer.friday')}:</span>
                 <span>15:00 - 02:00</span>
               </div>
               <div className="flex justify-between">
                 <span>{tMenu('footer.saturday')}:</span>
-                <span>15:00 - 00:00</span>
+                <span>15:00 - 02:00</span>
               </div>
               <div className="flex justify-between">
                 <span>{tMenu('footer.sunday')}:</span>

@@ -64,13 +64,13 @@ export const metadata: Metadata = {
     locale: "es_EC",
     images: [
       {
-        url: "https://rusobar.com/Imagenes/Inicio_logo.jpg",
+        url: "https://rusobar.com/Imagenes/Inicio_logo.webp",
         width: 1200,
         height: 630,
         alt: "Bar Ruso Kalashnikov - El #1 bar de Cuenca Ecuador con más de 250 cócteles únicos"
       },
       {
-        url: "https://rusobar.com/Imagenes/local.jpeg", 
+        url: "https://rusobar.com/Imagenes/local.webp", 
         width: 1200,
         height: 630,
         alt: "Interior del mejor bar de Cuenca - Bar Ruso Kalashnikov"
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "🍸 Bar Ruso Kalashnikov | Mejor Bar de Cuenca Ecuador",
     description: "⭐ #1 EN CUENCA ⭐ +250 cócteles únicos 🔥 Shots del Ruso 📍 Centro histórico ✅ RESERVA: 099-557-5335",
-    images: ["https://rusobar.com/Imagenes/Inicio_logo.jpg"]
+    images: ["https://rusobar.com/Imagenes/Inicio_logo.webp"],
   },
   
   // Configuración de robots mejorada

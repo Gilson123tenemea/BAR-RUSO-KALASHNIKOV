@@ -50,13 +50,13 @@ export const metadata: Metadata = {
     locale: "es_EC",
     images: [
       {
-        url: "https://rusobar.com/Imagenes/logo_bar.png",
+        url: "https://rusobar.com/Imagenes/logo_bar.webp",
         width: 1200,
         height: 630,
         alt: "Contacto Bar Ruso Kalashnikov - Reservas y ubicación"
       },
       {
-        url: "https://rusobar.com/Imagenes/local.jpeg",
+        url: "https://rusobar.com/Imagenes/local.webp",
         width: 800,
         height: 600,
         alt: "Interior Bar Ruso Kalashnikov Cuenca"
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     creator: "@BarRusoKalashnikov",
     title: "📞 Reservas: 099-557-5335 | Bar Ruso Kalashnikov Cuenca",
     description: "📍 Centro de Cuenca ⏰ Abierto Lun-Sáb 🍸 Reserva tu mesa ahora",
-    images: ["https://rusobar.com/Imagenes/contacto_logo.jpeg"]
+    images: ["https://rusobar.com/Imagenes/contacto_logo.webp"],
   },
   
   robots: {
@@ -111,8 +111,8 @@ export const metadata: Metadata = {
         "@id": "https://rusobar.com/#bar",
         "name": "Bar Ruso Kalashnikov",
         "image": [
-          "https://rusobar.com/Imagenes/logo_bar.png",
-          "https://rusobar.com/Imagenes/local.jpeg"
+          "https://rusobar.com/Imagenes/logo_bar.webp",
+          "https://rusobar.com/Imagenes/local.webp"
         ],
         "url": "https://rusobar.com",
         "telephone": "+593995575335",
@@ -133,13 +133,13 @@ export const metadata: Metadata = {
         "openingHoursSpecification": [
           {
             "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Lunes", "Martes", "Miercoles", "Jueves"],
+            "dayOfWeek": ["Lunes", "Martes", "Miercoles"],
             "opens": "15:00",
             "closes": "00:00"
           },
           {
             "@type": "OpeningHoursSpecification",
-            "dayOfWeek": "Viernes",
+            "dayOfWeek":["Jueves" ,"Viernes"],
             "opens": "15:00",
             "closes": "02:00"
           },
@@ -147,7 +147,7 @@ export const metadata: Metadata = {
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": "Sabado",
             "opens": "15:00",
-            "closes": "00:00"
+            "closes": "02:00"
           },
           {
             "@type": "OpeningHoursSpecification",

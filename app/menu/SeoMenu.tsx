@@ -51,19 +51,19 @@ export const metadata: Metadata = {
     locale: "es_EC",
     images: [
       {
-        url: "https://rusobar.com/Imagenes/Menu_logo.jpg",
+        url: "https://rusobar.com/Imagenes/Menu_logo.webp",
         width: 1200,
         height: 630,
         alt: "Menú completo Bar Ruso Kalashnikov - Cócteles y precios"
       },
       {
-        url: "https://rusobar.com/Imagenes/shots_del_ruso_menu.png",
+        url: "https://rusobar.com/Imagenes/shots_del_ruso_menu.webp",
         width: 800,
         height: 800,
         alt: "Shots del Ruso - Especialidad de la casa"
       },
       {
-        url: "https://rusobar.com/Imagenes/cocteles_flameados_menu.png",
+        url: "https://rusobar.com/Imagenes/cocteles_flameados_menu.webp",
         width: 800,
         height: 800,
         alt: "Cócteles Flameados - Show en tu mesa"
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     creator: "@BarRusoKalashnikov",
     title: "📋 MENÚ Bar Ruso Kalashnikov | +250 Cócteles Premium",
     description: "🔥 Shots desde $3 🔥 Cócteles Flameados 🔥 Jarras hasta 3L 🔥 Los mejores precios de Cuenca",
-    images: ["https://rusobar.com/Imagenes/Menu_logo.jpg"]
+    images: ["https://rusobar.com/Imagenes/Menu_logo.webp"],
   },
   
   robots: {
@@ -110,7 +110,7 @@ export const metadata: Metadata = {
       "@context": "https://schema.org",
       "@type": "Restaurant",
       "name": "Bar Ruso Kalashnikov",
-      "image": "https://rusobar.com/Imagenes/logo_bar.png",
+      "image": "https://rusobar.com/Imagenes/logo_bar.webp",
       "url": "https://rusobar.com",
       "telephone": "+593995575335",
       "menu": "https://rusobar.com/menu",

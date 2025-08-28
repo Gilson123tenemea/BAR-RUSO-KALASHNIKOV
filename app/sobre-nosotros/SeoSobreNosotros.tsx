@@ -50,19 +50,19 @@ export const metadata: Metadata = {
     locale: "es_EC",
     images: [
       {
-        url: "https://rusobar.com/Imagenes/sobre nosotros logo.jpg",
+        url: "https://rusobar.com/Imagenes/sobre nosotros logo.webp",
         width: 1200,
         height: 630,
         alt: "Historia Bar Ruso Kalashnikov - Sobre nosotros"
       },
       {
-        url: "https://rusobar.com/Imagenes/frase_del_bar.jpeg",
+        url: "https://rusobar.com/Imagenes/frase_del_bar.webp",
         width: 800,
         height: 600,
         alt: "Filosofía Bar Ruso Kalashnikov Cuenca"
       },
       {
-        url: "https://rusobar.com/Imagenes/local.jpeg",
+        url: "https://rusobar.com/Imagenes/local.webp",
         width: 800,
         height: 600,
         alt: "Interior y ambiente Bar Ruso Kalashnikov"
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     creator: "@BarRusoKalashnikov",
     title: "🍸 Historia y Tradición | Bar Ruso Kalashnikov Cuenca",
     description: "🇷🇺 Desde 2014 🍹 +250 cócteles únicos 🎭 Experiencia auténtica rusa",
-    images: ["https://rusobar.com/videos/Video-6.mp4"],
+    images: ["https://rusobar.com/videos/Video-6.webm"],
   },
   
   robots: {
@@ -117,9 +117,9 @@ export const metadata: Metadata = {
         "@id": "https://rusobar.com/#bar",
         "name": "Bar Ruso Kalashnikov",
         "image": [
-          "https://rusobar.com/Imagenes/logo_bar.png",
-          "https://rusobar.com/Imagenes/frase_del_bar.jpeg",
-          "https://rusobar.com/Imagenes/local.jpeg"
+          "https://rusobar.com/Imagenes/logo_bar.webp",
+          "https://rusobar.com/Imagenes/frase_del_bar.webp",
+          "https://rusobar.com/Imagenes/local.webp"
         ],
         "url": "https://rusobar.com",
         "telephone": "+593995575335",
@@ -240,7 +240,7 @@ export const metadata: Metadata = {
         "@type": "Organization",
         "name": "Bar Ruso Kalashnikov",
         "url": "https://rusobar.com",
-        "logo": "https://rusobar.com/Imagenes/logo_bar.png",
+        "logo": "https://rusobar.com/Imagenes/logo_bar.webp",
         "description": "Bar temático ruso líder en Cuenca, Ecuador. Especialistas en coctelería artesanal con más de 250 recetas únicas y ambiente auténtico ruso desde 2014.",
         "foundingDate": "2014",
         "founders": [
@@ -359,8 +359,8 @@ export const metadata: Metadata = {
         "@type": "VideoObject",
         "name": "Experiencia Bar Ruso Kalashnikov",
         "description": "Descubre el ambiente único y la experiencia premium del Bar Ruso Kalashnikov en Cuenca",
-        "contentUrl": "https://rusobar.com/videos/e.mp4",
-        "thumbnailUrl": "https://rusobar.com/Imagenes/sobre nosotros logo.jpg",
+        "contentUrl": "https://rusobar.com/videos/e.webm",
+        "thumbnailUrl": "https://rusobar.com/Imagenes/sobre nosotros logo.webp",
         "uploadDate": "2025-01-01",
         "duration": "PT30S"
       }

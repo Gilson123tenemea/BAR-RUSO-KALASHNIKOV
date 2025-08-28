@@ -933,7 +933,7 @@ const Footer = React.memo(function Footer() {
               </div>
               <div className="flex justify-between">
                 <span>{tInicio('footer.saturday')}</span>
-                <span>15:00 - 00:00</span>
+                <span>15:00 - 02:00</span>
               </div>
               <div className="flex justify-between">
                 <span>{tInicio('footer.sunday')}</span>

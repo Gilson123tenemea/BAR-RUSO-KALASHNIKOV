@@ -64,6 +64,25 @@ export type InicioTranslationKeys =
   | 'footer.instagram'
   | 'footer.copyright'
 
+  //carrusel secction
+  | 'carousel.boxing.title'
+  | 'carousel.boxing.description'
+  | 'carousel.boxing.alt'
+  | 'carousel.ufc.title'
+  | 'carousel.ufc.description'
+  | 'carousel.ufc.alt'
+  | 'carousel.experts.title'
+  | 'carousel.experts.description'
+  | 'carousel.experts.alt'
+  | 'carousel.experience.title'
+  | 'carousel.experience.description'
+  | 'carousel.experience.alt'
+  | 'carousel.music.title'
+  | 'carousel.music.description'
+  | 'carousel.music.alt'
+
+ 
+
 interface InicioLanguageContextType {
   currentLanguage: Language
   tInicio: (key: InicioTranslationKeys) => string
@@ -88,8 +107,30 @@ const inicioTranslations = {
     // Welcome Section
     'welcome.badge': 'BIENVENIDOS',
     'welcome.title': 'Una experiencia única',
-    'welcome.description': 'En el corazón de Cuenca, Bar Ruso Kalashnikov combina la tradición rusa con la creatividad en la coctelería moderna. Nuestros mixólogos expertos elaboran bebidas únicas que fusionan técnicas clásicas y vanguardistas. Cada visita es una experiencia sensorial que invita a disfrutar de momentos inolvidables en un ambiente vibrante, acogedor y lleno de energía.',
+    'welcome.description': 'En Ruso Bar no solo encuentras tragos y música, encuentras una experiencia que te acompaña en cada momento. Estamos aquí para asegurarnos de que la pases verdaderamente bien, siempre.',
     'welcome.button': 'Conocer Más',
+     
+    //carrusel secction
+    'carousel.boxing.title': 'PELEAS DE BOXEO',
+    'carousel.boxing.description': 'Vive la emoción del boxeo con vodka premium ruso 13/09/2025',
+    'carousel.boxing.alt': 'Pelea de Canelo en vivo',
+    
+    'carousel.ufc.title': 'UFC NIGHTS',
+    'carousel.ufc.description': 'Las mejores peleas UFC con cócteles únicos 13/09/2025',
+    'carousel.ufc.alt': 'UFC en pantalla',
+    
+    'carousel.experts.title': 'EXPERTOS EN LO QUE HACEMOS',
+    'carousel.experts.description': 'Experiencias únicas diseñadas para los paladares más exigentes',
+    'carousel.experts.alt': 'Líderes en lo que ofrecemos',
+    
+    'carousel.experience.title': 'EXPERIENCIA ÚNICA',
+    'carousel.experience.description': 'Vive la noche con amigos, música y el mejor ambiente',
+    'carousel.experience.alt': 'Personas disfrutando en el bar',
+    
+    'carousel.music.title': 'SONIDOS QUE MUEVEN',
+    'carousel.music.description': 'Déjate llevar por los ritmos que hacen vibrar cada momento',
+    'carousel.music.alt': 'Música para disfrutar en el bar',
+
     
     // Menu Section
     'menu.title': 'NUESTRO MENÚ',
@@ -146,9 +187,30 @@ const inicioTranslations = {
     // Welcome Section
     'welcome.badge': 'WELCOME',
     'welcome.title': 'A unique experience',
-    'welcome.description': 'In the heart of Cuenca, Bar Ruso Kalashnikov combines Russian tradition with creativity in modern mixology. Our expert mixologists craft unique drinks that fuse classic and avant-garde techniques. Each visit is a sensory experience that invites you to enjoy unforgettable moments in a vibrant, welcoming and energetic atmosphere.',
+    'welcome.description': 'At Ruso Bar, you do not just find drinks and music, you find an experience that stays with you every moment. We are here to make sure you have a truly great time, always.',
     'welcome.button': 'Learn More',
     
+    //carrusel secction
+    'carousel.boxing.title': 'BOXING FIGHTS',
+    'carousel.boxing.description': 'Live the excitement of boxing with premium Russian vodka 09/13/2025',
+    'carousel.boxing.alt': 'Canelo fight live',
+    
+    'carousel.ufc.title': 'UFC NIGHTS',
+    'carousel.ufc.description': 'The best UFC fights with unique cocktails 09/13/2025',
+    'carousel.ufc.alt': 'UFC on screen',
+    
+    'carousel.experts.title': 'EXPERTS IN WHAT WE DO',
+    'carousel.experts.description': 'Unique experiences designed for the most demanding palates',
+    'carousel.experts.alt': 'Leaders in what we offer',
+    
+    'carousel.experience.title': 'UNIQUE EXPERIENCE',
+    'carousel.experience.description': 'Live the night with friends, music and the best atmosphere',
+    'carousel.experience.alt': 'People enjoying at the bar',
+    
+    'carousel.music.title': 'SOUNDS THAT MOVE',
+    'carousel.music.description': 'Let yourself be carried away by the rhythms that make every moment vibrate',
+    'carousel.music.alt': 'Music to enjoy at the bar',
+
     // Menu Section
     'menu.title': 'OUR MENU',
     'menu.description': 'We have created a cocktail menu designed to captivate all your senses, combining classic recipes and exclusive creations that will transport you to a universe of unique aromas, colors and sensations.',
@@ -204,9 +266,30 @@ const inicioTranslations = {
     // Welcome Section
     'welcome.badge': 'ДОБРО ПОЖАЛОВАТЬ',
     'welcome.title': 'Уникальный опыт',
-    'welcome.description': 'В сердце Куэнки бар Русский Калашников сочетает русскую традицию с творчеством в современной миксологии. Наши опытные бармены создают уникальные напитки, объединяющие классические и авангардные техники. Каждое посещение - это сенсорный опыт, который приглашает насладиться незабываемыми моментами в яркой, уютной и энергичной атмосфере.',
+    'welcome.description': 'В баре Ruso вы найдете не просто напитки и музыку, но и впечатления, которые останутся с вами навсегда. Мы здесь, чтобы вы всегда отлично проводили время.',
     'welcome.button': 'Узнать больше',
     
+    //carrusel secction
+    'carousel.boxing.title': 'БОКСЁРСКИЕ БОИ',
+    'carousel.boxing.description': 'Почувствуйте азарт бокса с премиальной русской водкой 13/09/2025',
+    'carousel.boxing.alt': 'Бой Канело в прямом эфире',
+    
+    'carousel.ufc.title': 'ВЕЧЕРА UFC',
+    'carousel.ufc.description': 'Лучшие бои UFC с уникальными коктейлями 13/09/2025',
+    'carousel.ufc.alt': 'UFC на экране',
+    
+    'carousel.experts.title': 'ЭКСПЕРТЫ В ТОМ, ЧТО ДЕЛАЕМ',
+    'carousel.experts.description': 'Уникальные впечатления для самых взыскательных вкусов',
+    'carousel.experts.alt': 'Лидеры в том, что предлагаем',
+    
+    'carousel.experience.title': 'УНИКАЛЬНЫЙ ОПЫТ',
+    'carousel.experience.description': 'Проведите ночь с друзьями, музыкой и лучшей атмосферой',
+    'carousel.experience.alt': 'Люди наслаждаются в баре',
+    
+    'carousel.music.title': 'ЗВУКИ, КОТОРЫЕ ДВИЖУТ',
+    'carousel.music.description': 'Позвольте себе увлечься ритмами, которые заставляют вибрировать каждый момент',
+    'carousel.music.alt': 'Музыка для наслаждения в баре',
+
     // Menu Section
     'menu.title': 'НАШЕ МЕНЮ',
     'menu.description': 'Мы создали коктейльную карту, призванную пленить все ваши чувства, сочетая классические рецепты и эксклюзивные творения, которые перенесут вас во вселенную уникальных ароматов, цветов и ощущений.',

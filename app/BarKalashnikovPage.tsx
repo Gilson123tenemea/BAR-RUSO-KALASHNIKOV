@@ -4,10 +4,20 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Facebook, Instagram, Phone } from "lucide-react"
 import SharedHeader from "@/components/shared-header"
-import { InicioLanguageProvider, useInicioLanguage } from "./translations/InicioLanguageContext"
+import { InicioLanguageProvider, useInicioLanguage, InicioTranslationKeys} from "./translations/InicioLanguageContext"
 import { useLanguage } from "@/components/LanguageContext"
 import Link from "next/link"
 import Image from 'next/image'
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+// Tipos TypeScript
+interface CarouselImage {
+  id: number;
+  src: string;
+  altKey: InicioTranslationKeys;    // ✅ Específico para traducciones
+  titleKey: InicioTranslationKeys;  // ✅ Específico para traducciones
+  descriptionKey: InicioTranslationKeys; // ✅ Específico para traducciones
+}
 
 // ✅ IMÁGENES OPTIMIZADAS CON PRIORIDADES
 const CAROUSEL_IMAGES = [
@@ -447,70 +457,167 @@ const HeroSection = React.memo(function HeroSection() {
   )
 })
 
-// ✅ WELCOME SECTION OPTIMIZADO
-const WelcomeSection = React.memo(function WelcomeSection() {
-  const { tInicio } = useInicioLanguage()
+
+
+  const carouselImages: CarouselImage[] = [
+    {
+      id: 1,
+      src: "/Imagenes/peleacanelo.webp",
+      altKey: "carousel.boxing.alt",
+      titleKey: "carousel.boxing.title",
+      descriptionKey: "carousel.boxing.description"
+    },
+    {
+      id: 2,
+      src: "/Imagenes/ufc.webp",
+      altKey: "carousel.ufc.alt",
+      titleKey: "carousel.ufc.title",
+      descriptionKey: "carousel.ufc.description"
+    },
+    {
+      id: 3,
+      src: "/Imagenes/carrusel1.webp",
+      altKey: "carousel.experts.alt",
+      titleKey: "carousel.experts.title",
+      descriptionKey: "carousel.experts.description"
+    },
+    {
+      id: 4,
+      src: "/Imagenes/carrusel2.webp",
+      altKey: "carousel.experience.alt",
+      titleKey: "carousel.experience.title",
+      descriptionKey: "carousel.experience.description"
+    },
+    {
+      id: 5,
+      src: "/Imagenes/musica.webp",
+      altKey: "carousel.music.alt",
+      titleKey: "carousel.music.title",
+      descriptionKey: "carousel.music.description"
+    }
+  ];
+
+
+const ImageCarousel: React.FC = () => {
+const { tInicio } = useInicioLanguage(); // Hook para traducciones
+  const [translateX, setTranslateX] = useState<number>(0);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  // Duplicamos el array para crear el efecto infinito perfecto
+  const duplicatedImages = [...carouselImages, ...carouselImages, ...carouselImages];
+
+ useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setTranslateX(prev => {
+        const cardWidth = 320; // 300px + 20px gap
+        const newTranslate = prev - 1; // Movimiento suave pixel por pixel
+        
+        // Resetear cuando haya recorrido todas las imágenes originales
+        if (Math.abs(newTranslate) >= cardWidth * carouselImages.length) {
+          return 0;
+        }
+        
+        return newTranslate;
+      });
+    }, 25); // Movimiento suave a 40fps
+
+    return () => clearInterval(interval);
+  }, [isPaused, carouselImages.length]);
 
   return (
-    <section className="py-16 bg-black">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Imagen optimizada */}
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            className="relative h-96 rounded-2xl overflow-hidden group"
+    <div 
+      className="relative w-full h-[420px] overflow-hidden rounded-xl"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Contenedor de tarjetas con movimiento continuo */}
+      <div 
+        className="flex gap-5 h-full"
+        style={{
+          transform: `translateX(${translateX}px)`,
+          transition: isPaused ? 'transform 0.5s ease-out' : 'none'
+        }}
+      >
+        {duplicatedImages.map((image: CarouselImage, index: number) => (
+          <div 
+            key={`${image.id}-${index}`} 
+            className="flex-shrink-0 w-[300px] h-full relative bg-gray-900 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] group"
           >
-            <Image
-              src="/Imagenes/cerveza_inicio.webp"
-              alt="Cerveza artesanal en copa helada"
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-              loading="lazy"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              quality={85}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          </motion.div>
+            {/* Imagen principal */}
+            <div className="relative h-[280px] overflow-hidden">
+              <img
+                src={image.src}
+                alt={tInicio(image.altKey)} // ✅ Traducido
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                loading="lazy"
+              />
+              {/* Overlay gradient para texto legible */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+              
+              {/* Efecto hover naranja */}
+              <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/10 transition-all duration-300" />
+            </div>
+            
+            {/* Contenido de texto */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <h3 className="text-lg font-bold mb-3 text-orange-400 tracking-wide transform group-hover:translate-y-[-2px] transition-transform duration-300">
+                {tInicio(image.titleKey)} {/* ✅ Traducido */}
+              </h3>
+              <p className="text-sm text-gray-300 leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                {tInicio(image.descriptionKey)} {/* ✅ Traducido */}
+              </p>
+            </div>
+            
+            {/* Borde sutil que se ilumina en hover */}
+            <div className="absolute inset-0 border border-transparent group-hover:border-orange-500/30 rounded-xl transition-all duration-300" />
+          </div>
+        ))}
+      </div>
 
-          {/* Contenido */}
-          <motion.div 
-            initial={{ x: 50, opacity: 0 }} 
-            whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-          >
-            <motion.p 
-              className="text-orange-500 text-sm font-semibold mb-4 tracking-wider uppercase"
-            >
+      {/* Gradientes laterales para efecto fade profesional */}
+      <div className="absolute top-0 left-0 w-24 h-full bg-gradient-to-r from-black via-black/60 to-transparent pointer-events-none z-10" />
+      <div className="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-black via-black/60 to-transparent pointer-events-none z-10" />
+      
+      {/* Indicador de estado discreto */}
+      <div className="absolute top-4 right-6 z-20 opacity-50 hover:opacity-100 transition-opacity">
+        <div className={`w-2 h-2 rounded-full transition-colors duration-300 shadow-lg ${
+          isPaused ? 'bg-orange-500 animate-pulse' : 'bg-green-400'
+        }`} />
+      </div>
+    </div>
+  );
+};
+
+// ✅ WELCOME SECTION ACTUALIZADA
+const WelcomeSection = React.memo(function WelcomeSection() {
+  const { tInicio } = useInicioLanguage();
+
+  return (
+    <section className="py-10 bg-black">
+      <div className="container mx-auto px-4">
+        {/* Header de la sección */}
+        <div className="text-center mb-6">
+          <div className="inline-block">
+            <p className="text-orange-500 text-sm font-semibold mb-4 tracking-wider uppercase">
               {tInicio('welcome.badge')}
-            </motion.p>
-            
-            <h2 className="text-3xl font-bold mb-6 leading-tight">
-              {tInicio('welcome.title')}
-            </h2>
-            
-            <p className="text-gray-300 leading-relaxed mb-8 text-lg">
-              {tInicio('welcome.description')}
             </p>
-            
-            <Link href="/galeria">
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-orange-500 text-black px-8 py-4 font-semibold hover:bg-orange-600 transition-all duration-300 rounded-md shadow-lg hover:shadow-orange-500/25"
-              >
-                {tInicio('welcome.button')}
-              </motion.button>
-            </Link>
-          </motion.div>
+            <h2 className="text-1xl md:text-1xl font mb-2 leading-tight text-gray max-w-4xl mx-auto">
+              {tInicio('welcome.description')}
+            </h2>
+          </div>
+        </div>
+
+        {/* Carrusel traducido */}
+        <div className="max-w-7xl mx-auto mb-3">
+          <ImageCarousel />
         </div>
       </div>
     </section>
-  )
-})
+  );
+});
+
 
 // ✅ MENU SECTION OPTIMIZADO
 const MenuSection = React.memo(function MenuSection() {

@@ -70,18 +70,18 @@ function HeroSection({ tGaleria }: { tGaleria: (key: any) => string }) {
         <motion.div
           initial={{ opacity: 0, x: -100 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ 
-            duration: 0.4, 
+          transition={{
+            duration: 0.4,
             ease: [0.25, 0.46, 0.45, 0.94],
             delay: 0.1
           }}
           className="max-w-2xl"
         >
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, x: -120 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ 
-              duration: 0.5, 
+            transition={{
+              duration: 0.5,
               ease: [0.25, 0.46, 0.45, 0.94],
               delay: 0.2
             }}
@@ -90,11 +90,11 @@ function HeroSection({ tGaleria }: { tGaleria: (key: any) => string }) {
             {tGaleria('hero.title')}
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, x: -80 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ 
-              duration: 0.4, 
+            transition={{
+              duration: 0.4,
               ease: [0.25, 0.46, 0.45, 0.94],
               delay: 0.35
             }}
@@ -114,7 +114,7 @@ function useImagePreloader() {
 
   useEffect(() => {
     // Precargar todas las imágenes inmediatamente
-    const imagesToPreload = galleryItems.map(item => 
+    const imagesToPreload = galleryItems.map(item =>
       item.type === "video" ? item.thumbnail : item.imageSrc
     )
 
@@ -151,13 +151,13 @@ interface GalleryItemProps {
   currentLanguage: any;
 }
 
-const GalleryItem = React.memo(function GalleryItem({ 
-  item, 
-  index, 
-  onClick, 
+const GalleryItem = React.memo(function GalleryItem({
+  item,
+  index,
+  onClick,
   isImageLoaded,
   tGaleria,
-  currentLanguage 
+  currentLanguage
 }: GalleryItemProps) {
   const handleClick = useCallback(() => {
     if (item.type === "video" && item.videoSrc) {
@@ -171,14 +171,14 @@ const GalleryItem = React.memo(function GalleryItem({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
+      transition={{
         duration: 0.3,
         delay: index * 0.05,
         ease: [0.25, 0.46, 0.45, 0.94]
       }}
       className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 cursor-pointer transition-[border-color] duration-200"
       onClick={handleClick}
-      style={{ 
+      style={{
         transform: 'translateZ(0)',
         willChange: 'transform',
       }}
@@ -190,9 +190,8 @@ const GalleryItem = React.memo(function GalleryItem({
           src={imageSrc}
           alt={getTranslatedGalleryItemTitle(item.title, currentLanguage)}
           fill
-          className={`object-cover transition-all duration-300 ${
-            isImageLoaded ? 'opacity-100' : 'opacity-0'
-          } ${item.type === "photo" ? 'group-hover:scale-105 transition-transform duration-500' : ''}`}
+          className={`object-cover transition-all duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
+            } ${item.type === "photo" ? 'group-hover:scale-105 transition-transform duration-500' : ''}`}
           priority={index < 9} // Priorizar las primeras 9 imágenes
           quality={85}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -217,13 +216,12 @@ const GalleryItem = React.memo(function GalleryItem({
         {isImageLoaded && (
           <div className="absolute top-4 right-4 z-20">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
-                item.type === "video" 
-                  ? "bg-red-500/90 text-white" 
+              className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${item.type === "video"
+                  ? "bg-red-500/90 text-white"
                   : "bg-blue-500/90 text-white"
-              }`}
+                }`}
             >
-              {item.type === "video" 
+              {item.type === "video"
                 ? tGaleria('gallery.videoBadge')
                 : tGaleria('gallery.photoBadge')
               }
@@ -248,9 +246,9 @@ const GalleryItem = React.memo(function GalleryItem({
   )
 })
 
-function GallerySection({ tGaleria, currentLanguage }: { 
-  tGaleria: (key: any) => string; 
-  currentLanguage: any; 
+function GallerySection({ tGaleria, currentLanguage }: {
+  tGaleria: (key: any) => string;
+  currentLanguage: any;
 }) {
   const [filter, setFilter] = useState<"all" | "video" | "photo">("all")
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
@@ -287,7 +285,7 @@ function GallerySection({ tGaleria, currentLanguage }: {
     <>
       <section className="py-10 bg-black">
         <div className="container mx-auto px-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
@@ -300,7 +298,7 @@ function GallerySection({ tGaleria, currentLanguage }: {
           </motion.div>
 
           {/* Filtros */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
@@ -317,11 +315,10 @@ function GallerySection({ tGaleria, currentLanguage }: {
                   onClick={() =>
                     setFilter(filterOption.key as "all" | "video" | "photo")
                   }
-                  className={`px-6 py-2 rounded-md transition-all duration-200 ${
-                    filter === filterOption.key
+                  className={`px-6 py-2 rounded-md transition-all duration-200 ${filter === filterOption.key
                       ? "bg-orange-500 text-black font-semibold"
                       : "text-gray-300 hover:text-white hover:bg-gray-800"
-                  }`}
+                    }`}
                 >
                   {filterOption.label}
                 </button>
@@ -334,7 +331,7 @@ function GallerySection({ tGaleria, currentLanguage }: {
             {visibleFilteredItems.map((item, index) => {
               const imageSrc = item.type === "video" ? item.thumbnail : item.imageSrc
               const isImageLoaded = loadedImages.has(imageSrc)
-              
+
               return (
                 <GalleryItem
                   key={`${item.type}-${item.title}-${index}`}
@@ -351,7 +348,7 @@ function GallerySection({ tGaleria, currentLanguage }: {
 
           {/* Botón cargar más */}
           {visibleItems < filteredItems.length && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
@@ -366,7 +363,7 @@ function GallerySection({ tGaleria, currentLanguage }: {
             </motion.div>
           )}
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
@@ -396,36 +393,45 @@ function GallerySection({ tGaleria, currentLanguage }: {
         </div>
       </section>
 
-      {/* Modal de Video Optimizado */}
+      {/* Modal de Video Optimizado y Responsivo */}
       {selectedVideo && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-2 sm:p-4"
           onClick={closeVideoModal}
         >
           <div
-            className="relative w-full max-w-4xl aspect-video"
+            className="relative w-full h-full max-w-7xl max-h-full flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Botón de cerrar mejorado */}
             <button
               onClick={closeVideoModal}
-              className="absolute -top-12 right-0 text-white hover:text-orange-500 transition-colors z-10 bg-black/50 rounded-full p-2"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 text-white hover:text-orange-500 transition-colors z-10 bg-black/70 hover:bg-black/90 rounded-full p-2 sm:p-3"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
-            <video
-              src={selectedVideo}
-              controls
-              autoPlay
-              playsInline
-              preload="metadata"
-              className="w-full h-full rounded-lg shadow-2xl"
-            >
-              Tu navegador no soporta la reproducción de video.
-            </video>
+
+            {/* Contenedor del video responsivo */}
+            <div className="w-full h-full max-w-full max-h-full">
+              <video
+                src={selectedVideo}
+                controls
+                autoPlay
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-contain rounded-none sm:rounded-lg shadow-2xl"
+                style={{
+                  maxWidth: '100vw',
+                  maxHeight: '100vh'
+                }}
+              >
+                Tu navegador no soporta la reproducción de video.
+              </video>
+            </div>
           </div>
         </motion.div>
       )}

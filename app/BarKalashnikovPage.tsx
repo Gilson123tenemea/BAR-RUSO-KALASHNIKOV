@@ -458,55 +458,53 @@ const HeroSection = React.memo(function HeroSection() {
 })
 
 
-
-  const carouselImages: CarouselImage[] = [
-    {
-      id: 1,
-      src: "/Imagenes/peleacanelo.webp",
-      altKey: "carousel.boxing.alt",
-      titleKey: "carousel.boxing.title",
-      descriptionKey: "carousel.boxing.description"
-    },
-    {
-      id: 2,
-      src: "/Imagenes/ufc.webp",
-      altKey: "carousel.ufc.alt",
-      titleKey: "carousel.ufc.title",
-      descriptionKey: "carousel.ufc.description"
-    },
-    {
-      id: 3,
-      src: "/Imagenes/carrusel1.webp",
-      altKey: "carousel.experts.alt",
-      titleKey: "carousel.experts.title",
-      descriptionKey: "carousel.experts.description"
-    },
-    {
-      id: 4,
-      src: "/Imagenes/carrusel2.webp",
-      altKey: "carousel.experience.alt",
-      titleKey: "carousel.experience.title",
-      descriptionKey: "carousel.experience.description"
-    },
-    {
-      id: 5,
-      src: "/Imagenes/musica.webp",
-      altKey: "carousel.music.alt",
-      titleKey: "carousel.music.title",
-      descriptionKey: "carousel.music.description"
-    }
-  ];
-
+const carouselImages: CarouselImage[] = [
+  {
+    id: 1,
+    src: "/Imagenes/peleacanelo.webp",
+    altKey: "carousel.boxing.alt",
+    titleKey: "carousel.boxing.title",
+    descriptionKey: "carousel.boxing.description"
+  },
+  {
+    id: 2,
+    src: "/Imagenes/ufc.webp",
+    altKey: "carousel.ufc.alt",
+    titleKey: "carousel.ufc.title",
+    descriptionKey: "carousel.ufc.description"
+  },
+  {
+    id: 3,
+    src: "/Imagenes/carrusel1.webp",
+    altKey: "carousel.experts.alt",
+    titleKey: "carousel.experts.title",
+    descriptionKey: "carousel.experts.description"
+  },
+  {
+    id: 4,
+    src: "/Imagenes/carrusel2.webp",
+    altKey: "carousel.experience.alt",
+    titleKey: "carousel.experience.title",
+    descriptionKey: "carousel.experience.description"
+  },
+  {
+    id: 5,
+    src: "/Imagenes/musica.webp",
+    altKey: "carousel.music.alt",
+    titleKey: "carousel.music.title",
+    descriptionKey: "carousel.music.description"
+  }
+];
 
 const ImageCarousel: React.FC = () => {
-const { tInicio } = useInicioLanguage(); // Hook para traducciones
+  const { tInicio } = useInicioLanguage(); // Hook para traducciones
   const [translateX, setTranslateX] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   // Duplicamos el array para crear el efecto infinito perfecto
   const duplicatedImages = [...carouselImages, ...carouselImages, ...carouselImages];
 
- useEffect(() => {
+  useEffect(() => {
     if (isPaused) return;
 
     const interval = setInterval(() => {
@@ -525,6 +523,35 @@ const { tInicio } = useInicioLanguage(); // Hook para traducciones
 
     return () => clearInterval(interval);
   }, [isPaused, carouselImages.length]);
+
+  // Funciones para navegación manual
+  const handlePrevious = () => {
+    setTranslateX(prev => {
+      const cardWidth = 320;
+      const newTranslate = prev + cardWidth;
+      
+      // Si llegamos al inicio, ir al final
+      if (newTranslate > 0) {
+        return -(cardWidth * carouselImages.length - cardWidth);
+      }
+      
+      return newTranslate;
+    });
+  };
+
+  const handleNext = () => {
+    setTranslateX(prev => {
+      const cardWidth = 320;
+      const newTranslate = prev - cardWidth;
+      
+      // Si llegamos al final, resetear al inicio
+      if (Math.abs(newTranslate) >= cardWidth * carouselImages.length) {
+        return 0;
+      }
+      
+      return newTranslate;
+    });
+  };
 
   return (
     <div 
@@ -576,6 +603,36 @@ const { tInicio } = useInicioLanguage(); // Hook para traducciones
         ))}
       </div>
 
+      {/* Botón de navegación izquierda - En el área del desvanecido */}
+      <button
+        onClick={handlePrevious}
+        className="absolute left-8 top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-black/70 hover:bg-orange-500/90 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm border border-white/10 hover:border-orange-500/50"
+      >
+        <svg 
+          className="w-6 h-6 text-white" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      {/* Botón de navegación derecha - En el área del desvanecido */}
+      <button
+        onClick={handleNext}
+        className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-black/70 hover:bg-orange-500/90 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm border border-white/10 hover:border-orange-500/50"
+      >
+        <svg 
+          className="w-6 h-6 text-white" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
       {/* Gradientes laterales para efecto fade profesional */}
       <div className="absolute top-0 left-0 w-24 h-full bg-gradient-to-r from-black via-black/60 to-transparent pointer-events-none z-10" />
       <div className="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-black via-black/60 to-transparent pointer-events-none z-10" />
@@ -617,7 +674,6 @@ const WelcomeSection = React.memo(function WelcomeSection() {
     </section>
   );
 });
-
 
 // ✅ MENU SECTION OPTIMIZADO
 const MenuSection = React.memo(function MenuSection() {

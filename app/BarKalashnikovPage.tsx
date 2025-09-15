@@ -14,9 +14,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface CarouselImage {
   id: number;
   src: string;
-  altKey: InicioTranslationKeys;    // ✅ Específico para traducciones
-  titleKey: InicioTranslationKeys;  // ✅ Específico para traducciones
-  descriptionKey: InicioTranslationKeys; // ✅ Específico para traducciones
+  altKey: InicioTranslationKeys;   
+  titleKey: InicioTranslationKeys;  
+  descriptionKey: InicioTranslationKeys; 
 }
 
 // ✅ IMÁGENES OPTIMIZADAS CON PRIORIDADES
@@ -461,14 +461,14 @@ const HeroSection = React.memo(function HeroSection() {
 const carouselImages: CarouselImage[] = [
   {
     id: 1,
-    src: "/Imagenes/peleacanelo.webp",
+    src: "/Imagenes/tequilanueva.webp",
     altKey: "carousel.boxing.alt",
     titleKey: "carousel.boxing.title",
     descriptionKey: "carousel.boxing.description"
   },
   {
     id: 2,
-    src: "/Imagenes/ufc.webp",
+    src: "/Imagenes/camiseta1.webp",
     altKey: "carousel.ufc.alt",
     titleKey: "carousel.ufc.title",
     descriptionKey: "carousel.ufc.description"

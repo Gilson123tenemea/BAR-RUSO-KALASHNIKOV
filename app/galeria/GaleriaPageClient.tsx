@@ -3,12 +3,14 @@
 
 import React from "react";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence} from "framer-motion"
 import { Play, Calendar, Instagram, Facebook, Phone, X } from "lucide-react"
 import Link from "next/link"
 import SharedHeader from "@/components/shared-header"
 import Image from 'next/image'
 import { useGaleriaLanguage, getTranslatedGalleryItemTitle } from './GaleriaLanguage'
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 
 // Optimización: Mover datos fuera del componente para evitar recreación
 // Precargar todas las imágenes para máxima fluidez
@@ -42,6 +44,7 @@ export default function GaleriaPage() {
     >
       <SharedHeader />
       <HeroSection tGaleria={tGaleria} />
+      <HeroSectioncarrusel tGaleria={tGaleria} />
       <GallerySection tGaleria={tGaleria} currentLanguage={currentLanguage} />
       <Footer tGaleria={tGaleria} />
       <WhatsAppButton tGaleria={tGaleria} />
@@ -51,6 +54,7 @@ export default function GaleriaPage() {
 
 function HeroSection({ tGaleria }: { tGaleria: (key: any) => string }) {
   return (
+    
     <section className="relative h-[700px] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <Image
@@ -104,6 +108,346 @@ function HeroSection({ tGaleria }: { tGaleria: (key: any) => string }) {
           </motion.p>
         </motion.div>
       </div>
+    </section>
+  );
+}
+
+interface HeroSectionProps {
+  tGaleria: (key: any) => string;
+}
+
+const carouselImages = [
+  {
+    src: "/Imagenes/carruselgaleria1.webp",
+    fallback: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=300&fit=crop"
+  },
+  {
+    src: "/Imagenes/carruselgaleria2.webp", 
+    fallback: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop"
+  },
+  {
+    src: "/Imagenes/carruselgaleria3.webp",
+    fallback: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
+  },
+  {
+    src: "/Imagenes/carruselgaleria4.webp",
+    fallback: "https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=400&h=300&fit=crop"
+  },
+  {
+    src: "/Imagenes/carruselgaleria5.webp",
+
+    fallback: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop"
+  }
+];
+
+function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const startXRef = useRef(0);
+  const currentXRef = useRef(0);
+
+  // Función para avanzar al siguiente slide
+  const nextSlide = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex(prev => (prev + 1) % 5);
+    setTimeout(() => setIsTransitioning(false), 600);
+  }, [isTransitioning]);
+
+  // Función para retroceder al slide anterior
+  const prevSlide = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex(prev => (prev - 1 + 5) % 5);
+    setTimeout(() => setIsTransitioning(false), 600);
+  }, [isTransitioning]);
+
+  // Auto-play del carrusel cada 4 segundos
+  useEffect(() => {
+    if (!isAutoPlay || isDragging || isTransitioning) return;
+    
+    const interval = setInterval(nextSlide, 4000);
+    return () => clearInterval(interval);
+  }, [isAutoPlay, nextSlide, isDragging, isTransitioning]);
+
+  // Función para calcular las posiciones de las 5 imágenes
+  const getImagePositions = () => {
+    const positions = [];
+    const totalImages = 5;
+    
+    for (let i = 0; i < totalImages; i++) {
+      const relativeIndex = (i - currentIndex + totalImages) % totalImages;
+      
+      // Posiciones específicas para las 5 imágenes
+      let transform = '';
+      let scale = 1;
+      let opacity = 1;
+      let zIndex = 10;
+      let blur = 0;
+      
+      switch (relativeIndex) {
+        case 0: // Imagen central (principal)
+          transform = 'translateX(0) translateZ(200px)';
+          scale = 1.2;
+          opacity = 1;
+          zIndex = 50;
+          blur = 0;
+          break;
+        case 1: // Imagen derecha
+          transform = 'translateX(280px) translateZ(0px) rotateY(-25deg)';
+          scale = 0.8;
+          opacity = 0.7;
+          zIndex = 30;
+          blur = 1;
+          break;
+        case 2: // Imagen extrema derecha
+          transform = 'translateX(480px) translateZ(-100px) rotateY(-45deg)';
+          scale = 0.6;
+          opacity = 0.4;
+          zIndex = 10;
+          blur = 2;
+          break;
+        case 3: // Imagen extrema izquierda
+          transform = 'translateX(-480px) translateZ(-100px) rotateY(45deg)';
+          scale = 0.6;
+          opacity = 0.4;
+          zIndex = 10;
+          blur = 2;
+          break;
+        case 4: // Imagen izquierda
+          transform = 'translateX(-280px) translateZ(0px) rotateY(25deg)';
+          scale = 0.8;
+          opacity = 0.7;
+          zIndex = 30;
+          blur = 1;
+          break;
+      }
+      
+      positions.push({
+        ...carouselImages[i],
+        transform,
+        scale,
+        opacity,
+        zIndex,
+        blur,
+        isCenter: relativeIndex === 0,
+        index: i
+      });
+    }
+    
+    return positions;
+  };
+
+  // Manejo de eventos de mouse/touch
+  const handleStart = (clientX: number) => {
+    setIsDragging(true);
+    setIsAutoPlay(false);
+    startXRef.current = clientX;
+    currentXRef.current = clientX;
+  };
+
+  const handleMove = (clientX: number) => {
+    if (!isDragging) return;
+    currentXRef.current = clientX;
+  };
+
+  const handleEnd = () => {
+    if (!isDragging) return;
+    
+    const deltaX = currentXRef.current - startXRef.current;
+    const threshold = 50;
+
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX > 0) {
+        prevSlide();
+      } else {
+        nextSlide();
+      }
+    }
+
+    setIsDragging(false);
+    setTimeout(() => setIsAutoPlay(true), 2000);
+  };
+
+  // Eventos de mouse
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    handleMove(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleEnd();
+    }
+  };
+
+  // Eventos de touch
+  const handleTouchStart = (e: React.TouchEvent) => {
+    handleStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    handleMove(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    handleEnd();
+  };
+
+  return (
+    <section className="relative h-[700px] flex flex-col items-center overflow-hidden bg-black">
+      {/* Encabezado */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="text-center mb-12 pt-8"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-white">{tGaleria('gallery.title')}</h2>
+        <p className="text-gray-300 max-w-2xl mx-auto">
+          {tGaleria('gallery.subtitle')}
+        </p>
+      </motion.div>
+
+      {/* Contenedor del carrusel */}
+      <div 
+        ref={containerRef}
+        className="relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ perspective: '1200px' }}
+      >
+        {/* Carrusel de 5 imágenes */}
+        <div 
+          className="relative w-full max-w-7xl mx-auto h-[400px] md:h-[450px] flex items-center justify-center"
+          style={{ transformStyle: 'preserve-3d' }}
+        >
+          {getImagePositions().map((image, idx) => (
+            <div
+              key={image.index}
+              className="absolute transition-all duration-700 ease-out cursor-pointer"
+              style={{
+                transform: image.transform,
+                opacity: image.opacity,
+                zIndex: image.zIndex,
+                filter: `blur(${image.blur}px)`,
+                width: '300px',
+                height: '400px'
+              }}
+              onClick={() => {
+                if (!image.isCenter) {
+                  setCurrentIndex(image.index);
+                  setIsAutoPlay(false);
+                  setTimeout(() => setIsAutoPlay(true), 3000);
+                }
+              }}
+            >
+              <div className="relative w-full h-full group">
+                {/* Carta de imagen */}
+                <div className={`relative w-full h-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-700 ${
+                  image.isCenter 
+                    ? 'bg-gradient-to-t from-gray-800 to-gray-700 border-2 border-amber-400/50 shadow-amber-400/20' 
+                    : 'bg-gray-800 border border-gray-600'
+                }`}>
+                  <img
+                    src={image.src}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading={image.isCenter ? 'eager' : 'lazy'}
+                    onError={(e) => {
+                      // Fallback si la imagen no carga
+                      e.currentTarget.src = image.fallback;
+                    }}
+                  />
+                  
+                  {/* Overlay dinámico */}
+                  <div className={`absolute inset-0 transition-all duration-700 ${
+                    image.isCenter
+                      ? 'bg-gradient-to-t from-black/70 via-transparent to-black/20'
+                      : 'bg-gradient-to-t from-black/60 via-black/20 to-transparent'
+                  }`}></div>
+
+
+                  {/* Indicador de imagen activa */}
+                  {image.isCenter && (
+                    <div className="absolute top-4 right-4 w-3 h-3 bg-amber-400 rounded-full shadow-lg animate-pulse"></div>
+                  )}
+
+                  {/* Efecto de brillo para imagen activa */}
+                  {image.isCenter && (
+                    <div className="absolute inset-0 rounded-2xl border border-amber-400/40 shadow-[0_0_30px_rgba(251,191,36,0.3)] animate-pulse"></div>
+                  )}
+
+                  {/* Hover effect para imágenes no centrales */}
+                  {!image.isCenter && (
+                    <div className="absolute inset-0 bg-white/0 hover:bg-white/10 transition-colors duration-300 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100">
+
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Controles de navegación */}
+        <button
+          onClick={prevSlide}
+          disabled={isTransitioning}
+          className="absolute left-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-300 disabled:opacity-50 border border-white/20"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <button
+          onClick={nextSlide}
+          disabled={isTransitioning}
+          className="absolute right-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-300 disabled:opacity-50 border border-white/20"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        {/* Indicador de swipe (solo móvil) */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 md:hidden">
+   
+        </div>
+      </div>
+
+      {/* Estilos CSS personalizados */}
+      <style jsx>{`
+        @keyframes spin-wheel {
+          0% { transform: rotate(0deg) scale(0.8); opacity: 0.5; }
+          50% { transform: rotate(180deg) scale(1.1); opacity: 0.7; }
+          100% { transform: rotate(360deg) scale(1); opacity: 1; }
+        }
+        
+        .animate-spin-wheel {
+          animation: spin-wheel 2s ease-out forwards;
+        }
+        
+        .bg-gradient-radial {
+          background: radial-gradient(circle, var(--tw-gradient-stops));
+        }
+      `}</style>
     </section>
   );
 }
@@ -285,17 +629,7 @@ function GallerySection({ tGaleria, currentLanguage }: {
     <>
       <section className="py-10 bg-black">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-2xl font-bold mb-4">{tGaleria('gallery.title')}</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
-              {tGaleria('gallery.subtitle')}
-            </p>
-          </motion.div>
+          
 
           {/* Filtros */}
           <motion.div

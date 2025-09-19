@@ -11,7 +11,6 @@ import Image from 'next/image'
 import { useGaleriaLanguage, getTranslatedGalleryItemTitle } from './GaleriaLanguage'
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-
 // Optimización: Mover datos fuera del componente para evitar recreación
 // Precargar todas las imágenes para máxima fluidez
 const galleryItems = [
@@ -28,6 +27,75 @@ const galleryItems = [
   { type: "photo", title: "Decoración Especial", imageSrc: "/Imagenes/galeria_foto_4.webp" },
   { type: "photo", title: "Cervezas", imageSrc: "/Imagenes/galeria_foto_5.webp" },
 ] as const
+
+type GalleryItem = {
+  type: "video";
+  title: string;
+  videoSrc: string;
+  thumbnail: string;
+} | {
+  type: "photo";
+  title: string;
+  imageSrc: string;
+}
+
+// SOLUCIÓN 1: Optimizar el sistema de precarga de imágenes
+const imagePreloadManager = {
+  loadedImages: new Set<string>(),
+  isPreloading: false,
+  
+  async preloadAllImages(): Promise<void> {
+    if (this.isPreloading) return;
+    this.isPreloading = true;
+    
+    const imagesToPreload = galleryItems.map(item =>
+      item.type === "video" ? item.thumbnail : item.imageSrc
+    );
+
+    await Promise.allSettled(
+      imagesToPreload.map(src => {
+        return new Promise<void>((resolve) => {
+          if (this.loadedImages.has(src)) {
+            resolve();
+            return;
+          }
+          
+          const img = new window.Image();
+          img.onload = () => {
+            this.loadedImages.add(src);
+            resolve();
+          };
+          img.onerror = () => {
+            resolve(); // Continuar aunque falle
+          };
+          img.src = src;
+        });
+      })
+    );
+    
+    this.isPreloading = false;
+  }
+};
+
+// SOLUCIÓN 2: Hook optimizado para la precarga
+function useImagePreloader() {
+  const [loadedImages, setLoadedImages] = useState(imagePreloadManager.loadedImages);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (isInitialized) return;
+    
+    const initializePreload = async () => {
+      setIsInitialized(true);
+      await imagePreloadManager.preloadAllImages();
+      setLoadedImages(new Set(imagePreloadManager.loadedImages));
+    };
+
+    initializePreload();
+  }, [isInitialized]);
+
+  return loadedImages;
+}
 
 const INITIAL_VISIBLE_ITEMS = 9
 const LOAD_MORE_INCREMENT = 6
@@ -54,7 +122,6 @@ export default function GaleriaPage() {
 
 function HeroSection({ tGaleria }: { tGaleria: (key: any) => string }) {
   return (
-    
     <section className="relative h-[700px] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <Image
@@ -135,7 +202,6 @@ const carouselImages = [
   },
   {
     src: "/Imagenes/carruselgaleria5.webp",
-
     fallback: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop"
   }
 ];
@@ -149,7 +215,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
   const startXRef = useRef(0);
   const currentXRef = useRef(0);
 
-  // Función para avanzar al siguiente slide
   const nextSlide = useCallback(() => {
     if (isTransitioning) return;
     setIsTransitioning(true);
@@ -157,7 +222,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
     setTimeout(() => setIsTransitioning(false), 600);
   }, [isTransitioning]);
 
-  // Función para retroceder al slide anterior
   const prevSlide = useCallback(() => {
     if (isTransitioning) return;
     setIsTransitioning(true);
@@ -165,15 +229,12 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
     setTimeout(() => setIsTransitioning(false), 600);
   }, [isTransitioning]);
 
-  // Auto-play del carrusel cada 4 segundos
   useEffect(() => {
     if (!isAutoPlay || isDragging || isTransitioning) return;
-    
     const interval = setInterval(nextSlide, 4000);
     return () => clearInterval(interval);
   }, [isAutoPlay, nextSlide, isDragging, isTransitioning]);
 
-  // Función para calcular las posiciones de las 5 imágenes
   const getImagePositions = () => {
     const positions = [];
     const totalImages = 5;
@@ -181,7 +242,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
     for (let i = 0; i < totalImages; i++) {
       const relativeIndex = (i - currentIndex + totalImages) % totalImages;
       
-      // Posiciones específicas para las 5 imágenes
       let transform = '';
       let scale = 1;
       let opacity = 1;
@@ -189,35 +249,35 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
       let blur = 0;
       
       switch (relativeIndex) {
-        case 0: // Imagen central (principal)
+        case 0:
           transform = 'translateX(0) translateZ(200px)';
           scale = 1.2;
           opacity = 1;
           zIndex = 50;
           blur = 0;
           break;
-        case 1: // Imagen derecha
+        case 1:
           transform = 'translateX(280px) translateZ(0px) rotateY(-25deg)';
           scale = 0.8;
           opacity = 0.7;
           zIndex = 30;
           blur = 1;
           break;
-        case 2: // Imagen extrema derecha
+        case 2:
           transform = 'translateX(480px) translateZ(-100px) rotateY(-45deg)';
           scale = 0.6;
           opacity = 0.4;
           zIndex = 10;
           blur = 2;
           break;
-        case 3: // Imagen extrema izquierda
+        case 3:
           transform = 'translateX(-480px) translateZ(-100px) rotateY(45deg)';
           scale = 0.6;
           opacity = 0.4;
           zIndex = 10;
           blur = 2;
           break;
-        case 4: // Imagen izquierda
+        case 4:
           transform = 'translateX(-280px) translateZ(0px) rotateY(25deg)';
           scale = 0.8;
           opacity = 0.7;
@@ -241,7 +301,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
     return positions;
   };
 
-  // Manejo de eventos de mouse/touch
   const handleStart = (clientX: number) => {
     setIsDragging(true);
     setIsAutoPlay(false);
@@ -272,7 +331,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
     setTimeout(() => setIsAutoPlay(true), 2000);
   };
 
-  // Eventos de mouse
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
     handleStart(e.clientX);
@@ -292,7 +350,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
     }
   };
 
-  // Eventos de touch
   const handleTouchStart = (e: React.TouchEvent) => {
     handleStart(e.touches[0].clientX);
   };
@@ -307,7 +364,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
 
   return (
     <section className="relative h-[700px] flex flex-col items-center overflow-hidden bg-black">
-      {/* Encabezado */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -320,7 +376,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
         </p>
       </motion.div>
 
-      {/* Contenedor del carrusel */}
       <div 
         ref={containerRef}
         className="relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing select-none"
@@ -333,7 +388,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
         onTouchEnd={handleTouchEnd}
         style={{ perspective: '1200px' }}
       >
-        {/* Carrusel de 5 imágenes */}
         <div 
           className="relative w-full max-w-7xl mx-auto h-[400px] md:h-[450px] flex items-center justify-center"
           style={{ transformStyle: 'preserve-3d' }}
@@ -359,7 +413,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
               }}
             >
               <div className="relative w-full h-full group">
-                {/* Carta de imagen */}
                 <div className={`relative w-full h-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-700 ${
                   image.isCenter 
                     ? 'bg-gradient-to-t from-gray-800 to-gray-700 border-2 border-amber-400/50 shadow-amber-400/20' 
@@ -370,34 +423,26 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading={image.isCenter ? 'eager' : 'lazy'}
                     onError={(e) => {
-                      // Fallback si la imagen no carga
                       e.currentTarget.src = image.fallback;
                     }}
                   />
                   
-                  {/* Overlay dinámico */}
                   <div className={`absolute inset-0 transition-all duration-700 ${
                     image.isCenter
                       ? 'bg-gradient-to-t from-black/70 via-transparent to-black/20'
                       : 'bg-gradient-to-t from-black/60 via-black/20 to-transparent'
                   }`}></div>
 
-
-                  {/* Indicador de imagen activa */}
                   {image.isCenter && (
                     <div className="absolute top-4 right-4 w-3 h-3 bg-amber-400 rounded-full shadow-lg animate-pulse"></div>
                   )}
 
-                  {/* Efecto de brillo para imagen activa */}
                   {image.isCenter && (
                     <div className="absolute inset-0 rounded-2xl border border-amber-400/40 shadow-[0_0_30px_rgba(251,191,36,0.3)] animate-pulse"></div>
                   )}
 
-                  {/* Hover effect para imágenes no centrales */}
                   {!image.isCenter && (
-                    <div className="absolute inset-0 bg-white/0 hover:bg-white/10 transition-colors duration-300 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100">
-
-                    </div>
+                    <div className="absolute inset-0 bg-white/0 hover:bg-white/10 transition-colors duration-300 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100"></div>
                   )}
                 </div>
               </div>
@@ -405,7 +450,6 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
           ))}
         </div>
 
-        {/* Controles de navegación */}
         <button
           onClick={prevSlide}
           disabled={isTransitioning}
@@ -426,283 +470,352 @@ function HeroSectioncarrusel({ tGaleria }: HeroSectionProps) {
           </svg>
         </button>
 
-        {/* Indicador de swipe (solo móvil) */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 md:hidden">
-   
-        </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 md:hidden"></div>
       </div>
-
-      {/* Estilos CSS personalizados */}
-      <style jsx>{`
-        @keyframes spin-wheel {
-          0% { transform: rotate(0deg) scale(0.8); opacity: 0.5; }
-          50% { transform: rotate(180deg) scale(1.1); opacity: 0.7; }
-          100% { transform: rotate(360deg) scale(1); opacity: 1; }
-        }
-        
-        .animate-spin-wheel {
-          animation: spin-wheel 2s ease-out forwards;
-        }
-        
-        .bg-gradient-radial {
-          background: radial-gradient(circle, var(--tw-gradient-stops));
-        }
-      `}</style>
     </section>
   );
 }
 
-// Hook para precargar imágenes
-function useImagePreloader() {
-  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
-
-  useEffect(() => {
-    // Precargar todas las imágenes inmediatamente
-    const imagesToPreload = galleryItems.map(item =>
-      item.type === "video" ? item.thumbnail : item.imageSrc
-    )
-
-    const preloadPromises = imagesToPreload.map(src => {
-      return new Promise<string>((resolve, reject) => {
-        const img = new window.Image()
-        img.onload = () => {
-          setLoadedImages(prev => new Set(prev).add(src))
-          resolve(src)
-        }
-        img.onerror = () => {
-          // Si falla, usar imagen por defecto
-          setLoadedImages(prev => new Set(prev).add(src))
-          resolve(src)
-        }
-        img.src = src
-      })
-    })
-
-    // Precargar todas las imágenes sin esperar
-    Promise.allSettled(preloadPromises)
-  }, [])
-
-  return loadedImages
-}
-
-// Componente ultra-optimizado sin lazy loading para máxima fluidez
-interface GalleryItemProps {
-  item: typeof galleryItems[number];
-  index: number;
-  onClick: (videoSrc: string) => void;
-  isImageLoaded: boolean;
+// SOLUCIÓN 3: Componente ReelsCarousel optimizado
+interface ReelsCarouselProps {
+  videos: GalleryItem[];
+  onVideoClick: (video: GalleryItem, index: number) => void;
+  loadedImages: Set<string>;
   tGaleria: (key: any) => string;
   currentLanguage: any;
+  showAll: boolean;
+  onToggleShowAll: () => void;
 }
 
-const GalleryItem = React.memo(function GalleryItem({
+const ReelsCarousel = React.memo(function ReelsCarousel({
+  videos,
+  onVideoClick,
+  loadedImages,
+  tGaleria,
+  currentLanguage,
+  showAll,
+  onToggleShowAll
+}: ReelsCarouselProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
+
+  // SOLUCIÓN 4: Memoizar displayedVideos para evitar recálculos
+  const displayedVideos = useMemo(() => 
+    showAll ? videos : videos.slice(0, 6), 
+    [showAll, videos]
+  );
+
+  const updateScrollButtons = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
+      setCanScrollLeft(scrollLeft > 0)
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
+    }
+  }, [])
+
+  useEffect(() => {
+    updateScrollButtons()
+    const container = scrollContainerRef.current
+    if (container) {
+      container.addEventListener('scroll', updateScrollButtons, { passive: true })
+      return () => container.removeEventListener('scroll', updateScrollButtons)
+    }
+  }, [updateScrollButtons, displayedVideos])
+
+  const scroll = useCallback((direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 320
+      const newScrollLeft = scrollContainerRef.current.scrollLeft + 
+        (direction === 'left' ? -scrollAmount : scrollAmount)
+      
+      scrollContainerRef.current.scrollTo({
+        left: newScrollLeft,
+        behavior: 'smooth'
+      })
+    }
+  }, [])
+
+  if (showAll) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {displayedVideos.map((video, index) => (
+          <ReelItem
+            key={`${video.type}-${index}`}
+            item={video}
+            index={index}
+            onClick={() => onVideoClick(video, index)}
+            loadedImages={loadedImages}
+            tGaleria={tGaleria}
+            currentLanguage={currentLanguage}
+            isGrid={true}
+          />
+        ))}
+        <div className="col-span-full text-center mt-6">
+          <button
+            onClick={onToggleShowAll}
+            className="bg-gray-800 text-white px-6 py-2 rounded-full hover:bg-gray-700 transition-colors"
+          >
+            {tGaleria('gallery.showLess')}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative">
+      {canScrollLeft && (
+        <button
+          onClick={() => scroll('left')}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white rounded-full p-2 transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+
+      <div 
+        ref={scrollContainerRef}
+        className="flex gap-4 overflow-x-auto scrollbar-hide pb-4"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}
+      >
+        {displayedVideos.map((video, index) => (
+          <ReelItem
+            key={`${video.type}-${index}`}
+            item={video}
+            index={index}
+            onClick={() => onVideoClick(video, index)}
+            loadedImages={loadedImages}
+            tGaleria={tGaleria}
+            currentLanguage={currentLanguage}
+            isGrid={false}
+          />
+        ))}
+
+        {!showAll && videos.length > 6 && (
+          <div className="flex-shrink-0 w-48 md:w-60">
+            <div className="h-full flex items-center justify-center bg-gray-900 rounded-lg border border-gray-700 hover:border-orange-500/50 transition-colors cursor-pointer min-h-[200px]">
+              <button
+                onClick={onToggleShowAll}
+                className="text-center p-4"
+              >
+                <div className="text-orange-500 mb-2">
+                  <Play className="w-8 h-8 mx-auto" />
+                </div>
+                <p className="text-white font-semibold">
+                  {tGaleria('gallery.filter.all')}
+                </p>
+                <p className="text-gray-400 text-sm mt-1">
+                  +{videos.length - 6} videos
+                </p>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {canScrollRight && !showAll && (
+        <button
+          onClick={() => scroll('right')}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white rounded-full p-2 transition-colors"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
+    </div>
+  )
+})
+
+// SOLUCIÓN 5: ReelItem optimizado sin animaciones innecesarias
+interface ReelItemProps {
+  item: GalleryItem;
+  index: number;
+  onClick: () => void;
+  loadedImages: Set<string>;
+  tGaleria: (key: any) => string;
+  currentLanguage: any;
+  isGrid?: boolean;
+}
+
+const ReelItem = React.memo(function ReelItem({
   item,
   index,
   onClick,
-  isImageLoaded,
+  loadedImages,
   tGaleria,
-  currentLanguage
-}: GalleryItemProps) {
-  const handleClick = useCallback(() => {
-    if (item.type === "video" && item.videoSrc) {
-      onClick(item.videoSrc)
-    }
-  }, [item, onClick])
-
+  currentLanguage,
+  isGrid = false
+}: ReelItemProps) {
   const imageSrc = item.type === "video" ? item.thumbnail : item.imageSrc
+  const isImageLoaded = loadedImages.has(imageSrc)
 
+  // SOLUCIÓN 6: Remover animación de framer-motion que causa lag
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.3,
-        delay: index * 0.05,
-        ease: [0.25, 0.46, 0.45, 0.94]
-      }}
-      className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 cursor-pointer transition-[border-color] duration-200"
-      onClick={handleClick}
+    <div
+      className={`group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-orange-500/50 cursor-pointer transition-all duration-200 hover:scale-105 ${
+        isGrid ? 'aspect-[9/16]' : 'flex-shrink-0 w-48 md:w-60 aspect-[9/16]'
+      }`}
+      onClick={onClick}
       style={{
-        transform: 'translateZ(0)',
-        willChange: 'transform',
+        opacity: isImageLoaded ? 1 : 0.7,
+        transition: 'opacity 0.3s ease, transform 0.2s ease'
       }}
     >
-      <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
-
-        {/* Imagen principal - sin lazy loading para máxima fluidez */}
+      <div className="relative w-full h-full">
         <Image
           src={imageSrc}
           alt={getTranslatedGalleryItemTitle(item.title, currentLanguage)}
           fill
-          className={`object-cover transition-all duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
-            } ${item.type === "photo" ? 'group-hover:scale-105 transition-transform duration-500' : ''}`}
-          priority={index < 9} // Priorizar las primeras 9 imágenes
-          quality={85}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          placeholder="blur"
-          blurDataURL="data:image/webp;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+          className={`object-cover transition-transform duration-300 group-hover:scale-110`}
+          priority={index < 6}
+          quality={75} // Reducir calidad para mejorar rendimiento
+          sizes="(max-width: 768px) 200px, 240px"
         />
 
-        {/* Overlay para videos - solo si la imagen está cargada */}
-        {item.type === "video" && isImageLoaded && (
-          <>
-            <div className="absolute inset-0 bg-black/20"></div>
-            {/* Botón de play optimizado */}
-            <div className="absolute inset-0 flex items-center justify-center z-20">
-              <div className="w-16 h-16 bg-orange-500/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Play className="w-8 h-8 text-white ml-1" />
-              </div>
-            </div>
-          </>
-        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
 
-        {/* Badge optimizado - solo si la imagen está cargada */}
-        {isImageLoaded && (
-          <div className="absolute top-4 right-4 z-20">
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${item.type === "video"
-                  ? "bg-red-500/90 text-white"
-                  : "bg-blue-500/90 text-white"
-                }`}
-            >
-              {item.type === "video"
-                ? tGaleria('gallery.videoBadge')
-                : tGaleria('gallery.photoBadge')
-              }
-            </span>
+        {item.type === "video" && isImageLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg group-hover:scale-110 transition-transform duration-200">
+              <Play className="w-6 h-6 text-black ml-0.5" />
+            </div>
           </div>
         )}
 
-        {/* Indicador de carga minimalista */}
+        <div className="absolute bottom-0 left-0 right-0 p-3">
+          <h4 className="text-white text-sm font-semibold line-clamp-2 leading-tight">
+            {getTranslatedGalleryItemTitle(item.title, currentLanguage)}
+          </h4>
+        </div>
+
         {!isImageLoaded && (
           <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin"></div>
+            <div className="w-6 h-6 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin"></div>
           </div>
         )}
       </div>
-
-      <div className="p-6">
-        <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition-colors duration-200">
-          {getTranslatedGalleryItemTitle(item.title, currentLanguage)}
-        </h3>
-      </div>
-    </motion.div>
+    </div>
   )
 })
 
+// SOLUCIÓN 7: GallerySection optimizada
 function GallerySection({ tGaleria, currentLanguage }: {
   tGaleria: (key: any) => string;
   currentLanguage: any;
 }) {
-  const [filter, setFilter] = useState<"all" | "video" | "photo">("all")
-  const [selectedVideo, setSelectedVideo] = useState<string | null>(null)
-  const [visibleItems, setVisibleItems] = useState(INITIAL_VISIBLE_ITEMS)
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState<number | null>(null)
+  const [showAllVideos, setShowAllVideos] = useState(false)
+  const [showAllPhotos, setShowAllPhotos] = useState(false)
   const loadedImages = useImagePreloader()
 
-  const filteredItems = useMemo(() =>
-    galleryItems.filter((item) => filter === "all" || item.type === filter),
-    [filter]
-  )
+  // Memoizar separación de videos y fotos
+  const { videos, photos } = useMemo(() => ({
+    videos: galleryItems.filter(item => item.type === "video"),
+    photos: galleryItems.filter(item => item.type === "photo")
+  }), []);
 
-  const handleVideoClick = useCallback((videoSrc: string) => {
-    setSelectedVideo(videoSrc)
-  }, [])
+  const handleVideoClick = useCallback((video: GalleryItem, index: number) => {
+    const videoIndex = videos.findIndex(v => v === video)
+    setSelectedVideoIndex(videoIndex)
+  }, [videos])
 
   const closeVideoModal = useCallback(() => {
-    setSelectedVideo(null)
+    setSelectedVideoIndex(null)
   }, [])
 
-  const loadMoreItems = useCallback(() => {
-    setVisibleItems(prev => prev + LOAD_MORE_INCREMENT)
-  }, [])
+  const navigateVideo = useCallback((direction: 'prev' | 'next') => {
+    if (selectedVideoIndex === null) return
+    
+    const newIndex = direction === 'prev' 
+      ? (selectedVideoIndex - 1 + videos.length) % videos.length
+      : (selectedVideoIndex + 1) % videos.length
+    
+    setSelectedVideoIndex(newIndex)
+  }, [selectedVideoIndex, videos.length])
 
+  // Keyboard navigation
   useEffect(() => {
-    setVisibleItems(INITIAL_VISIBLE_ITEMS)
-  }, [filter])
+    if (selectedVideoIndex === null) return
 
-  const visibleFilteredItems = useMemo(() =>
-    filteredItems.slice(0, visibleItems),
-    [filteredItems, visibleItems]
-  )
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          navigateVideo('prev')
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          navigateVideo('next')
+          break
+        case 'Escape':
+          e.preventDefault()
+          closeVideoModal()
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedVideoIndex, navigateVideo, closeVideoModal])
 
   return (
     <>
       <section className="py-10 bg-black">
         <div className="container mx-auto px-4">
           
-
-          {/* Filtros */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            className="flex justify-center mb-12"
-          >
-            <div className="flex space-x-4 bg-gray-900/50 p-2 rounded-lg">
-              {[
-                { key: "all", label: tGaleria('gallery.filter.all') },
-                { key: "video", label: tGaleria('gallery.filter.videos') },
-                { key: "photo", label: tGaleria('gallery.filter.photos') },
-              ].map((filterOption) => (
-                <button
-                  key={filterOption.key}
-                  onClick={() =>
-                    setFilter(filterOption.key as "all" | "video" | "photo")
-                  }
-                  className={`px-6 py-2 rounded-md transition-all duration-200 ${filter === filterOption.key
-                      ? "bg-orange-500 text-black font-semibold"
-                      : "text-gray-300 hover:text-white hover:bg-gray-800"
-                    }`}
-                >
-                  {filterOption.label}
-                </button>
-              ))}
+          {/* Sección de Videos */}
+          <div className="mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-1 h-8 bg-orange-500"></div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">
+                {tGaleria('gallery.videoBadge')}
+              </h2>
+              <div className="bg-red-500/20 p-2 rounded-lg">
+                <Play className="w-6 h-6 text-red-500" />
+              </div>
             </div>
-          </motion.div>
 
-          {/* Grid de Galería */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {visibleFilteredItems.map((item, index) => {
-              const imageSrc = item.type === "video" ? item.thumbnail : item.imageSrc
-              const isImageLoaded = loadedImages.has(imageSrc)
-
-              return (
-                <GalleryItem
-                  key={`${item.type}-${item.title}-${index}`}
-                  item={item}
-                  index={index}
-                  onClick={handleVideoClick}
-                  isImageLoaded={isImageLoaded}
-                  tGaleria={tGaleria}
-                  currentLanguage={currentLanguage}
-                />
-              )
-            })}
+            <ReelsCarousel
+              videos={videos}
+              onVideoClick={handleVideoClick}
+              loadedImages={loadedImages}
+              tGaleria={tGaleria}
+              currentLanguage={currentLanguage}
+              showAll={showAllVideos}
+              onToggleShowAll={() => setShowAllVideos(!showAllVideos)}
+            />
           </div>
 
-          {/* Botón cargar más */}
-          {visibleItems < filteredItems.length && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-center mt-8"
-            >
-              <button
-                onClick={loadMoreItems}
-                className="bg-orange-500 text-black px-8 py-3 font-semibold hover:bg-orange-600 transition-colors rounded-md"
-              >
-                {tGaleria('gallery.loadMore')} ({filteredItems.length - visibleItems} {tGaleria('gallery.remaining')})
-              </button>
-            </motion.div>
-          )}
+          {/* Sección de Fotos */}
+          <div className="mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-1 h-8 bg-blue-500"></div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">
+                {tGaleria('gallery.photoBadge')}
+              </h2>
+              <div className="bg-blue-500/20 p-2 rounded-lg">
+                <Calendar className="w-6 h-6 text-blue-500" />
+              </div>
+            </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-center mt-16"
-          >
+            <ReelsCarousel
+              videos={photos}
+              onVideoClick={(photo, index) => {
+                console.log('Photo clicked:', photo)
+              }}
+              loadedImages={loadedImages}
+              tGaleria={tGaleria}
+              currentLanguage={currentLanguage}
+              showAll={showAllPhotos}
+              onToggleShowAll={() => setShowAllPhotos(!showAllPhotos)}
+            />
+          </div>
+
+          {/* Botones de redirección */}
+          <div className="text-center">
             <h3 className="text-2xl font-bold mb-4">{tGaleria('gallery.bePartTitle')}</h3>
             <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
               {tGaleria('gallery.bePartSubtitle')}
@@ -723,57 +836,87 @@ function GallerySection({ tGaleria, currentLanguage }: {
                 <span>{tGaleria('gallery.instagramButton')}</span>
               </a>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Modal de Video Optimizado y Responsivo */}
-      {selectedVideo && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-2 sm:p-4"
-          onClick={closeVideoModal}
-        >
-          <div
-            className="relative w-full h-full max-w-7xl max-h-full flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
+      {/* Modal de Video estilo Reels */}
+      <AnimatePresence>
+        {selectedVideoIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black z-50 flex items-center justify-center"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeVideoModal()
+            }}
           >
-            {/* Botón de cerrar mejorado */}
-            <button
-              onClick={closeVideoModal}
-              className="absolute top-2 right-2 sm:top-4 sm:right-4 text-white hover:text-orange-500 transition-colors z-10 bg-black/70 hover:bg-black/90 rounded-full p-2 sm:p-3"
-            >
-              <X className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
+            <div className="relative w-full h-full max-w-md mx-auto flex items-center justify-center">
+              <div className="relative w-full h-full bg-black flex items-center justify-center">
+                <video
+                  key={selectedVideoIndex}
+                  src={videos[selectedVideoIndex]?.type === "video" ? videos[selectedVideoIndex].videoSrc : ""}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-contain"
+                  style={{ maxHeight: '100vh' }}
+                >
+                  Tu navegador no soporta la reproducción de video.
+                </video>
 
-            {/* Contenedor del video responsivo */}
-            <div className="w-full h-full max-w-full max-h-full">
-              <video
-                src={selectedVideo}
-                controls
-                autoPlay
-                playsInline
-                preload="metadata"
-                className="w-full h-full object-contain rounded-none sm:rounded-lg shadow-2xl"
-                style={{
-                  maxWidth: '100vw',
-                  maxHeight: '100vh'
-                }}
-              >
-                Tu navegador no soporta la reproducción de video.
-              </video>
+                {videos.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => navigateVideo('prev')}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black/90 text-white rounded-full p-3 transition-colors"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={() => navigateVideo('next')}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black/90 text-white rounded-full p-3 transition-colors"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+
+                <button
+                  onClick={closeVideoModal}
+                  className="absolute top-4 right-4 text-white hover:text-orange-500 transition-colors bg-black/70 hover:bg-black/90 rounded-full p-2"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+
+                {videos.length > 1 && (
+                  <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex space-x-1">
+                    {videos.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-2 h-2 rounded-full ${
+                          index === selectedVideoIndex ? 'bg-orange-500' : 'bg-white/30'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                <div className="absolute bottom-4 left-4 right-4 text-center">
+                  <h3 className="text-white text-lg font-semibold">
+                    {getTranslatedGalleryItemTitle(videos[selectedVideoIndex]?.title, currentLanguage)}
+                  </h3>
+                </div>
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
-
-// Reemplaza el componente Footer en GaleriaPageClient.tsx con esta versión actualizada
 
 function Footer({ tGaleria }: { tGaleria: (key: any) => string }) {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -883,7 +1026,6 @@ function Footer({ tGaleria }: { tGaleria: (key: any) => string }) {
             </div>
           </div>
 
-          {/* Sección de páginas actualizada con traducciones */}
           <div>
             <h4 className="font-semibold mb-4">{tGaleria('footer.pages')}</h4>
             <ul className="space-y-2 text-gray-400">

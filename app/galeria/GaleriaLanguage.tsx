@@ -55,6 +55,7 @@ export type GaleriaTranslationKeys =
   | 'gallery.items.specialMoments'
   | 'gallery.items.specialDecoration'
   | 'gallery.items.beers'
+  | 'gallery.showLess'
 
 type Language = 'es' | 'en' | 'ru'
 type GaleriaTranslations = Record<Language, Record<GaleriaTranslationKeys, string>>
@@ -70,6 +71,7 @@ const galeriaTranslations: GaleriaTranslations = {
     'gallery.filter.videos': 'Videos',
     'gallery.filter.photos': 'Fotos',
     'gallery.loadMore': 'Cargar más',
+    'gallery.showLess': 'Menos',
     'gallery.remaining': 'restantes',
     'gallery.bePartTitle': '¿Quieres ser parte de nuestra galería?',
     'gallery.bePartSubtitle': 'Visítanos y vive momentos únicos que podrían aparecer en nuestra próxima actualización semanal. ¡Cada noche es una nueva historia!',
@@ -122,6 +124,7 @@ const galeriaTranslations: GaleriaTranslations = {
     'gallery.filter.videos': 'Videos',
     'gallery.filter.photos': 'Photos',
     'gallery.loadMore': 'Load more',
+    'gallery.showLess': 'Less',
     'gallery.remaining': 'remaining',
     'gallery.bePartTitle': 'Want to be part of our gallery?',
     'gallery.bePartSubtitle': 'Visit us and live unique moments that could appear in our next weekly update. Every night is a new story!',
@@ -174,6 +177,7 @@ const galeriaTranslations: GaleriaTranslations = {
     'gallery.filter.videos': 'Видео',
     'gallery.filter.photos': 'Фото',
     'gallery.loadMore': 'Загрузить еще',
+    'gallery.showLess': 'меньше',
     'gallery.remaining': 'осталось',
     'gallery.bePartTitle': 'Хотите стать частью нашей галереи?',
     'gallery.bePartSubtitle': 'Посетите нас и переживите уникальные моменты, которые могут появиться в нашем следующем еженедельном обновлении. Каждая ночь - новая история!',

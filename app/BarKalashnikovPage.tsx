@@ -468,7 +468,7 @@ const carouselImages: CarouselImage[] = [
   },
   {
     id: 2,
-    src: "/Imagenes/camiseta1.webp",
+    src: "/Imagenes/Semana2_Carrusel1.webp",
     altKey: "carousel.ufc.alt",
     titleKey: "carousel.ufc.title",
     descriptionKey: "carousel.ufc.description"
@@ -482,7 +482,7 @@ const carouselImages: CarouselImage[] = [
   },
   {
     id: 4,
-    src: "/Imagenes/carrusel2.webp",
+    src: "/Imagenes/batbonny.webp",
     altKey: "carousel.experience.alt",
     titleKey: "carousel.experience.title",
     descriptionKey: "carousel.experience.description"

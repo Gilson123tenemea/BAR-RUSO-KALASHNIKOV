@@ -14,6 +14,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Optimización: Mover datos fuera del componente para evitar recreación
 // Precargar todas las imágenes para máxima fluidez
 const galleryItems = [
+  { type: "video", title: "", videoSrc: "/videos/Semana2_V.webm", thumbnail: "/Imagenes/FondoSemana2_V.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana2_V1.webm", thumbnail: "/Imagenes/FondoSemana2_V1.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana2_V2_2.webm", thumbnail: "/Imagenes/FondoSemana2_V2.webp" },
   { type: "video", title: "Preparación de Cócteles", videoSrc: "/videos/Video-1.webm", thumbnail: "/Imagenes/imagen_1_video1.webp" },
   { type: "photo", title: "Ambiente Nocturno", imageSrc: "/Imagenes/galeria_foto_1.webp" },
   { type: "video", title: "Cócteles Flameados", videoSrc: "/videos/Video-2.webm", thumbnail: "/Imagenes/imagen_2_video2.webp" },
@@ -185,23 +188,23 @@ interface HeroSectionProps {
 
 const carouselImages = [
   {
-    src: "/Imagenes/carruselgaleria1.webp",
+    src: "/Imagenes/Semana2_Carrusel1.webp",
     fallback: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=300&fit=crop"
   },
   {
-    src: "/Imagenes/carruselgaleria2.webp", 
+    src: "/Imagenes/Semana2_Carrusel2.webp", 
     fallback: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop"
   },
   {
-    src: "/Imagenes/carruselgaleria3.webp",
+    src: "/Imagenes/Semana2_Carrusel3.webp",
     fallback: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
   },
   {
-    src: "/Imagenes/carruselgaleria4.webp",
+    src: "/Imagenes/Semana2_Carrusel4.webp",
     fallback: "https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=400&h=300&fit=crop"
   },
   {
-    src: "/Imagenes/carruselgaleria5.webp",
+    src: "/Imagenes/Semana2_Carrusel5.webp",
     fallback: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop"
   }
 ];

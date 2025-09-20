@@ -123,8 +123,8 @@ const inicioTranslations = {
     'carousel.experts.description': 'Experiencias únicas diseñadas para los paladares más exigentes',
     'carousel.experts.alt': 'Líderes en lo que ofrecemos',
 
-    'carousel.experience.title': 'EXPERIENCIA ÚNICA',
-    'carousel.experience.description': 'Vive la noche con amigos, música y el mejor ambiente',
+    'carousel.experience.title': 'CONCIERTO DE BAD BUNNY',
+    'carousel.experience.description': 'Hoy 20 de Septiembre a las 7:30pm, Ven y disruta con una bebida',
     'carousel.experience.alt': 'Personas disfrutando en el bar',
 
     'carousel.music.title': 'SONIDOS QUE MUEVEN',
@@ -203,8 +203,8 @@ const inicioTranslations = {
     'carousel.experts.description': 'Unique experiences designed for the most demanding palates',
     'carousel.experts.alt': 'Leaders in what we offer',
 
-    'carousel.experience.title': 'UNIQUE EXPERIENCE',
-    'carousel.experience.description': 'Live the night with friends, music and the best atmosphere',
+    'carousel.experience.title': 'BAD BUNNY CONCERT',
+    'carousel.experience.description': 'Today, September 20th at 7:30pm. Come and enjoy a drink',
     'carousel.experience.alt': 'People enjoying at the bar',
 
     'carousel.music.title': 'SOUNDS THAT MOVE',
@@ -283,8 +283,8 @@ const inicioTranslations = {
     'carousel.experts.description': 'Уникальные впечатления для самых взыскательных вкусов',
     'carousel.experts.alt': 'Лидеры в том, что предлагаем',
 
-    'carousel.experience.title': 'УНИКАЛЬНЫЙ ОПЫТ',
-    'carousel.experience.description': 'Проведите ночь с друзьями, музыкой и лучшей атмосферой',
+    'carousel.experience.title': 'КОНЦЕРТ BAD BUNNY',
+    'carousel.experience.description': 'Сегодня, 20 сентября, в 19:30. Приходите выпить',
     'carousel.experience.alt': 'Люди наслаждаются в баре',
 
     'carousel.music.title': 'ЗВУКИ, КОТОРЫЕ ДВИЖУТ',

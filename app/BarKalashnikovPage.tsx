@@ -688,7 +688,7 @@ const ShirtsSection = React.memo(function ShirtsSection() {
       nameKey: 'shirts.classic.name' as const,
       price: "$25.00",
       originalPrice: "$41.60",
-      image: "/Imagenes/Semana2_Carrusel1.webp",
+      image: "/Imagenes/CamisetaVenta1.webp",
       rating: 5,
       colors: ["#000000", "#8B4513", "#808080"],
       sizes: ["S", "M", "L", "XL"],

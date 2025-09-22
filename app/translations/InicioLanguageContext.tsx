@@ -81,6 +81,28 @@ export type InicioTranslationKeys =
   | 'carousel.music.description'
   | 'carousel.music.alt'
 
+  // Shirts Section
+  | 'shirts.badge'
+  | 'shirts.title.part1'
+  | 'shirts.title.part2'
+  | 'shirts.description'
+  | 'shirts.classic.name'
+  | 'shirts.sport.name'
+  | 'shirts.casual.name'
+  | 'shirts.urban.name'
+  | 'shirts.sale'
+  | 'shirts.stars'
+  | 'shirts.inStock'
+  | 'shirts.freeShipping'
+  | 'shirts.color'
+  | 'shirts.size'
+  | 'shirts.orderWhatsapp'
+  | 'shirts.premiumQuality'
+  | 'shirts.fastShipping'
+  | 'shirts.satisfaction'
+  | 'shirts.whatsapp.message'
+  | 'shirts.whatsapp.price'
+  | 'shirts.whatsapp.question'
 
 
 interface InicioLanguageContextType {
@@ -169,8 +191,33 @@ const inicioTranslations = {
     'footer.currentTime': 'Hora actual:',
     'footer.closed': 'CERRADO',
     'footer.instagram': 'Instagram',
-    'footer.copyright': '© 2025 Bar Ruso Kalashnikov. Todos los derechos reservados.'
+    'footer.copyright': '© 2025 Bar Ruso Kalashnikov. Todos los derechos reservados.',
+
+    // Shirts Section
+    'shirts.badge': 'COLECCIÓN PREMIUM',
+    'shirts.title.part1': 'Nuestras',
+    'shirts.title.part2': 'Camisetas',
+    'shirts.description': 'Descubre nuestra exclusiva colección de camisetas de alta calidad, diseñadas para quienes buscan estilo y comodidad únicos.',
+    'shirts.classic.name': 'Camiseta FERRARI',
+    'shirts.sport.name': 'Camiseta LAGRIAS DE CULEBRA',
+    'shirts.casual.name': 'Camiseta ABISMO',
+    'shirts.urban.name': 'Camiseta CHERNOBYL',  
+    'shirts.sale': 'OFERTA',
+    'shirts.stars': 'estrellas',
+    'shirts.inStock': 'En Stock',
+    'shirts.freeShipping': 'Envío Gratis',
+    'shirts.color': 'Color',
+    'shirts.size': 'Talla',
+    'shirts.orderWhatsapp': 'Pedir por WhatsApp',
+    'shirts.premiumQuality': 'Calidad premium garantizada',
+    'shirts.fastShipping': 'Envío en 24-48h',
+    'shirts.satisfaction': 'Garantía de satisfacción',
+    'shirts.whatsapp.message': 'Hola! Me interesa la',
+    'shirts.whatsapp.price': 'por',
+    'shirts.whatsapp.question': '¿Podrías darme más información?'
   },
+
+
 
   en: {
     // Loading Screen
@@ -248,7 +295,29 @@ const inicioTranslations = {
     'footer.currentTime': 'Current time:',
     'footer.closed': 'CLOSED',
     'footer.instagram': 'Instagram',
-    'footer.copyright': '© 2025 Bar Ruso Kalashnikov. All rights reserved.'
+    'footer.copyright': '© 2025 Bar Ruso Kalashnikov. All rights reserved.',
+    // Shirts Section
+    'shirts.badge': 'PREMIUM COLLECTION',
+    'shirts.title.part1': 'Our',
+    'shirts.title.part2': 'Shirts',
+    'shirts.description': 'Discover our exclusive collection of high-quality shirts, designed for those seeking unique style and comfort.',
+    'shirts.classic.name': 'Ferrari T-shirt',
+    'shirts.sport.name': 'SNAKE CRY T-shirt',
+    'shirts.casual.name': 'ABISMO T-shirt',
+    'shirts.urban.name': 'CHERNOBYL T-shirt',
+    'shirts.sale': 'SALE',
+    'shirts.stars': 'stars',
+    'shirts.inStock': 'In Stock',
+    'shirts.freeShipping': 'Free Shipping',
+    'shirts.color': 'Color',
+    'shirts.size': 'Size',
+    'shirts.orderWhatsapp': 'Order via WhatsApp',
+    'shirts.premiumQuality': 'Premium quality guaranteed',
+    'shirts.fastShipping': '24-48h shipping',
+    'shirts.satisfaction': 'Satisfaction guarantee',
+    'shirts.whatsapp.message': 'Hello! I\'m interested in the',
+    'shirts.whatsapp.price': 'for',
+    'shirts.whatsapp.question': 'Could you give me more information?',
   },
 
   ru: {
@@ -328,7 +397,30 @@ const inicioTranslations = {
     'footer.currentTime': 'Текущее время:',
     'footer.closed': 'ЗАКРЫТО',
     'footer.instagram': 'Instagram',
-    'footer.copyright': '© 2025 Бар Русский Калашников. Все права защищены.'
+    'footer.copyright': '© 2025 Бар Русский Калашников. Все права защищены.',
+
+    // Shirts Section
+    'shirts.badge': 'ПРЕМИУМ КОЛЛЕКЦИЯ',
+    'shirts.title.part1': 'Наши',
+    'shirts.title.part2': 'Рубашки',
+    'shirts.description': 'Откройте для себя нашу эксклюзивную коллекцию высококачественных рубашек, созданных для тех, кто ищет уникальный стиль и комфорт.',
+    'shirts.classic.name': 'Футболка FERRARI',
+    'shirts.sport.name': 'Футболка SNAKE CRY',
+    'shirts.casual.name': 'Футболка ABISMO',
+    'shirts.urban.name': 'Футболка CHERNOBYL',
+    'shirts.sale': 'СКИДКА',
+    'shirts.stars': 'звезд',
+    'shirts.inStock': 'В наличии',
+    'shirts.freeShipping': 'Бесплатная доставка',
+    'shirts.color': 'Цвет',
+    'shirts.size': 'Размер',
+    'shirts.orderWhatsapp': 'Заказать через WhatsApp',
+    'shirts.premiumQuality': 'Гарантия премиум качества',
+    'shirts.fastShipping': 'Доставка 24-48ч',
+    'shirts.satisfaction': 'Гарантия удовлетворения',
+    'shirts.whatsapp.message': 'Привет! Меня интересует',
+    'shirts.whatsapp.price': 'за',
+    'shirts.whatsapp.question': 'Можете дать больше информации?',
   }
 } as const
 

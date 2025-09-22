@@ -8,6 +8,7 @@ import { InicioLanguageProvider, useInicioLanguage, InicioTranslationKeys} from 
 import { useLanguage } from "@/components/LanguageContext"
 import Link from "next/link"
 import Image from 'next/image'
+import { Star, MessageCircle } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Tipos TypeScript
@@ -258,6 +259,7 @@ function BarKalashnikovContent() {
         <SharedHeader scrolled={scrolled} />
         <HeroSection />
         <WelcomeSection />
+        <ShirtsSection />
         <MenuSection />
         <BarInteriorSection />
         <StatsSection />
@@ -480,13 +482,13 @@ const carouselImages: CarouselImage[] = [
     titleKey: "carousel.experts.title",
     descriptionKey: "carousel.experts.description"
   },
-  {
-    id: 4,
-    src: "/Imagenes/batbonny.webp",
-    altKey: "carousel.experience.alt",
-    titleKey: "carousel.experience.title",
-    descriptionKey: "carousel.experience.description"
-  },
+  //{
+  //  id: 4,
+  //  src: "/Imagenes/batbonny.webp",
+  //  altKey: "carousel.experience.alt",
+  //  titleKey: "carousel.experience.title",
+  //  descriptionKey: "carousel.experience.description"
+  //},
   {
     id: 5,
     src: "/Imagenes/musica.webp",
@@ -675,6 +677,319 @@ const WelcomeSection = React.memo(function WelcomeSection() {
   );
 });
 
+const ShirtsSection = React.memo(function ShirtsSection() {
+  const { tInicio } = useInicioLanguage();
+  const [selectedShirt, setSelectedShirt] = useState(0);
+  
+  // Datos de las camisetas
+  const shirtsData = useMemo(() => [
+    {
+      id: 1,
+      nameKey: 'shirts.classic.name' as const,
+      price: "$25.00",
+      originalPrice: "$41.60",
+      image: "/Imagenes/Semana2_Carrusel1.webp",
+      rating: 5,
+      colors: ["#000000", "#8B4513", "#808080"],
+      sizes: ["S", "M", "L", "XL"],
+      inStock: true,
+      sale: true
+    },
+    {
+      id: 2,
+      nameKey: 'shirts.sport.name' as const,
+      price: "$25.50",
+      originalPrice: "$35.00",
+      image: "/Imagenes/CamisetaVenta2.webp",
+      rating: 4,
+      colors: ["#FFFFFF", "#000000", "#FF0000"],
+      sizes: ["S", "M", "L", "XL"],
+      inStock: true,
+      sale: true
+    },
+    {
+      id: 3,
+      nameKey: 'shirts.casual.name' as const,
+      price: "$20.00",
+      originalPrice: "$45.00",
+      image: "/Imagenes/CamisetaVenta4.webp",
+      rating: 5,
+      colors: ["#0066CC", "#000000", "#00CC00"],
+      sizes: ["M", "L", "XL"],
+      inStock: true,
+      sale: false
+    },
+    {
+      id: 4,
+      nameKey: 'shirts.urban.name' as const,
+      price: "$20.99",
+      originalPrice: "$50.00",
+      image: "/Imagenes/CamisetaVenta3.webp",
+      rating: 4,
+      colors: ["#333333", "#FFFFFF", "#FF6600"],
+      sizes: ["S", "M", "L"],
+      inStock: true,
+      sale: true
+    }
+  ], []);
+
+  const handleShirtSelect = useCallback((index: number) => {
+    setSelectedShirt(index);
+  }, []);
+
+  const currentShirt = shirtsData[selectedShirt];
+
+  const renderStars = useCallback((rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${
+          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+        }`}
+      />
+    ));
+  }, []);
+
+  const handleWhatsAppOrder = useCallback(() => {
+    const shirtName = tInicio(currentShirt.nameKey);
+    const message = encodeURIComponent(
+      `${tInicio('shirts.whatsapp.message')} ${shirtName} ${tInicio('shirts.whatsapp.price')} ${currentShirt.price}. ${tInicio('shirts.whatsapp.question')}`
+    );
+    window.open(`https://wa.me/593995575335?text=${message}`, '_blank');
+  }, [currentShirt, tInicio]);
+
+  return (
+    <section className="py-16 bg-gradient-to-br from-gray-900 via-black to-gray-900">
+      <div className="container mx-auto px-4">
+        {/* Header de la sección */}
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-12"
+        >
+          <div className="inline-block mb-6">
+            <span className="bg-orange-500 text-black px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-full">
+              {tInicio('shirts.badge')}
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            {tInicio('shirts.title.part1')} <span className="text-orange-500">{tInicio('shirts.title.part2')}</span>
+          </h2>
+          <p className="text-gray-300 max-w-3xl mx-auto text-lg leading-relaxed">
+            {tInicio('shirts.description')}
+          </p>
+        </motion.div>
+
+        {/* Galería Principal */}
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Columna Izquierda - Miniaturas */}
+            <motion.div 
+              initial={{ x: -50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="order-2 lg:order-1 flex justify-center lg:block"
+            >
+              <div className="grid grid-cols-4 lg:grid-cols-1 gap-2 max-w-fit">
+                {shirtsData.slice(0, 4).map((shirt, index) => (
+                  <motion.div
+                    key={shirt.id}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all duration-300 w-20 h-24 ${
+                      selectedShirt === index
+                        ? 'border-orange-500 shadow-lg shadow-orange-500/30'
+                        : 'border-gray-700 hover:border-gray-500'
+                    }`}
+                    onClick={() => handleShirtSelect(index)}
+                  >
+                    <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 p-1">
+                      <img
+                        src={shirt.image}
+                        alt={tInicio(shirt.nameKey)}
+                        className="w-full h-full object-cover rounded"
+                      />
+                      {shirt.sale && (
+                        <div className="absolute top-1 right-1 bg-red-500 text-white text-[10px] px-1 py-0.5 rounded">
+                          {tInicio('shirts.sale')}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Columna Central - Imagen Principal */}
+            <motion.div 
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="order-1 lg:order-2"
+            >
+              <div className="relative">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedShirt}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.5 }}
+                    className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden shadow-2xl"
+                  >
+                    <div className="aspect-[3/4] p-8">
+                      <img
+                        src={currentShirt.image}
+                        alt={tInicio(currentShirt.nameKey)}
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                    </div>
+                    {currentShirt.sale && (
+                      <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-2 rounded-lg font-bold shadow-lg">
+                        {tInicio('shirts.sale')}
+                      </div>
+                    )}
+                    <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2">
+                      <div className="flex items-center gap-1">
+                        {renderStars(currentShirt.rating)}
+                        <span className="text-white text-sm ml-2">
+                          ({currentShirt.rating}.0)
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
+
+            {/* Columna Derecha - Información del Producto */}
+            <motion.div 
+              initial={{ x: 50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="order-3"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedShirt}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700"
+                >
+                  {/* Título y Rating */}
+                  <div className="mb-4">
+                    <h3 className="text-2xl font-bold text-white mb-2">
+                      {tInicio(currentShirt.nameKey)}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-1">
+                        {renderStars(currentShirt.rating)}
+                      </div>
+                      <span className="text-gray-400 text-sm">
+                        ({currentShirt.rating} {tInicio('shirts.stars')})
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Precios */}
+                  <div className="mb-6">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl font-bold text-orange-500">
+                        {currentShirt.price}
+                      </span>
+                      {currentShirt.originalPrice && (
+                        <span className="text-xl text-gray-500 line-through">
+                          {currentShirt.originalPrice}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-green-400 text-sm mt-1">
+                      ✓ {tInicio('shirts.inStock')} 
+                    </p>
+                  </div>
+
+                  {/* Colores - Oculto */}
+                  <div className="mb-6" style={{ display: 'none' }}>
+                    <h4 className="text-white font-semibold mb-3">{tInicio('shirts.color')}:</h4>
+                    <div className="flex gap-2">
+                      {currentShirt.colors.map((color, index) => (
+                        <div
+                          key={index}
+                          className="w-8 h-8 rounded-full border-2 border-gray-600 cursor-pointer hover:border-orange-500 transition-colors"
+                          style={{ backgroundColor: color }}
+                          title={`${tInicio('shirts.color')} ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tallas */}
+                  <div className="mb-8">
+                    <h4 className="text-white font-semibold mb-3">{tInicio('shirts.size')}:</h4>
+                    <div className="flex gap-2 flex-wrap">
+                      {currentShirt.sizes.map((size) => (
+                        <button
+                          key={size}
+                          className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors"
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Botón de WhatsApp */}
+                  <button
+                    onClick={handleWhatsAppOrder}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-green-500/25 hover:scale-105"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    {tInicio('shirts.orderWhatsapp')}
+                  </button>
+
+                  {/* Información adicional */}
+                  <div className="mt-6 text-center">
+                    <p className="text-gray-400 text-sm">
+                      💫 {tInicio('shirts.premiumQuality')}<br/>
+                      🚚 {tInicio('shirts.fastShipping')}<br/>
+                      💝 {tInicio('shirts.satisfaction')}
+                    </p>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+
+          </div>
+        </div>
+
+        {/* Indicadores inferiores para móvil */}
+        <div className="flex justify-center mt-8 lg:hidden">
+          <div className="flex gap-2">
+            {shirtsData.slice(0, 4).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => handleShirtSelect(index)}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  selectedShirt === index
+                    ? 'bg-orange-500'
+                    : 'bg-gray-600 hover:bg-gray-500'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+});
 // ✅ MENU SECTION OPTIMIZADO
 const MenuSection = React.memo(function MenuSection() {
   const { tInicio } = useInicioLanguage()

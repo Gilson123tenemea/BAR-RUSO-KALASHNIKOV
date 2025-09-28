@@ -14,6 +14,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Optimización: Mover datos fuera del componente para evitar recreación
 // Precargar todas las imágenes para máxima fluidez
 const galleryItems = [
+  { type: "video", title: "", videoSrc: "/videos/Semana3_V1.webm", thumbnail: "/Imagenes/Semana3_Im1.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana3_V2.webm", thumbnail: "/Imagenes/Semana3_Im2.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana3_V3.webm", thumbnail: "/Imagenes/Semana3_Im3.webp" },
   { type: "video", title: "", videoSrc: "/videos/Semana2_V.webm", thumbnail: "/Imagenes/FondoSemana2_V.webp" },
   { type: "video", title: "", videoSrc: "/videos/Semana2_V1.webm", thumbnail: "/Imagenes/FondoSemana2_V1.webp" },
   { type: "video", title: "", videoSrc: "/videos/Semana2_V2_2.webm", thumbnail: "/Imagenes/FondoSemana2_V2.webp" },

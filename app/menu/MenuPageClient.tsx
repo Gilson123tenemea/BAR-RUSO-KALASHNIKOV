@@ -338,6 +338,7 @@ const menuSections: MenuSection[] = [
   },
 ]
 
+
 const useImagePreloader = () => {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
   const [isMobile, setIsMobile] = useState(false)
@@ -492,6 +493,7 @@ const translatedMenuSections = useMemo(() =>
     >
       <SharedHeader />
       <HeroSection onDownload={handleDownloadMenu} />
+      <AnnouncementBanner />
       <MenuSections
         sections={translatedMenuSections}
         openSections={openSections}
@@ -504,6 +506,51 @@ const translatedMenuSections = useMemo(() =>
     </motion.div>
   )
 }
+
+const AnnouncementBanner = memo(() => {
+  const { tMenu } = useMenuLanguage()
+  const text = tMenu('banner.announcement' as any)
+  const repeatedText = `${text} • `.repeat(4)
+
+  return (
+    <div className="relative w-full h-10 bg-gradient-to-r from-purple-900 via-pink-600 to-purple-900 overflow-hidden shadow-lg">
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
+      <div className="relative h-full flex items-center">
+        <div className="animate-scroll whitespace-nowrap">
+          <span className="inline-block text-white font-bold text-sm tracking-wider uppercase px-4">
+            {repeatedText}
+          </span>
+          <span className="inline-block text-white font-bold text-sm tracking-wider uppercase px-4">
+            {repeatedText}
+          </span>
+        </div>
+      </div>
+      <style jsx>{`
+        @keyframes scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .animate-scroll {
+          display: inline-flex;
+          animation: scroll 25s linear infinite;
+        }
+        .animate-shimmer {
+          animation: shimmer 3s ease-in-out infinite;
+        }
+        @media (max-width: 640px) {
+          .animate-scroll {
+            animation: scroll 15s linear infinite;
+          }
+        }
+      `}</style>
+    </div>
+  )
+})
+
 
 // ✅ OPTIMIZADO: MenuSections sin esperas por imágenes
 const MenuSections = memo(({
@@ -766,6 +813,9 @@ const MenuSectionItem = memo(({
     </motion.div>
   )
 })
+
+
+
 
 MenuSectionItem.displayName = 'MenuSectionItem'
 

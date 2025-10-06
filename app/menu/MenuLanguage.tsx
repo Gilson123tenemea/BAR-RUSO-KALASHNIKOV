@@ -41,6 +41,7 @@ type MenuTranslationKeys =
     | 'footer.description'
     | 'footer.rights'
     | 'whatsapp.reservationMessage'
+    | 'banner.announcement'
 
 // Interface para items del menú
 export interface MenuItem {
@@ -579,7 +580,9 @@ const generalTranslations = {
         'footer.closed': 'CERRADO',
         'footer.description': 'La experiencia nocturna más exclusiva de Cuenca. Donde la tradición se encuentra con la innovación.',
         'footer.rights': 'Todos los derechos reservados.',
-        'whatsapp.reservationMessage': 'Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov'
+        'whatsapp.reservationMessage': 'Hola, me gustaría hacer una reserva en Bar Ruso Kalashnikov',
+        'banner.announcement': '🔥 NUEVOS TEQUILAS PREMIUM 🍹 SABORES EXCLUSIVOS 🎉 PROMOCIONES ESPECIALES 🌟 EXPERIENCIA ÚNICA'
+
     },
     en: {
         'hero.title': 'Explore Our Menu',
@@ -605,7 +608,9 @@ const generalTranslations = {
         'footer.closed': 'CLOSED',
         'footer.description': 'Cuenca\'s most exclusive nightlife experience. Where tradition meets innovation.',
         'footer.rights': 'All rights reserved.',
-        'whatsapp.reservationMessage': 'Hello, I would like to make a reservation at Bar Ruso Kalashnikov'
+        'whatsapp.reservationMessage': 'Hello, I would like to make a reservation at Bar Ruso Kalashnikov',
+        'banner.announcement': '🔥 NEW PREMIUM TEQUILAS 🍹 EXCLUSIVE FLAVORS 🎉 SPECIAL PROMOTIONS 🌟 UNIQUE EXPERIENCE'
+
     },
     ru: {
         'hero.title': 'Изучите наше меню',
@@ -631,7 +636,9 @@ const generalTranslations = {
         'footer.closed': 'ЗАКРЫТО',
         'footer.description': 'Самый эксклюзивный ночной отдых в Куэнке. Где традиции встречаются с инновациями.',
         'footer.rights': 'Все права защищены.',
-        'whatsapp.reservationMessage': 'Привет, я хотел бы забронировать столик в Bar Ruso Kalashnikov'
+        'whatsapp.reservationMessage': 'Привет, я хотел бы забронировать столик в Bar Ruso Kalashnikov',
+        'banner.announcement': '🔥 НОВЫЕ ПРЕМИУМ ТЕКИЛЫ 🍹 ЭКСКЛЮЗИВНЫЕ ВКУСЫ 🎉 СПЕЦИАЛЬНЫЕ АКЦИИ 🌟 УНИКАЛЬНЫЙ ОПЫТ'
+
     }
 } as const
 

@@ -14,6 +14,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Optimización: Mover datos fuera del componente para evitar recreación
 // Precargar todas las imágenes para máxima fluidez
 const galleryItems = [
+
+  { type: "video", title: "", videoSrc: "/videos/Semana4_V1.webm", thumbnail: "/Imagenes/S4_Img_1_v1.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana4_V2.webm", thumbnail: "/Imagenes/S4_Img_1_v2.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana4_V3.webm", thumbnail: "/Imagenes/S4_Img_1_v3.webp" },
+
   { type: "video", title: "", videoSrc: "/videos/Semana3_V1.webm", thumbnail: "/Imagenes/Semana3_Im1.webp" },
   { type: "video", title: "", videoSrc: "/videos/Semana3_V2.webm", thumbnail: "/Imagenes/Semana3_Im2.webp" },
   { type: "video", title: "", videoSrc: "/videos/Semana3_V3.webm", thumbnail: "/Imagenes/Semana3_Im3.webp" },
@@ -195,19 +200,19 @@ const carouselImages = [
     fallback: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=300&fit=crop"
   },
   {
-    src: "/Imagenes/Semana2_Carrusel2.webp", 
+    src: "/Imagenes/S4_Img_1.webp", 
     fallback: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop"
   },
   {
-    src: "/Imagenes/Semana2_Carrusel3.webp",
+    src: "/Imagenes/S4_Img_2.webp",
     fallback: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"
   },
   {
-    src: "/Imagenes/Semana2_Carrusel4.webp",
+    src: "/Imagenes/S4_Img_3.webp",
     fallback: "https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=400&h=300&fit=crop"
   },
   {
-    src: "/Imagenes/Semana2_Carrusel5.webp",
+    src: "/Imagenes/S4_Img_4.webp",
     fallback: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop"
   }
 ];

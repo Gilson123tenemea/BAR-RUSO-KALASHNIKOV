@@ -15,9 +15,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Precargar todas las imágenes para máxima fluidez
 const galleryItems = [
 
-  { type: "video", title: "", videoSrc: "/videos/Semana4_V1.webm", thumbnail: "/Imagenes/S4_Img_1_v1.webp" },
-  { type: "video", title: "", videoSrc: "/videos/Semana4_V2.webm", thumbnail: "/Imagenes/S4_Img_1_v2.webp" },
-  { type: "video", title: "", videoSrc: "/videos/Semana4_V3.webm", thumbnail: "/Imagenes/S4_Img_1_v3.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana4_V1.webm", thumbnail: "/Imagenes/S4_Img_1_V1.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana4_V2.webm", thumbnail: "/Imagenes/S4_Img_1_V2.webp" },
+  { type: "video", title: "", videoSrc: "/videos/Semana4_V3.webm", thumbnail: "/Imagenes/S4_Img_1_V3.webp" },
 
   { type: "video", title: "", videoSrc: "/videos/Semana3_V1.webm", thumbnail: "/Imagenes/Semana3_Im1.webp" },
   { type: "video", title: "", videoSrc: "/videos/Semana3_V2.webm", thumbnail: "/Imagenes/Semana3_Im2.webp" },
